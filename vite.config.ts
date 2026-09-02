@@ -7,6 +7,12 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Fully static site (no server functions) — pin the preset so CI platform
+  // auto-detection (e.g. Netlify's `netlify` preset) doesn't swap in a server
+  // output layout the prerender step doesn't recognize. Only .output/public
+  // (the prerendered static HTML) ever gets published; this server bundle is
+  // build-time-only, used solely to crawl-render the pages.
+  nitro: { preset: "cloudflare-module" },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

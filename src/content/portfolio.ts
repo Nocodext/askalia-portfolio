@@ -41,7 +41,8 @@ export const profile = {
   role: "Product Architect",
   tagline: "Product clarity. Technical fluency.",
   location: "France / Europe",
-  email: "hello@askalia.net",
+  emailUser: "hello",
+  emailDomain: "askalia.net",
   sideBusinessBrand: "nocodext.studio",
 };
 

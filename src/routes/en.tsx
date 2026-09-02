@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ContactEmail } from "@/components/contact-email";
 import {
   HeartPulse,
   Network,
@@ -903,12 +904,12 @@ function Contact() {
             </p>
           </div>
           <div className="flex flex-col gap-4">
-            <a
-              href={`mailto:${profile.email}`}
+            <ContactEmail
+              user={profile.emailUser}
+              domain={profile.emailDomain}
+              placeholder="Reveal email"
               className="rounded-md bg-ink px-6 py-3.5 text-center text-sm font-semibold text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
-            >
-              {profile.email}
-            </a>
+            />
             <div className="flex flex-wrap gap-4 font-mono text-xs text-slate">
               <span>Askalia</span>
               <span>·</span>

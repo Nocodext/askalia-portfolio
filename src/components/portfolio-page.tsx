@@ -657,6 +657,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
             title={c.title}
             onClick={(e) => {
               e.preventDefault();
+              trackEvent("toc_click", { case: c.id });
               scrollToCase(c.id);
             }}
             className={`flex items-center gap-2.5 rounded-md py-1.5 pl-3 text-xs transition-colors ${

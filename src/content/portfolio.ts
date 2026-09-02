@@ -117,6 +117,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["HDS niveaux 4-6", "RGPD / DPO", "Souveraineté de la donnée"],
     },
+    duration: "1 an",
     glossary: [
       {
         term: "PAM",
@@ -185,6 +186,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["RGPD", "Choix d'hébergement des données"],
     },
+    duration: "3 ans",
     scope:
       "Réalisé : tout — faisabilité, conception & angles morts, backend, tests et cas limites, frontend, architecture code + NoCode, prod.",
   },
@@ -215,6 +217,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["RGPD", "Anonymisation des PDF"],
     },
+    duration: "3 mois",
     scope: "Réalisé : tout.",
   },
   {
@@ -245,6 +248,7 @@ export const cases: CaseStudy[] = [
       technical: ["No-code", "iPaaS (automatisation)", "RBAC (contrôle d'accès)"],
       ethical: ["RGPD", "Souveraineté (kSuite Drive)"],
     },
+    duration: "1 an",
   },
   {
     id: "stt-ehpad",
@@ -274,6 +278,7 @@ export const cases: CaseStudy[] = [
       technical: ["Edge AI", "Reconnaissance vocale (ASR)", "Inférence embarquée (NPU)"],
       ethical: ["HDS", "Souveraineté des données"],
     },
+    duration: "5 jours",
   },
   {
     id: "energie",
@@ -300,7 +305,7 @@ export const cases: CaseStudy[] = [
       technical: ["Web services SOAP/XML", "Automatisation no-code", "Agents IA"],
       ethical: ["Certificats TLS & sécurité des accès"],
     },
-    duration: "6 mois",
+    duration: "4 mois",
   },
   {
     id: "cad-web",
@@ -341,6 +346,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["Scalabilité de l'infrastructure cloud", "Exposition Cloud Act (AWS)"],
     },
+    duration: "6 mois",
     scope: "Rôle : architecte polyvalent.",
   },
   {
@@ -363,6 +369,7 @@ export const cases: CaseStudy[] = [
       technical: ["Mobile natif C++", "Full-stack réactif temps réel", "PaaS hébergement"],
       ethical: ["Fiabilité en contexte d'urgence médicale"],
     },
+    duration: "3 mois",
   },
   {
     id: "ats-youtubers",
@@ -396,6 +403,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["RGPD (données candidats)", "Délivrabilité & anti-spam (SPF/DKIM/DMARC)"],
     },
+    duration: "1 mois",
     scope: "Retombées business : réseau d'affaires OnlyFans et MyM.",
   },
   {
@@ -439,6 +447,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["Protection des droits d'auteur (watermark)"],
     },
+    duration: "1 mois",
   },
 ];
 

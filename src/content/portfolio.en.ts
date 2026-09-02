@@ -117,6 +117,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["HDS levels 4-6", "GDPR / DPO", "Data sovereignty"],
     },
+    duration: "1 year",
     glossary: [
       {
         term: "PAM",
@@ -185,6 +186,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["GDPR", "Data-hosting choices"],
     },
+    duration: "3 years",
     scope:
       "Delivered: everything — feasibility, design & blind spots, backend, tests & edge cases, frontend, code + no-code architecture, production.",
   },
@@ -215,6 +217,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["GDPR", "PDF anonymization"],
     },
+    duration: "3 months",
     scope: "Delivered: everything.",
   },
   {
@@ -245,6 +248,7 @@ export const cases: CaseStudy[] = [
       technical: ["No-code", "iPaaS (automation)", "RBAC (access control)"],
       ethical: ["GDPR", "Data sovereignty (kSuite Drive)"],
     },
+    duration: "1 year",
   },
   {
     id: "stt-ehpad",
@@ -274,6 +278,7 @@ export const cases: CaseStudy[] = [
       technical: ["Edge AI", "Speech recognition (ASR)", "On-device inference (NPU)"],
       ethical: ["HDS", "Data sovereignty"],
     },
+    duration: "5 days",
   },
   {
     id: "energie",
@@ -300,7 +305,7 @@ export const cases: CaseStudy[] = [
       technical: ["SOAP/XML web services", "No-code automation", "AI agents"],
       ethical: ["TLS certificates & access security"],
     },
-    duration: "6 months",
+    duration: "4 months",
   },
   {
     id: "cad-web",
@@ -340,6 +345,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["Cloud infrastructure scalability", "Cloud Act exposure (AWS)"],
     },
+    duration: "6 months",
     scope: "Role: versatile architect.",
   },
   {
@@ -362,6 +368,7 @@ export const cases: CaseStudy[] = [
       technical: ["Native C++ mobile", "Real-time reactive full-stack", "PaaS hosting"],
       ethical: ["Reliability in emergency medical context"],
     },
+    duration: "3 months",
   },
   {
     id: "ats-youtubers",
@@ -395,6 +402,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["GDPR (candidate data)", "Deliverability & anti-spam (SPF/DKIM/DMARC)"],
     },
+    duration: "1 month",
     scope: "Business outcome: business network across OnlyFans and MyM.",
   },
   {
@@ -438,6 +446,7 @@ export const cases: CaseStudy[] = [
       ],
       ethical: ["Copyright protection (watermark)"],
     },
+    duration: "1 month",
   },
 ];
 

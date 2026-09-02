@@ -206,7 +206,14 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-ground/80 backdrop-blur-xl">
       <div className="mx-auto max-w-6xl px-6">
         <nav className="flex items-center justify-between py-4">
-          <a href="#top" className="flex items-center gap-3">
+          <a
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToCase("top");
+            }}
+            className="flex items-center gap-3"
+          >
             <span className="grid size-8 place-items-center rounded-md bg-ink font-mono text-xs font-medium text-white">
               {profile.initials}
             </span>
@@ -218,31 +225,70 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
             </span>
           </a>
           <div className="hidden items-center gap-7 text-sm font-medium text-slate md:flex">
-            <a href="#work" className="transition-colors hover:text-ink">
+            <a
+              href="#work"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("work");
+              }}
+              className="transition-colors hover:text-ink"
+            >
               {strings.nav.caseStudies}
             </a>
-            <a href="#map" className="transition-colors hover:text-ink">
+            <a
+              href="#map"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("map");
+              }}
+              className="transition-colors hover:text-ink"
+            >
               {strings.nav.cartography}
             </a>
-            <a href="#process" className="transition-colors hover:text-ink">
+            <a
+              href="#process"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("process");
+              }}
+              className="transition-colors hover:text-ink"
+            >
               {strings.nav.method}
             </a>
-            <a href="#lab" className="transition-colors hover:text-ink">
+            <a
+              href="#lab"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("lab");
+              }}
+              className="transition-colors hover:text-ink"
+            >
               {strings.nav.sideBusiness}
             </a>
-            <a href="#contact" className="transition-colors hover:text-ink">
+            <a
+              href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("contact");
+              }}
+              className="transition-colors hover:text-ink"
+            >
               {strings.nav.contact}
             </a>
           </div>
           <div className="flex items-center gap-4">
             <a
               href={strings.nav.altLangHref}
-              className="font-mono text-xs font-medium text-slate transition-colors hover:text-ink"
+              className="rounded-full px-2.5 py-1 font-mono text-xs font-medium text-slate ring-1 ring-inset ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
             >
               {strings.nav.altLangLabel}
             </a>
             <a
               href="#contact"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("contact");
+              }}
               className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
             >
               {strings.nav.startProject}
@@ -279,12 +325,20 @@ function Hero({ content, strings }: { content: PortfolioContent; strings: UIStri
           <div className="reveal d3 mt-8 flex flex-wrap items-center gap-3">
             <a
               href="#work"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("work");
+              }}
               className="rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
             >
               {strings.hero.seeCaseStudies}
             </a>
             <a
               href="#lab"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("lab");
+              }}
               className="rounded-md bg-white/70 px-5 py-2.5 text-sm font-medium text-ink ring-1 ring-ink/10 backdrop-blur transition-transform hover:-translate-y-0.5"
             >
               {profile.sideBusinessBrand}

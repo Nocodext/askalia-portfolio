@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   CaseStudy,
   Highlight,
@@ -560,20 +560,14 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
 function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
   const [activeId, setActiveId] = useState<string>(cases[0]?.id ?? "");
-  const [hasEntered, setHasEntered] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const hasScrolled = useRef(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const activeObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-            // IntersectionObserver reports current state as soon as observe()
-            // runs, even with no scroll — on tall viewports the first case can
-            // already sit in the trigger band at scrollY 0. Require an actual
-            // scroll so the TOC never appears before the user has moved.
-            if (window.scrollY > 0) setHasEntered(true);
-          }
+          if (entry.isIntersecting) setActiveId(entry.target.id);
         });
       },
       { rootMargin: "0px 0px -80% 0px", threshold: 0 },
@@ -581,14 +575,39 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
     const els = cases
       .map((c) => document.getElementById(c.id))
       .filter((el): el is HTMLElement => el !== null);
-    els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    els.forEach((el) => activeObserver.observe(el));
+
+    // Fades the TOC in while the Work section is in view and back out once
+    // scrolled past it (either direction). IntersectionObserver reports
+    // current state as soon as observe() runs, even with no scroll — on tall
+    // viewports the section can already intersect at scrollY 0 — so ignore
+    // that state until an actual scroll has happened.
+    const onScroll = () => {
+      if (window.scrollY > 0) hasScrolled.current = true;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const workEl = document.getElementById("work");
+    const sectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        if (hasScrolled.current || window.scrollY > 0) setVisible(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    if (workEl) sectionObserver.observe(workEl);
+
+    return () => {
+      activeObserver.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      sectionObserver.disconnect();
+    };
   }, [cases]);
 
   return (
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      className={`sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex ${hasEntered ? "visible" : "invisible"}`}
+      aria-hidden={!visible}
+      className={`sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto transition-opacity duration-300 lg:flex ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`}
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

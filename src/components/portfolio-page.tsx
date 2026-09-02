@@ -588,7 +588,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   return (
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      className={`sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto ${hasEntered ? "lg:flex" : ""}`}
+      className={`sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex ${hasEntered ? "visible" : "invisible"}`}
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

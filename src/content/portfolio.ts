@@ -122,7 +122,7 @@ export const cases: CaseStudy[] = [
     glossary: [
       {
         term: "PAM",
-        def: "Progiciel d'Accueil et de Mouvements — gestion administrative des patients (identités, admissions, mouvements).",
+        def: "Patient Administration Management — gestion administrative des patients (identités, admissions, mouvements).",
       },
       {
         term: "HL7",

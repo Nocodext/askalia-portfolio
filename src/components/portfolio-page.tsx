@@ -491,10 +491,11 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="mt-1 grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] text-slate ring-1 ring-ink/15 transition-colors hover:text-ink"
+                  className="mt-1 grid size-6 shrink-0 place-items-center overflow-hidden rounded-full ring-1 ring-ink/15 transition-colors hover:ring-ink/30"
                   aria-label={strings.caseCard.glossaryAria}
+                  title={strings.caseCard.glossaryAria}
                 >
-                  ?
+                  <img src="/logos/uk-flag.svg" alt="" className="h-3.5 w-auto rounded-[1px]" />
                 </button>
               </PopoverTrigger>
               <PopoverContent side="left" align="start" className="w-72">

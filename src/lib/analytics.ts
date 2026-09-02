@@ -17,6 +17,10 @@ export function initAnalytics() {
     persistence: "memory",
     autocapture: true,
     capture_pageview: true,
+    // Free plan is one PostHog project total — this tags every event
+    // (autocapture included) so nocodext.studio and future landing pages can
+    // share it and still be filtered/segmented apart in PostHog's UI.
+    loaded: (ph) => ph.register({ app: "portfolio" }),
   });
 }
 

@@ -754,8 +754,9 @@ function Overview() {
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
         [03] — Cartographie
       </span>
-      <h2 className="mt-3 max-w-[30ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-        Ce que couvrent les {cases.length} missions, en un coup d'œil.
+      <h2 className="mt-3 max-w-[35ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
+        Ce que couvrent les {cases.length} missions, <br />
+        en un coup d'œil.
       </h2>
       <p className="mt-3 max-w-prose text-sm text-pretty text-slate">
         Synthèse des secteurs, compétences techniques et produit, et rôles endossés, à partir des
@@ -780,7 +781,7 @@ function Process() {
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
         [04] — Méthode
       </span>
-      <h2 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
+      <h2 className="mt-3 max-w-[35ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
         Un plan lisible qui devient un système en marche.
       </h2>
       <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[min(1vw,14px)] ring-1 ring-ink/10 md:grid-cols-3">

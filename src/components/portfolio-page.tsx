@@ -630,7 +630,7 @@ function Work({ content, strings }: { content: PortfolioContent; strings: UIStri
           </span>
         </div>
         <div className="lg:flex lg:items-start lg:gap-8">
-          <div className="grid grid-cols-1 gap-5 lg:min-w-0 lg:flex-1">
+          <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">
             {cases.map((item) => (
               <CaseCard key={item.id} item={item} strings={strings} />
             ))}

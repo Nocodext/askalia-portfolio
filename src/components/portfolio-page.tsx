@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type {
   CaseStudy,
   Highlight,
@@ -561,7 +561,6 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   const { cases } = content;
   const [activeId, setActiveId] = useState<string>(cases[0]?.id ?? "");
   const [visible, setVisible] = useState(false);
-  const hasScrolled = useRef(false);
 
   useEffect(() => {
     const activeObserver = new IntersectionObserver(
@@ -582,15 +581,15 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
     // the viewport, so an IntersectionObserver only fires at its entry/exit
     // boundaries — never in between — leaving `visible` stuck for the whole
     // scroll through the case list. Compute it directly against scroll
-    // position instead. Also require an actual scroll before the first
-    // reveal: on tall viewports the section can already overlap the
-    // viewport at scrollY 0.
+    // position instead. Require scrollY > 0 *right now* (not just "has ever
+    // scrolled") — on tall viewports the section already overlaps the
+    // viewport at scrollY 0, so bounds-overlap alone would stay true even
+    // after scrolling back up to the very top.
     const workEl = document.getElementById("work");
     const onScroll = () => {
-      if (window.scrollY > 0) hasScrolled.current = true;
-      if (!hasScrolled.current || !workEl) return;
+      if (!workEl) return;
       const rect = workEl.getBoundingClientRect();
-      setVisible(rect.top < window.innerHeight && rect.bottom > 0);
+      setVisible(window.scrollY > 0 && rect.top < window.innerHeight && rect.bottom > 0);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();

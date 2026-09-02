@@ -659,97 +659,109 @@ function OverviewPanel({
       <div className="bg-gradient-to-b from-white/85 to-white/55 p-6">
         <p className="text-xs text-slate">{category.description}</p>
         <ul className="mt-5">
-          {category.buckets.map((b) => (
-            <li
-              key={b.label}
-              className="flex items-center justify-between gap-3 border-t border-ink/10 py-2.5 first:border-t-0 first:pt-0"
-            >
-              <span className="text-sm">{b.label}</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 font-mono text-[11px] ring-1 ring-inset transition-colors hover:brightness-95 ${c.bg} ${c.text} ${c.ring}`}
-                  >
-                    {b.caseIds.length}
-                    <ArrowUpRight className="size-3" strokeWidth={2.5} />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent side={popoverSide} align="center" className="w-80">
-                  <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
-                  <div
-                    className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] ${b.caseIds.length >= 2 ? `font-semibold ${c.text}` : "text-slate"}`}
-                  >
-                    {b.caseIds.length >= 2 ? (
-                      <span
-                        className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`}
-                      />
-                    ) : null}
-                    {b.label}
-                  </div>
-                  {b.caseIds.length >= 2 ? (
-                    <SkillRing
-                      hubClassName={c.head}
-                      onSelect={scrollToCase}
-                      items={b.caseIds.flatMap((id) => {
-                        const item = cases.find((x) => x.id === id);
-                        const project = sideProjects.find((x) => x.id === id);
-                        const title = item?.title ?? project?.name;
-                        if (!title) return [];
-                        return [
-                          {
-                            id,
-                            title,
-                            color: ringColorVar[caseColor(id)],
-                            node: <CaseIcon id={id} size="sm" />,
-                          },
-                        ];
-                      })}
+          {category.buckets.map((b) => {
+            const hasRing = b.caseIds.length >= 3;
+            return (
+              <li
+                key={b.label}
+                className="flex items-center justify-between gap-3 border-t border-ink/10 py-2.5 first:border-t-0 first:pt-0"
+              >
+                <span
+                  className={`flex items-center gap-1.5 text-sm ${hasRing ? `font-semibold ${c.text}` : ""}`}
+                >
+                  {hasRing ? (
+                    <span
+                      className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`}
                     />
                   ) : null}
-                  <TooltipProvider delayDuration={200}>
-                    <ul className="mt-3 -mx-1">
-                      {b.caseIds.map((id) => {
-                        const item = cases.find((x) => x.id === id);
-                        const project = sideProjects.find((x) => x.id === id);
-                        const title = item?.title ?? project?.name;
-                        if (!title) return null;
-                        return (
-                          <li key={id}>
-                            <PopoverClose asChild>
-                              <a
-                                href={`#${id}`}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  scrollToCase(id);
-                                }}
-                                className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
-                              >
-                                <CaseIcon id={id} size="sm" />
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <span className="min-w-0 flex-1 truncate text-left">
-                                      {title}
+                  {b.label}
+                </span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 font-mono text-[11px] ring-1 ring-inset transition-colors hover:brightness-95 ${c.bg} ${c.text} ${c.ring}`}
+                    >
+                      {b.caseIds.length}
+                      <ArrowUpRight className="size-3" strokeWidth={2.5} />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side={popoverSide} align="center" className="w-80">
+                    <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
+                    <div
+                      className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
+                    >
+                      {hasRing ? (
+                        <span
+                          className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`}
+                        />
+                      ) : null}
+                      {b.label}
+                    </div>
+                    {hasRing ? (
+                      <SkillRing
+                        hubClassName={c.head}
+                        onSelect={scrollToCase}
+                        items={b.caseIds.flatMap((id) => {
+                          const item = cases.find((x) => x.id === id);
+                          const project = sideProjects.find((x) => x.id === id);
+                          const title = item?.title ?? project?.name;
+                          if (!title) return [];
+                          return [
+                            {
+                              id,
+                              title,
+                              color: ringColorVar[caseColor(id)],
+                              node: <CaseIcon id={id} size="sm" />,
+                            },
+                          ];
+                        })}
+                      />
+                    ) : null}
+                    <TooltipProvider delayDuration={200}>
+                      <ul className="mt-3 -mx-1">
+                        {b.caseIds.map((id) => {
+                          const item = cases.find((x) => x.id === id);
+                          const project = sideProjects.find((x) => x.id === id);
+                          const title = item?.title ?? project?.name;
+                          if (!title) return null;
+                          return (
+                            <li key={id}>
+                              <PopoverClose asChild>
+                                <a
+                                  href={`#${id}`}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    scrollToCase(id);
+                                  }}
+                                  className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
+                                >
+                                  <CaseIcon id={id} size="sm" />
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="min-w-0 flex-1 truncate text-left">
+                                        {title}
+                                      </span>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="bottom">{title}</TooltipContent>
+                                  </Tooltip>
+                                  {project ? (
+                                    <span className="shrink-0 font-mono text-[10px] font-normal text-slate">
+                                      {strings.work.sideProjectSuffix}
                                     </span>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="bottom">{title}</TooltipContent>
-                                </Tooltip>
-                                {project ? (
-                                  <span className="shrink-0 font-mono text-[10px] font-normal text-slate">
-                                    {strings.work.sideProjectSuffix}
-                                  </span>
-                                ) : null}
-                              </a>
-                            </PopoverClose>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </TooltipProvider>
-                </PopoverContent>
-              </Popover>
-            </li>
-          ))}
+                                  ) : null}
+                                </a>
+                              </PopoverClose>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </TooltipProvider>
+                  </PopoverContent>
+                </Popover>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

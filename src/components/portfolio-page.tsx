@@ -580,7 +580,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   return (
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      className="sticky top-1/2 hidden max-h-[70vh] w-44 shrink-0 -translate-y-1/2 flex-col gap-0.5 overflow-y-auto lg:flex"
+      className="sticky top-1/2 hidden max-h-[70vh] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex"
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

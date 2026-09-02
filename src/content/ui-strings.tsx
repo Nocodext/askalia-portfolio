@@ -39,6 +39,8 @@ export type UIStrings = {
     glossaryAria: string;
     glossaryHeading: string;
     interventionFields: string;
+    expand: string;
+    collapse: string;
   };
   caseToc: { ariaLabel: string };
   work: {
@@ -124,6 +126,8 @@ export const uiStringsFr: UIStrings = {
     glossaryAria: "Glossaire",
     glossaryHeading: "Glossaire",
     interventionFields: "Champs d'intervention",
+    expand: "Voir le détail",
+    collapse: "Réduire",
   },
   caseToc: { ariaLabel: "Sommaire des cas clients" },
   work: {
@@ -214,6 +218,8 @@ export const uiStringsEn: UIStrings = {
     glossaryAria: "Glossary",
     glossaryHeading: "Glossary",
     interventionFields: "Areas of intervention",
+    expand: "See details",
+    collapse: "Collapse",
   },
   caseToc: { ariaLabel: "Case studies table of contents" },
   work: {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import type {
   CaseStudy,
@@ -31,6 +31,7 @@ import {
   Camera,
   ArrowUpRight,
   GraduationCap,
+  Languages,
   type LucideIcon,
 } from "lucide-react";
 
@@ -81,6 +82,7 @@ const accentBorder = {
 function scrollToCase(id: string) {
   const el = document.getElementById(id);
   if (el) {
+    el.dispatchEvent(new Event(CASE_EXPAND_EVENT));
     const top = el.getBoundingClientRect().top + window.scrollY - 128;
     window.scrollTo({ top, behavior: "instant" });
   }
@@ -449,10 +451,24 @@ function HighlightItem({ item }: { item: Highlight }) {
   );
 }
 
+const CASE_EXPAND_EVENT = "cc:expand";
+
 function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
   const matrixAxes = useMatrixAxes(strings);
+  const [expanded, setExpanded] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (location.hash === `#${item.id}`) setExpanded(true);
+    const el = ref.current;
+    const onExpand = () => setExpanded(true);
+    el?.addEventListener(CASE_EXPAND_EVENT, onExpand);
+    return () => el?.removeEventListener(CASE_EXPAND_EVENT, onExpand);
+  }, [item.id]);
+
   return (
     <article
+      ref={ref}
       id={item.id}
       className="group relative overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
     >
@@ -491,11 +507,11 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="mt-1 grid size-6 shrink-0 place-items-center overflow-hidden rounded-full ring-1 ring-ink/15 transition-colors hover:ring-ink/30"
+                  className="mt-1 grid size-6 shrink-0 place-items-center rounded-full text-slate ring-1 ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
                   aria-label={strings.caseCard.glossaryAria}
                   title={strings.caseCard.glossaryAria}
                 >
-                  <img src="/logos/uk-flag.svg" alt="" className="h-3.5 w-auto rounded-[1px]" />
+                  <Languages className="size-3.5" strokeWidth={2} />
                 </button>
               </PopoverTrigger>
               <PopoverContent side="left" align="start" className="w-72">
@@ -540,78 +556,96 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             </span>
           ))}
         </div>
-        <ul
-          className={`mt-6 space-y-2.5 ${
-            item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
-          }`}
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded((v) => {
+              if (!v) trackEvent("case_expanded", { case: item.id });
+              return !v;
+            });
+          }}
+          className="mt-5 flex items-center gap-1.5 font-mono text-[11px] font-medium text-cyan transition-colors hover:text-ink"
         >
-          {item.highlights.map((h, i) => (
-            <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
-          ))}
-        </ul>
-        {item.scope ? (
-          <p className="mt-5 border-l-2 border-violet/40 pl-3 font-mono text-[11px] leading-relaxed text-slate">
-            {item.scope}
-          </p>
-        ) : null}
+          {expanded ? strings.caseCard.collapse : strings.caseCard.expand}
+          <ArrowUpRight
+            className={`size-3 transition-transform ${expanded ? "rotate-[135deg]" : ""}`}
+            strokeWidth={2.5}
+          />
+        </button>
+        <div className={expanded ? "" : "hidden"}>
+          <ul
+            className={`mt-6 space-y-2.5 ${
+              item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
+            }`}
+          >
+            {item.highlights.map((h, i) => (
+              <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+            ))}
+          </ul>
+          {item.scope ? (
+            <p className="mt-5 border-l-2 border-violet/40 pl-3 font-mono text-[11px] leading-relaxed text-slate">
+              {item.scope}
+            </p>
+          ) : null}
 
-        <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-          {strings.caseCard.interventionFields}
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
-          {matrixAxes.map((axis) => (
-            <div key={axis.key} className="overflow-hidden rounded-md ring-1 ring-ink/10">
-              <div
-                className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] ${axis.head} ${axis.headText}`}
-              >
-                {axis.label}
-              </div>
-              <div className="flex flex-wrap gap-1.5 bg-white p-3">
-                {item.matrix[axis.key as keyof typeof item.matrix].map((v) => (
-                  <span
-                    key={v}
-                    className={`rounded px-2 py-1 text-xs ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
-                  >
-                    {v}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6">
-          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-            Stack software
+          <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+            {strings.caseCard.interventionFields}
           </div>
-          <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px]">
-            {item.stackSoftware.map((s) => (
-              <span
-                key={s}
-                className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10"
-              >
-                {s}
-              </span>
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {matrixAxes.map((axis) => (
+              <div key={axis.key} className="overflow-hidden rounded-md ring-1 ring-ink/10">
+                <div
+                  className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] ${axis.head} ${axis.headText}`}
+                >
+                  {axis.label}
+                </div>
+                <div className="flex flex-wrap gap-1.5 bg-white p-3">
+                  {item.matrix[axis.key as keyof typeof item.matrix].map((v) => (
+                    <span
+                      key={v}
+                      className={`rounded px-2 py-1 text-xs ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
+                    >
+                      {v}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-        {item.stackHardware ? (
-          <div className="mt-4">
+
+          <div className="mt-6">
             <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-              Stack hardware
+              Stack software
             </div>
             <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px]">
-              {item.stackHardware.map((s) => (
+              {item.stackSoftware.map((s) => (
                 <span
                   key={s}
-                  className="rounded-full bg-blue/10 px-2.5 py-1 text-blue ring-1 ring-inset ring-blue/25"
+                  className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10"
                 >
                   {s}
                 </span>
               ))}
             </div>
           </div>
-        ) : null}
+          {item.stackHardware ? (
+            <div className="mt-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+                Stack hardware
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px]">
+                {item.stackHardware.map((s) => (
+                  <span
+                    key={s}
+                    className="rounded-full bg-blue/10 px-2.5 py-1 text-blue ring-1 ring-inset ring-blue/25"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
     </article>
   );

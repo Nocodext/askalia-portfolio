@@ -568,7 +568,11 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
-            setHasEntered(true);
+            // IntersectionObserver reports current state as soon as observe()
+            // runs, even with no scroll — on tall viewports the first case can
+            // already sit in the trigger band at scrollY 0. Require an actual
+            // scroll so the TOC never appears before the user has moved.
+            if (window.scrollY > 0) setHasEntered(true);
           }
         });
       },

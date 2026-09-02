@@ -997,6 +997,10 @@ export function PortfolioPage({
   content: PortfolioContent;
   strings: UIStrings;
 }) {
+  useEffect(() => {
+    if (location.hash) scrollToCase(location.hash.slice(1));
+  }, []);
+
   return (
     <main className="min-h-screen bg-ground font-sans text-ink antialiased selection:bg-cyan/20">
       <Nav content={content} strings={strings} />

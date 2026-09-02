@@ -781,7 +781,7 @@ function Overview({ content, strings }: { content: PortfolioContent; strings: UI
       <p className="mt-3 max-w-prose text-sm text-pretty text-slate">
         {strings.overview.description}
       </p>
-      <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
         {overview.map((category, i) => (
           <OverviewPanel
             key={category.key}

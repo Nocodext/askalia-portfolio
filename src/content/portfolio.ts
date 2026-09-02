@@ -577,6 +577,16 @@ export type OverviewCategory = {
   buckets: OverviewBucket[];
 };
 
+export type Capability = { key: string; title: string; body: string; accent: string };
+
+export type PortfolioContent = {
+  profile: typeof profile;
+  cases: CaseStudy[];
+  sideProjects: SideProject[];
+  capabilities: Capability[];
+  overview: OverviewCategory[];
+};
+
 export const overview: OverviewCategory[] = [
   {
     key: "sectors",
@@ -620,7 +630,7 @@ export const overview: OverviewCategory[] = [
       },
       { label: "Frontend & mobile", caseIds: ["reanimation", "cad-web", "smur"] },
       {
-        label: "No-code & rapid build",
+        label: "No-code & Low-Code",
         caseIds: ["patrimoine", "ats-youtubers", "sftp-photographe"],
       },
       { label: "IA & edge computing", caseIds: ["ocr-labo", "stt-ehpad"] },

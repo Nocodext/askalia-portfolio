@@ -238,12 +238,7 @@ export const cases: CaseStudy[] = [
     hashtags: ["data-sovereignty", "GDPR"],
     matrix: {
       roles: ["Product Builder", "GDPR Advisory"],
-      functional: [
-        "UX/UI scoping",
-        "CRM + ERP",
-        "Multi-level permission tree",
-        "Team training",
-      ],
+      functional: ["UX/UI scoping", "CRM + ERP", "Multi-level permission tree", "Team training"],
       sectors: ["Wealth Management", "Finance"],
       technical: ["No-code", "iPaaS (automation)", "RBAC (access control)"],
       ethical: ["GDPR", "Data sovereignty (kSuite Drive)"],
@@ -269,11 +264,7 @@ export const cases: CaseStudy[] = [
     hashtags: ["healthcare", "data-sovereignty", "AI Act", "Cloud Act"],
     matrix: {
       roles: ["Study & PoC", "Hardware / Software Advisory"],
-      functional: [
-        "Medical speech-to-text",
-        "Report archiving",
-        "DUI interoperability",
-      ],
+      functional: ["Medical speech-to-text", "Report archiving", "DUI interoperability"],
       sectors: ["Senior Care Facilities", "Healthcare"],
       technical: ["Edge AI", "Speech recognition (ASR)", "On-device inference (NPU)"],
       ethical: ["HDS", "Data sovereignty"],
@@ -296,11 +287,7 @@ export const cases: CaseStudy[] = [
     hashtags: ["real-time", "cybersecurity", "scalability"],
     matrix: {
       roles: ["Integration Architect", "Enedis Support Liaison"],
-      functional: [
-        "Meter data collection",
-        "Market-index scraping",
-        "Quote decision support",
-      ],
+      functional: ["Meter data collection", "Market-index scraping", "Quote decision support"],
       sectors: ["Energy", "Brokerage"],
       technical: ["SOAP/XML web services", "No-code automation", "AI agents"],
       ethical: ["TLS certificates & access security"],
@@ -337,12 +324,7 @@ export const cases: CaseStudy[] = [
         "WebGL studio",
       ],
       sectors: ["Software Publishing", "3D Architecture", "Building Information Modeling (BIM)"],
-      technical: [
-        "Public cloud",
-        "NoSQL database",
-        "Real-time 3D rendering",
-        "Full-stack JS",
-      ],
+      technical: ["Public cloud", "NoSQL database", "Real-time 3D rendering", "Full-stack JS"],
       ethical: ["Cloud infrastructure scalability", "Cloud Act exposure (AWS)"],
     },
     duration: "6 months",
@@ -394,12 +376,7 @@ export const cases: CaseStudy[] = [
         "Automated pre-qualification (WhatsApp bot)",
       ],
       sectors: ["HR Tech", "Creator Economy"],
-      technical: [
-        "No-code",
-        "Email automation",
-        "Conversational bot",
-        "Mobile deeplinking",
-      ],
+      technical: ["No-code", "Email automation", "Conversational bot", "Mobile deeplinking"],
       ethical: ["GDPR (candidate data)", "Deliverability & anti-spam (SPF/DKIM/DMARC)"],
     },
     duration: "1 month",
@@ -619,7 +596,7 @@ export const overview: OverviewCategory[] = [
       },
       { label: "Frontend & mobile", caseIds: ["reanimation", "cad-web", "smur"] },
       {
-        label: "No-code & rapid build",
+        label: "No-code, Low-Code",
         caseIds: ["patrimoine", "ats-youtubers", "sftp-photographe"],
       },
       { label: "AI & edge computing", caseIds: ["ocr-labo", "stt-ehpad"] },

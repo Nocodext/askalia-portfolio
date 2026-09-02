@@ -560,12 +560,16 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
 function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
   const [activeId, setActiveId] = useState<string>(cases[0]?.id ?? "");
+  const [hasEntered, setHasEntered] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id);
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+            setHasEntered(true);
+          }
         });
       },
       { rootMargin: "0px 0px -80% 0px", threshold: 0 },
@@ -580,7 +584,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   return (
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      className="sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex"
+      className={`sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto ${hasEntered ? "lg:flex" : ""}`}
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

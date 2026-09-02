@@ -522,7 +522,7 @@ export const sideProjects: SideProject[] = [
     index: "04",
     name: "Airtable explorer",
     pitch:
-      "Les couleurs du dashboard Airtable ont disparu sur décisioninterne. L'extension signe leur retour — et rend le dashboard réellement navigable.",
+      "Les couleurs du dashboard Airtable ont disparu sur décision interne. L'extension signe leur retour — et rend le dashboard réellement navigable.",
     bullets: [
       "Atteindre les colonnes sans scroller quand il y en a beaucoup (par liste, par voix).",
       "Bookmark de colonnes, auto most-popular.",

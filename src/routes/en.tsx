@@ -7,7 +7,7 @@ import {
   profile,
   sideProjects,
   type Highlight,
-} from "@/content/portfolio";
+} from "@/content/portfolio.en";
 import {
   Popover,
   PopoverArrow,
@@ -32,20 +32,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/en")({
   head: () => ({
     meta: [
       { title: "Joris Grouillet — Product Architect" },
       {
         name: "description",
         content:
-          "Product clarity. Technical fluency. Portfolio freelance de Joris Grouillet : architecture produit & technique, santé, IA, interopérabilité, et side-business nocodext.studio.",
+          "Product clarity. Technical fluency. Freelance portfolio of Joris Grouillet: product & technical architecture, healthcare, AI, interoperability, and side venture nocodext.studio.",
       },
       { property: "og:title", content: "Joris Grouillet — Product Architect" },
       {
         property: "og:description",
         content:
-          "Product clarity. Technical fluency. Cas clients en santé, IA, interopérabilité et SaaS métier, plus quatre side-business en production.",
+          "Product clarity. Technical fluency. Client case studies in healthcare, AI, interoperability and business SaaS, plus four side ventures in production.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -72,16 +72,16 @@ function Nav() {
           </a>
           <div className="hidden items-center gap-7 text-sm font-medium text-slate md:flex">
             <a href="#work" className="transition-colors hover:text-ink">
-              Cas clients
+              Case Studies
             </a>
             <a href="#map" className="transition-colors hover:text-ink">
-              Cartographie
+              Overview
             </a>
             <a href="#process" className="transition-colors hover:text-ink">
-              Méthode
+              Method
             </a>
             <a href="#lab" className="transition-colors hover:text-ink">
-              Side-business
+              Side Projects
             </a>
             <a href="#contact" className="transition-colors hover:text-ink">
               Contact
@@ -89,16 +89,16 @@ function Nav() {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="/en"
+              href="/"
               className="font-mono text-xs font-medium text-slate transition-colors hover:text-ink"
             >
-              EN
+              FR
             </a>
             <a
               href="#contact"
               className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
             >
-              Démarrer un projet
+              Start a Project
             </a>
           </div>
         </nav>
@@ -119,30 +119,29 @@ function Hero() {
       </div>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className="reveal d1 font-mono text-xs text-slate">[01] — Positionnement</p>
+          <p className="reveal d1 font-mono text-xs text-slate">[01] — Positioning</p>
           <h1 className="reveal d1 mt-4 max-w-[18ch] font-display text-5xl font-bold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
             Product clarity.
             <br />
             Technical fluency.
           </h1>
           <p className="reveal d2 mt-6 max-w-[52ch] text-base text-pretty text-slate sm:text-lg">
-            Généraliste par choix, transverse par tempérament — hospitalier, presse numérique,
-            e-learning, smart-city, laboratoire, énergie, bureau d'études, photographie, patrimoine,
-            recherche, business, courtage, IA, ...
+            A generalist by choice, cross-functional by temperament — healthcare, digital
+            publishing, e-learning, smart cities, laboratories, energy, engineering firms,
+            photography, wealth management, research, brokerage, AI, and more.
             <br />
-            J'aime les défis, notamment ceux qu'on croit impossibles et je vais chercher le besoin
-            réel derrière le besoin exprimé.
+            I go looking for the real need behind the one that gets asked for — especially on
+            problems everyone assumes are impossible.
             <br />
-            Conseiller et facilitateur de la transformation numérique & IA des entreprises de
-            secteurs traditionnels, du cadrage à la mise en production, puis à la transmission aux
-            équipes qui la portent.
+            I help traditional-industry companies through digital & AI transformation, from
+            scoping to production, then hand it off cleanly to the teams who'll own it.
           </p>
           <div className="reveal d3 mt-8 flex flex-wrap items-center gap-3">
             <a
               href="#work"
               className="rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
             >
-              Voir les cas clients
+              See the case studies
             </a>
             <a
               href="#lab"
@@ -160,60 +159,59 @@ function Hero() {
                 <div className="font-display text-3xl font-semibold leading-none">
                   {cases.length}
                 </div>
-                <div className="mt-1 font-mono text-[11px] text-slate">cas clients présentés</div>
+                <div className="mt-1 font-mono text-[11px] text-slate">case studies featured</div>
               </div>
               <div>
                 <div className="font-display text-3xl font-semibold leading-none">
                   {sideProjects.length}
                 </div>
-                <div className="mt-1 font-mono text-[11px] text-slate">produits solopreneur</div>
+                <div className="mt-1 font-mono text-[11px] text-slate">solo-built products</div>
               </div>
             </div>
             <div className="mt-6 border-t border-ink/10 pt-5">
               <p className="mt-2 font-mono text-xs text-ink">
-                Adaptatif | Inventif | Polyvalent | Proactif | Engagé
+                Adaptive | Inventive | Versatile | Proactive | Committed
               </p>
             </div>
             <div className="mt-5 border-t border-ink/10 pt-5">
               <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
-                En ce moment
+                Currently
               </div>
               <ul className="mt-2 space-y-1.5 text-sm font-medium">
                 <li className="flex items-start gap-2">
                   <DraftingCompass className="mt-0.5 size-4 shrink-0 text-cyan" strokeWidth={2} />
                   <span>
-                    Architecture d'une plateforme hospitalière d'information Soignant · Patient ·
-                    Familles
+                    Architecting a hospital Care Team · Patient · Family information platform
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <DraftingCompass className="mt-0.5 size-4 shrink-0 text-cyan" strokeWidth={2} />
-                  <span>lancement de {profile.sideBusinessBrand}.</span>
+                  <span>launching {profile.sideBusinessBrand}.</span>
                 </li>
               </ul>
             </div>
             <div className="mt-5 border-t border-ink/10 pt-5">
               <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
                 <GraduationCap className="size-3.5" strokeWidth={2} />
-                Jury expert technique
+                Technical expert jury
               </div>
               <p className="mt-2 text-sm font-medium">
-                Oreegami (école du digital) · Ynov (ingénierie logicielle)
+                Oreegami (digital school) · Ynov (software engineering)
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full bg-ink/5 py-1 pl-1.5 pr-2.5 font-mono text-[11px] ring-1 ring-inset ring-ink/10"
-                  title="Crédit Impôt Innovation, agrément délivré par l'État français, valable jusqu'en 2028"
+                  title="Crédit Impôt Innovation — France's state-approved R&D tax credit accreditation, valid through 2028"
                 >
                   <img src="/logos/marianne.svg" alt="" className="size-3.5 rounded-[2px]" />
-                  Agrément CII → 2028
+                  CII Tax Credit → 2028
                 </span>
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full bg-ink/5 py-1 pl-1.5 pr-2.5 font-mono text-[11px] ring-1 ring-inset ring-ink/10"
-                  title="Équipes anglophones (ex. stagiaire international), portée internationale"
+                  title="Comfortable working with English-speaking, international teams (e.g. an international intern)"
                 >
                   <img src="/logos/uk-flag.svg" alt="" className="h-3.5 w-auto rounded-[1px]" />
-                  Anglais courant
+                  International teams
                 </span>
               </div>
             </div>
@@ -296,7 +294,7 @@ function CaseIcon({ id, size = "lg" }: { id: string; size?: "lg" | "sm" }) {
 const matrixAxes = [
   {
     key: "roles",
-    label: "Rôles",
+    label: "Roles",
     color: "text-cyan",
     bg: "bg-cyan/10",
     ring: "ring-cyan/25",
@@ -305,7 +303,7 @@ const matrixAxes = [
   },
   {
     key: "functional",
-    label: "Fonctionnel",
+    label: "Functional",
     color: "text-violet",
     bg: "bg-violet/10",
     ring: "ring-violet/25",
@@ -314,7 +312,7 @@ const matrixAxes = [
   },
   {
     key: "sectors",
-    label: "Sectoriel",
+    label: "Sector",
     color: "text-amber",
     bg: "bg-amber/10",
     ring: "ring-amber/25",
@@ -323,7 +321,7 @@ const matrixAxes = [
   },
   {
     key: "technical",
-    label: "Technologie",
+    label: "Technology",
     color: "text-blue",
     bg: "bg-blue/10",
     ring: "ring-blue/25",
@@ -332,7 +330,7 @@ const matrixAxes = [
   },
   {
     key: "ethical",
-    label: "Éthique",
+    label: "Ethics",
     color: "text-slate",
     bg: "bg-ink/5",
     ring: "ring-ink/15",
@@ -410,14 +408,14 @@ function CaseCard({ item }: { item: (typeof cases)[number] }) {
                 <button
                   type="button"
                   className="mt-1 grid size-6 shrink-0 place-items-center rounded-full font-mono text-[11px] text-slate ring-1 ring-ink/15 transition-colors hover:text-ink"
-                  aria-label="Glossaire"
+                  aria-label="Glossary"
                 >
                   ?
                 </button>
               </PopoverTrigger>
               <PopoverContent side="left" align="start" className="w-72">
                 <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
-                  Glossaire
+                  Glossary
                 </div>
                 <dl className="mt-3 space-y-2.5">
                   {item.glossary.map((g) => (
@@ -473,7 +471,7 @@ function CaseCard({ item }: { item: (typeof cases)[number] }) {
         ) : null}
 
         <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-          Champs d'intervention
+          Areas of intervention
         </div>
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
           {matrixAxes.map((axis) => (
@@ -555,7 +553,7 @@ function CaseToc() {
 
   return (
     <nav
-      aria-label="Sommaire des cas clients"
+      aria-label="Case studies table of contents"
       className="sticky top-24 hidden max-h-[calc(100vh-8rem)] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex"
     >
       {cases.map((c) => {
@@ -592,11 +590,11 @@ function Work() {
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
-              [02] — Cas clients
+              [02] — Case Studies
             </span>
             {false && (
               <h2 className="mt-3 max-w-[26ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-                Des défis qu'on disait impossibles, livrés en production.
+                Challenges everyone said were impossible, shipped to production.
               </h2>
             )}
           </div>
@@ -720,7 +718,7 @@ function OverviewPanel({
                                 </Tooltip>
                                 {project ? (
                                   <span className="shrink-0 font-mono text-[10px] font-normal text-slate">
-                                    (side-business)
+                                    (side project)
                                   </span>
                                 ) : null}
                               </a>
@@ -744,14 +742,14 @@ function Overview() {
   return (
     <section id="map" className="mx-auto max-w-6xl px-6 py-16">
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
-        [03] — Cartographie
+        [03] — Overview
       </span>
       <h2 className="mt-3 max-w-[30ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-        Ce que couvrent les {cases.length} missions, en un coup d'œil.
+        What the {cases.length} missions cover, at a glance.
       </h2>
       <p className="mt-3 max-w-prose text-sm text-pretty text-slate">
-        Synthèse des secteurs, compétences techniques et produit, et rôles endossés, à partir des
-        matrices d'intervention de chaque cas client.
+        A synthesis of sectors, technical and product skills, and roles held, drawn from each case
+        study's intervention matrix.
       </p>
       <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
         {overview.map((category, i) => (
@@ -770,10 +768,10 @@ function Process() {
   return (
     <section id="process" className="mx-auto max-w-6xl px-6 py-16">
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
-        [04] — Méthode
+        [04] — Method
       </span>
       <h2 className="mt-3 max-w-[22ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
-        Un plan lisible qui devient un système en marche.
+        A clear plan that becomes a working system.
       </h2>
       <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[min(1vw,14px)] ring-1 ring-ink/10 md:grid-cols-3">
         {capabilities.map((c) => (
@@ -797,15 +795,14 @@ function SideBusiness() {
       <div className="relative overflow-hidden rounded-[min(1vw,16px)] bg-ink p-8 text-white ring-1 ring-ink/10 prism-edge sm:p-10">
         <div className="spectrum absolute inset-x-0 top-0 h-1 opacity-90" />
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-white/60">
-          <span className="size-1.5 rounded-full bg-cyan" /> [05] — Side-business
+          <span className="size-1.5 rounded-full bg-cyan" /> [05] — Side Projects
         </div>
         <div className="mt-5 inline-flex rounded-md bg-white px-4 py-2.5">
           <img src="/logos/nocodext.png" alt="nocodext.studio" className="h-7 w-auto sm:h-8" />
         </div>
         <p className="mt-3 max-w-[58ch] text-sm text-pretty text-white/70">
-          Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et
-          outillage qui comblent les manques des plateformes que les équipes utilisent tous les
-          jours.
+          Four products built solo, from idea to production: browser extensions and tooling that
+          fill the gaps in the platforms teams use every day.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
           {sideProjects.map((p) => (
@@ -814,7 +811,7 @@ function SideBusiness() {
               id={p.id}
               className="rounded-[min(1vw,14px)] bg-white/5 p-6 ring-1 ring-white/10"
             >
-              <div className="font-mono text-[11px] text-white/50">{p.index} / produit</div>
+              <div className="font-mono text-[11px] text-white/50">{p.index} / product</div>
               <div className="mt-3 flex items-center justify-between gap-3">
                 <h3 className="font-display text-xl font-semibold">{p.name}</h3>
                 {p.logos ? (
@@ -852,7 +849,7 @@ function SideBusiness() {
               {p.llms ? (
                 <div className="mt-4">
                   <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
-                    LLMs utilisés
+                    LLMs used
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-amber">
                     {p.llms.map((l) => (
@@ -887,15 +884,15 @@ function Contact() {
               [06] — Contact
             </span>
             <h2 className="mt-4 max-w-[20ch] font-display text-4xl font-bold leading-[1.05] tracking-tight text-balance sm:text-5xl">
-              Parlons du problème avant la solution.
+              Let's talk about the problem before the solution.
             </h2>
             <p className="mt-4 max-w-[44ch] text-sm text-pretty text-slate sm:text-base">
-              Une mission engagée à la fois. Décrivez le contexte et les contraintes : je vois
-              au-delà du besoin exprimé pour capter ce qu'il recouvre vraiment, et ce que la
-              technologie peut réellement débloquer — souvent plus que ce qu'on imagine. J'étudie la
-              faisabilité, je cadre, je m'imprègne du métier et du fonctionnel, puis je porte
-              l'architecture et les itérations de livraison — jusqu'à l'impact recherché : usage,
-              facilitation, création de valeur.
+              One committed engagement at a time. Describe the context and the constraints: I look
+              past the stated need to find what it's really about, and what technology can
+              actually unlock — usually more than people expect. I study feasibility, scope the
+              work, get immersed in the business and its workflows, then own the architecture and
+              delivery iterations — through to the outcome that matters: adoption, ease of use,
+              real value created.
             </p>
           </div>
           <div className="flex flex-col gap-4">

@@ -578,9 +578,15 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   }, [cases]);
 
   return (
+    // top offsets by half the list's own rendered height (10 items, measured
+    // ~298px) so the box is genuinely centered in the viewport via `top`
+    // itself — a transform-based translateY(-50%) paints outside the sticky
+    // containment box and can rise above the section's top bound; `top`
+    // participates in that bound correctly. Re-measure this if the number of
+    // cases changes enough to shift the list's height noticeably.
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      className="sticky top-1/2 hidden max-h-[70vh] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex"
+      className="sticky top-[calc(50%-9.3rem)] hidden max-h-[70vh] w-44 shrink-0 flex-col gap-0.5 overflow-y-auto lg:flex"
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

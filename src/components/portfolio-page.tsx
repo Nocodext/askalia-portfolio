@@ -80,7 +80,7 @@ const accentBorder = {
 function scrollToCase(id: string) {
   const el = document.getElementById(id);
   if (el) {
-    const top = el.getBoundingClientRect().top + window.scrollY - 96;
+    const top = el.getBoundingClientRect().top + window.scrollY - 128;
     window.scrollTo({ top, behavior: "instant" });
   }
   history.replaceState(null, "", `#${id}`);

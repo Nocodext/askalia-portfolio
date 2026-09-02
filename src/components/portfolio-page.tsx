@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 import type {
   CaseStudy,
   Highlight,
@@ -482,7 +483,11 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             </h3>
           </div>
           {item.glossary ? (
-            <Popover>
+            <Popover
+              onOpenChange={(next) => {
+                if (next) trackEvent("popover_opened", { glossary_for: item.id });
+              }}
+            >
               <PopoverTrigger asChild>
                 <button
                   type="button"
@@ -774,7 +779,13 @@ function BucketRow({
         ) : null}
         {b.label}
       </span>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (next) trackEvent("popover_opened", { bucket: b.label, category: category.key });
+        }}
+      >
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -1053,6 +1064,27 @@ export function PortfolioPage({
 }) {
   useEffect(() => {
     if (location.hash) scrollToCase(location.hash.slice(1));
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = ["top", "work", "map", "process", "lab", "contact"];
+    const seen = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !seen.has(entry.target.id)) {
+            seen.add(entry.target.id);
+            trackEvent("section_viewed", { section: entry.target.id });
+          }
+        });
+      },
+      { threshold: 0.4 },
+    );
+    const els = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
   return (

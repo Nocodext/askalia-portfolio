@@ -1,7 +1,5 @@
 {
-  "name": "askalia-portfolio",
+  "name": "askalia-portfolio-pages",
   "compatibility_date": "2026-09-02",
-  "assets": {
-    "directory": "./.output/public"
-  }
+  "pages_build_output_dir": "./.output/public"
 }

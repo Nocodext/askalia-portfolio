@@ -596,6 +596,10 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
             key={c.id}
             href={`#${c.id}`}
             title={c.title}
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToCase(c.id);
+            }}
             className={`flex items-center gap-2.5 rounded-md py-1.5 pl-3 text-xs transition-colors ${
               active ? "font-medium text-ink" : "text-slate hover:text-ink"
             }`}

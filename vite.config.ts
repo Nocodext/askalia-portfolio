@@ -11,5 +11,9 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Fully static content (no server functions) — prerender to plain HTML at build time
+    // so the site is crawlable without JS and can be hosted on Netlify with no functions.
+    // "/" links to "/en" and vice versa, so crawlLinks (default on) discovers both from "/".
+    prerender: { enabled: true },
   },
 });

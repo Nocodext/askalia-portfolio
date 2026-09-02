@@ -560,10 +560,9 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
 function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
   const [activeId, setActiveId] = useState<string>(cases[0]?.id ?? "");
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const activeObserver = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) setActiveId(entry.target.id);
@@ -574,37 +573,14 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
     const els = cases
       .map((c) => document.getElementById(c.id))
       .filter((el): el is HTMLElement => el !== null);
-    els.forEach((el) => activeObserver.observe(el));
-
-    // Fades the TOC in while the Work section is in view and back out once
-    // scrolled past it (either direction). The section is far taller than
-    // the viewport, so an IntersectionObserver only fires at its entry/exit
-    // boundaries — never in between — leaving `visible` stuck for the whole
-    // scroll through the case list. Compute it directly against scroll
-    // position instead. Require scrollY > 0 *right now* (not just "has ever
-    // scrolled") — on tall viewports the section already overlaps the
-    // viewport at scrollY 0, so bounds-overlap alone would stay true even
-    // after scrolling back up to the very top.
-    const workEl = document.getElementById("work");
-    const onScroll = () => {
-      if (!workEl) return;
-      const rect = workEl.getBoundingClientRect();
-      setVisible(window.scrollY > 0 && rect.top < window.innerHeight && rect.bottom > 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
-    return () => {
-      activeObserver.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, [cases]);
 
   return (
     <nav
       aria-label={strings.caseToc.ariaLabel}
-      aria-hidden={!visible}
-      className={`sticky top-1/2 hidden max-h-[70vh] w-44 shrink-0 -translate-y-1/2 flex-col gap-0.5 overflow-y-auto transition-opacity duration-300 lg:flex ${visible ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      className="sticky top-1/2 hidden max-h-[70vh] w-44 shrink-0 -translate-y-1/2 flex-col gap-0.5 overflow-y-auto lg:flex"
     >
       {cases.map((c) => {
         const conf = caseIcons[c.id];

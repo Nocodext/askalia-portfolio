@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ContactEmail } from "@/components/contact-email";
+import { SkillRing } from "@/components/skill-ring";
 import {
   HeartPulse,
   Network,
@@ -259,6 +260,23 @@ const iconBadgeBg = {
   blue: "bg-blue",
   red: "bg-[#FF0000]",
 } as const;
+
+const ringColorVar = {
+  cyan: "var(--cyan)",
+  violet: "var(--violet)",
+  amber: "var(--amber)",
+  blue: "var(--blue)",
+  red: "#FF0000",
+} as const;
+
+function scrollToCase(id: string) {
+  const el = document.getElementById(id);
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 96;
+    window.scrollTo({ top, behavior: "instant" });
+  }
+  history.replaceState(null, "", `#${id}`);
+}
 
 const accentBorder = {
   cyan: "border-cyan",
@@ -688,11 +706,36 @@ function OverviewPanel({
                     <ArrowUpRight className="size-3" strokeWidth={2.5} />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent side={popoverSide} align="center" className="w-72">
+                <PopoverContent side={popoverSide} align="center" className="w-80">
                   <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
-                  <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
+                  <div
+                    className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] ${b.caseIds.length >= 2 ? `font-semibold ${c.text}` : "text-slate"}`}
+                  >
+                    {b.caseIds.length >= 2 ? (
+                      <span className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`} />
+                    ) : null}
                     {b.label}
                   </div>
+                  {b.caseIds.length >= 2 ? (
+                    <SkillRing
+                      hubClassName={c.head}
+                      onSelect={scrollToCase}
+                      items={b.caseIds.flatMap((id) => {
+                        const item = cases.find((x) => x.id === id);
+                        const project = sideProjects.find((x) => x.id === id);
+                        const title = item?.title ?? project?.name;
+                        if (!title) return [];
+                        return [
+                          {
+                            id,
+                            title,
+                            color: ringColorVar[caseColor(id)],
+                            node: <CaseIcon id={id} size="sm" />,
+                          },
+                        ];
+                      })}
+                    />
+                  ) : null}
                   <TooltipProvider delayDuration={200}>
                     <ul className="mt-3 -mx-1">
                       {b.caseIds.map((id) => {
@@ -707,13 +750,7 @@ function OverviewPanel({
                                 href={`#${id}`}
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  const el = document.getElementById(id);
-                                  if (el) {
-                                    const top =
-                                      el.getBoundingClientRect().top + window.scrollY - 96;
-                                    window.scrollTo({ top, behavior: "instant" });
-                                  }
-                                  history.replaceState(null, "", `#${id}`);
+                                  scrollToCase(id);
                                 }}
                                 className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
                               >

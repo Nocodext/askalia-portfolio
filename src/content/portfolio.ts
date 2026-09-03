@@ -30,7 +30,7 @@ export type CaseStudy = {
   duration?: string;
   glossary?: GlossaryEntry[];
   logos?: string[];
-  scope?: string;
+  scope?: { label: string; body: string };
   flagship?: boolean;
 };
 
@@ -188,8 +188,10 @@ export const cases: CaseStudy[] = [
       ethical: ["RGPD", "Choix d'hébergement des données"],
     },
     duration: "3 ans",
-    scope:
-      "Réalisé : tout — faisabilité, conception & angles morts, backend, tests et cas limites, frontend, architecture code + NoCode, prod.",
+    scope: {
+      label: "Réalisé",
+      body: "Tout — faisabilité, conception & angles morts, backend, tests et cas limites, frontend, architecture code + NoCode, prod.",
+    },
   },
   {
     id: "ocr-labo",
@@ -219,7 +221,7 @@ export const cases: CaseStudy[] = [
       ethical: ["RGPD", "Anonymisation des PDF"],
     },
     duration: "3 mois",
-    scope: "Réalisé : tout.",
+    scope: { label: "Réalisé", body: "Tout." },
   },
   {
     id: "patrimoine",
@@ -404,7 +406,7 @@ export const cases: CaseStudy[] = [
       ethical: ["RGPD (données candidats)", "Délivrabilité & anti-spam (SPF/DKIM/DMARC)"],
     },
     duration: "1 mois",
-    scope: "Retombées business : réseau d'affaires OnlyFans et MyM.",
+    scope: { label: "Retombées business", body: "Réseau d'affaires OnlyFans et MyM." },
   },
   {
     id: "sftp-photographe",

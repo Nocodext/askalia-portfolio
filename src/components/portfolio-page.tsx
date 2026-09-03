@@ -478,8 +478,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     <article
       ref={ref}
       id={item.id}
-      onClick={toggleExpand}
-      className="group relative cursor-pointer overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
+      className="group relative overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
     >
       <div className="spectrum h-1 w-full opacity-80" />
       <div className="p-7">
@@ -501,7 +500,10 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
           </div>
         </div>
         <div className="mt-5 flex items-start justify-between gap-3">
-          <div className="flex max-w-prose items-start gap-3.5">
+          <div
+            onClick={toggleExpand}
+            className="flex max-w-prose cursor-pointer items-start gap-3.5"
+          >
             <CaseIcon id={item.id} />
             <h3 className="min-w-0 font-display text-2xl font-semibold leading-tight tracking-tight text-balance">
               {item.title}
@@ -578,7 +580,8 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
         </div>
         <button
           type="button"
-          className="mt-5 flex items-center gap-1.5 font-mono text-[11px] font-medium text-cyan transition-colors group-hover:text-ink"
+          onClick={toggleExpand}
+          className="mt-5 flex items-center gap-1.5 font-mono text-[11px] font-medium text-cyan transition-colors hover:text-ink"
         >
           {expanded ? strings.caseCard.collapse : strings.caseCard.expand}
           {expanded ? (
@@ -598,9 +601,12 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             ))}
           </ul>
           {item.scope ? (
-            <p className="mt-5 border-l-2 border-violet/40 pl-3 font-mono text-[11px] leading-relaxed text-slate">
-              {item.scope}
-            </p>
+            <div className="mt-5 border-l-2 border-violet/40 pl-3">
+              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+                {item.scope.label}
+              </div>
+              <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
+            </div>
           ) : null}
 
           <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">

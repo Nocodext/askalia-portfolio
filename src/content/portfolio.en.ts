@@ -30,7 +30,7 @@ export type CaseStudy = {
   duration?: string;
   glossary?: GlossaryEntry[];
   logos?: string[];
-  scope?: string;
+  scope?: { label: string; body: string };
   flagship?: boolean;
 };
 
@@ -188,8 +188,10 @@ export const cases: CaseStudy[] = [
       ethical: ["GDPR", "Data-hosting choices"],
     },
     duration: "3 years",
-    scope:
-      "Delivered: everything — feasibility, design & blind spots, backend, tests & edge cases, frontend, code + no-code architecture, production.",
+    scope: {
+      label: "Delivered",
+      body: "Everything — feasibility, design & blind spots, backend, tests & edge cases, frontend, code + no-code architecture, production.",
+    },
   },
   {
     id: "ocr-labo",
@@ -219,7 +221,7 @@ export const cases: CaseStudy[] = [
       ethical: ["GDPR", "PDF anonymization"],
     },
     duration: "3 months",
-    scope: "Delivered: everything.",
+    scope: { label: "Delivered", body: "Everything." },
   },
   {
     id: "patrimoine",
@@ -380,7 +382,10 @@ export const cases: CaseStudy[] = [
       ethical: ["GDPR (candidate data)", "Deliverability & anti-spam (SPF/DKIM/DMARC)"],
     },
     duration: "1 month",
-    scope: "Business outcome: business network across OnlyFans and MyM.",
+    scope: {
+      label: "Business outcome",
+      body: "Business network across OnlyFans and MyM.",
+    },
   },
   {
     id: "sftp-photographe",

@@ -41,7 +41,7 @@ export function SkillRing({ items, hubClassName, onSelect }: SkillRingProps) {
       {positions.map((p) => (
         <div
           key={p.id}
-          className="absolute top-1/2 left-1/2 h-px opacity-50"
+          className="spoke-flow absolute top-1/2 left-1/2 h-px opacity-50"
           style={{
             width: radius,
             transformOrigin: "0 50%",

@@ -468,6 +468,9 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
   }, [item.id]);
 
   const toggleExpand = () => {
+    // A click that ends a text-selection drag shouldn't also toggle — bail
+    // if the user is mid-selection anywhere on the page.
+    if (window.getSelection()?.toString()) return;
     setExpanded((v) => {
       if (!v) trackEvent("case_expanded", { case: item.id });
       return !v;
@@ -482,70 +485,69 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     >
       <div className="spectrum h-1 w-full opacity-80" />
       <div className="p-7">
-        <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate">
-          <span>
-            {item.index} / {item.sector}
-          </span>
-          <div className="flex items-center gap-2">
-            {item.duration ? (
-              <span className="rounded-full bg-ink/5 px-2.5 py-0.5 ring-1 ring-inset ring-ink/10">
-                {item.duration}
-              </span>
-            ) : null}
-            {item.flagship ? (
-              <span className="rounded-full bg-amber/10 px-2.5 py-0.5 text-amber ring-1 ring-inset ring-amber/25">
-                Flagship
-              </span>
-            ) : null}
+        <div onClick={toggleExpand} className="cursor-pointer">
+          <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate">
+            <span>
+              {item.index} / {item.sector}
+            </span>
+            <div className="flex items-center gap-2">
+              {item.duration ? (
+                <span className="rounded-full bg-ink/5 px-2.5 py-0.5 ring-1 ring-inset ring-ink/10">
+                  {item.duration}
+                </span>
+              ) : null}
+              {item.flagship ? (
+                <span className="rounded-full bg-amber/10 px-2.5 py-0.5 text-amber ring-1 ring-inset ring-amber/25">
+                  Flagship
+                </span>
+              ) : null}
+            </div>
           </div>
-        </div>
-        <div className="mt-5 flex items-start justify-between gap-3">
-          <div
-            onClick={toggleExpand}
-            className="flex max-w-prose cursor-pointer items-start gap-3.5"
-          >
-            <CaseIcon id={item.id} />
-            <h3 className="min-w-0 font-display text-2xl font-semibold leading-tight tracking-tight text-balance">
-              {item.title}
-            </h3>
-          </div>
-          {item.glossary ? (
-            <Popover
-              onOpenChange={(next) => {
-                if (next) trackEvent("popover_opened", { glossary_for: item.id });
-              }}
-            >
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-1 grid size-6 shrink-0 place-items-center rounded-full text-slate ring-1 ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
-                  aria-label={strings.caseCard.glossaryAria}
-                  title={strings.caseCard.glossaryAria}
-                >
-                  <Languages className="size-3.5" strokeWidth={2} />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                side="left"
-                align="start"
-                collisionPadding={16}
-                className="w-[min(18rem,calc(100vw-2rem))]"
+          <div className="mt-5 flex items-start justify-between gap-3">
+            <div className="flex max-w-prose items-start gap-3.5">
+              <CaseIcon id={item.id} />
+              <h3 className="min-w-0 font-display text-2xl font-semibold leading-tight tracking-tight text-balance">
+                {item.title}
+              </h3>
+            </div>
+            {item.glossary ? (
+              <Popover
+                onOpenChange={(next) => {
+                  if (next) trackEvent("popover_opened", { glossary_for: item.id });
+                }}
               >
-                <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
-                  {strings.caseCard.glossaryHeading}
-                </div>
-                <dl className="mt-3 space-y-2.5">
-                  {item.glossary.map((g) => (
-                    <div key={g.term}>
-                      <dt className="font-mono text-xs font-semibold text-ink">{g.term}</dt>
-                      <dd className="mt-0.5 text-xs text-pretty text-slate">{g.def}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </PopoverContent>
-            </Popover>
-          ) : null}
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-1 grid size-6 shrink-0 place-items-center rounded-full text-slate ring-1 ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
+                    aria-label={strings.caseCard.glossaryAria}
+                    title={strings.caseCard.glossaryAria}
+                  >
+                    <Languages className="size-3.5" strokeWidth={2} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="left"
+                  align="start"
+                  collisionPadding={16}
+                  className="w-[min(18rem,calc(100vw-2rem))]"
+                >
+                  <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
+                    {strings.caseCard.glossaryHeading}
+                  </div>
+                  <dl className="mt-3 space-y-2.5">
+                    {item.glossary.map((g) => (
+                      <div key={g.term}>
+                        <dt className="font-mono text-xs font-semibold text-ink">{g.term}</dt>
+                        <dd className="mt-0.5 text-xs text-pretty text-slate">{g.def}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </PopoverContent>
+              </Popover>
+            ) : null}
+          </div>
         </div>
         <p
           className={`mt-4 max-w-prose border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate ${

@@ -585,7 +585,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
         <button
           type="button"
           onClick={toggleExpand}
-          className="mx-auto mt-5 flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 font-mono text-[11px] font-medium text-cyan shadow-[0_6px_16px_-6px_rgba(16,19,26,0.25)] ring-1 ring-ink/10 transition-colors hover:text-ink"
+          className="mx-auto mt-5 flex w-fit cursor-pointer items-center gap-1.5 rounded-full bg-white px-4 py-2 font-mono text-[11px] font-medium text-cyan shadow-[0_6px_16px_-6px_rgba(16,19,26,0.25)] ring-1 ring-ink/10 transition-colors hover:text-ink"
         >
           {expanded ? strings.caseCard.collapse : strings.caseCard.expand}
           {expanded ? (

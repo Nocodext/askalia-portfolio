@@ -570,7 +570,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                   key={src}
                   src={src}
                   alt=""
-                  className={src.includes("salesforce") ? "h-11 w-auto" : "h-9 w-auto"}
+                  className={src.includes("salesforce") ? "h-12 w-auto" : "h-8 w-auto"}
                 />
               ))}
             </div>

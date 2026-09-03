@@ -545,31 +545,36 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             </Popover>
           ) : null}
         </div>
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <p
-            className={`max-w-prose border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate ${
-              accentBorder[caseColor(item.id)]
-            }`}
-          >
-            {item.need}
-          </p>
+        <p
+          className={`mt-4 max-w-prose border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate ${
+            accentBorder[caseColor(item.id)]
+          }`}
+        >
+          {item.need}
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {item.hashtags.map((h) => (
+              <span
+                key={h}
+                className="rounded-full bg-violet/10 px-2.5 py-1 font-mono text-xs text-violet ring-1 ring-inset ring-violet/25"
+              >
+                #{h.replace(/\s+/g, "-")}
+              </span>
+            ))}
+          </div>
           {item.logos ? (
             <div className="flex shrink-0 items-center gap-5">
               {item.logos.map((src) => (
-                <img key={src} src={src} alt="" className="h-9 w-auto" />
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  className={src.includes("salesforce") ? "h-11 w-auto" : "h-9 w-auto"}
+                />
               ))}
             </div>
           ) : null}
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {item.hashtags.map((h) => (
-            <span
-              key={h}
-              className="rounded-full bg-violet/10 px-2.5 py-1 font-mono text-xs text-violet ring-1 ring-inset ring-violet/25"
-            >
-              #{h.replace(/\s+/g, "-")}
-            </span>
-          ))}
         </div>
         <button
           type="button"

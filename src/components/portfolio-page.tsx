@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 import type {
   CaseStudy,
   Highlight,
@@ -457,6 +458,7 @@ const CASE_EXPAND_EVENT = "cc:expand";
 function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
   const matrixAxes = useMatrixAxes(strings);
   const [expanded, setExpanded] = useState(!!item.flagship);
+  const reducedMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -589,7 +591,10 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
           {expanded ? (
             <ChevronUp className="size-3.5" strokeWidth={2.5} />
           ) : (
-            <ChevronDown className="chevron-nudge size-3.5" strokeWidth={2.5} />
+            <ChevronDown
+              className={`size-3.5 ${reducedMotion ? "" : "chevron-nudge"}`}
+              strokeWidth={2.5}
+            />
           )}
         </button>
         <div className={expanded ? "" : "hidden"}>

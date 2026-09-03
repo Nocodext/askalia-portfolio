@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 export type SkillRingItem = {
   id: string;
@@ -18,6 +19,7 @@ type SkillRingProps = {
 // The hub carries no label (the bucket name above the ring already names it) —
 // just the section color, so there's no long-label-in-a-small-circle problem.
 export function SkillRing({ items, hubClassName, onSelect }: SkillRingProps) {
+  const reducedMotion = useReducedMotion();
   const radius = 78;
   const positions = useMemo(() => {
     const n = items.length;
@@ -41,7 +43,7 @@ export function SkillRing({ items, hubClassName, onSelect }: SkillRingProps) {
       {positions.map((p) => (
         <div
           key={p.id}
-          className="spoke-flow absolute top-1/2 left-1/2 h-px opacity-50"
+          className={`absolute top-1/2 left-1/2 h-px opacity-50 ${reducedMotion ? "" : "spoke-flow"}`}
           style={{
             width: radius,
             transformOrigin: "0 50%",

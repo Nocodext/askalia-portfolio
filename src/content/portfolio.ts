@@ -348,7 +348,6 @@ export const cases: CaseStudy[] = [
       ethical: ["Scalabilité de l'infrastructure cloud", "Exposition Cloud Act (AWS)"],
     },
     duration: "6 mois",
-    scope: "Rôle : architecte polyvalent.",
   },
   {
     id: "smur",

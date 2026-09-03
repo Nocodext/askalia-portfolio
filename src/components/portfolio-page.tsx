@@ -1095,7 +1095,7 @@ function Contact({ content, strings }: { content: PortfolioContent; strings: UIS
               user={profile.emailUser}
               domain={profile.emailDomain}
               placeholder={strings.contact.emailPlaceholder}
-              className="rounded-md bg-gradient-to-r from-violet to-blue px-6 py-4 text-center text-base font-semibold text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
+              className="rounded-md bg-gradient-to-r from-violet to-blue px-6 py-4 text-center text-lg font-semibold text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             />
             <div className="flex flex-wrap gap-4 font-mono text-xs text-slate">
               <span>Askalia</span>

@@ -130,14 +130,36 @@
 
 @keyframes spokeFlow {
   to {
-    background-position: -12px 0;
+    /* Positive shift = dashes travel from element-x 0 (hub, transform-origin)
+       outward toward the icon end — hub-to-icon, not icon-to-hub. */
+    background-position: 12px 0;
   }
 }
 
 @utility spoke-flow {
-  /* Temporarily ignoring prefers-reduced-motion to confirm that's the cause
-     of "animation not visible" — re-add the guard once confirmed. */
   animation: spokeFlow 0.6s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes chevronNudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@utility chevron-nudge {
+  animation: chevronNudge 1.4s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
 }
 
 @keyframes fadeUp {

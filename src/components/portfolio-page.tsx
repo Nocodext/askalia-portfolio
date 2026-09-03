@@ -30,6 +30,8 @@ import {
   Youtube,
   Camera,
   ArrowUpRight,
+  ChevronDown,
+  ChevronUp,
   GraduationCap,
   Languages,
   type LucideIcon,
@@ -223,7 +225,7 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
             <span className="font-display text-sm font-semibold tracking-tight">
               {profile.firstName} {profile.lastName}
             </span>
-            <span className="hidden font-mono text-[11px] text-slate sm:inline">
+            <span className="hidden font-mono text-xs font-medium text-ink/70 sm:inline">
               / product architect
             </span>
           </a>
@@ -292,7 +294,7 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
                 e.preventDefault();
                 scrollToCase("contact");
               }}
-              className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
+              className="rounded-md bg-gradient-to-r from-violet to-blue px-4 py-2 text-sm font-medium text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             >
               {strings.nav.startProject}
             </a>
@@ -316,8 +318,7 @@ function Hero({ content, strings }: { content: PortfolioContent; strings: UIStri
       </div>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className="reveal d1 font-mono text-xs text-slate">{strings.hero.positioning}</p>
-          <h1 className="reveal d1 mt-4 max-w-[18ch] font-display text-5xl font-bold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+          <h1 className="reveal d1 max-w-[18ch] font-display text-5xl font-bold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
             Product clarity.
             <br />
             Technical fluency.
@@ -332,7 +333,7 @@ function Hero({ content, strings }: { content: PortfolioContent; strings: UIStri
                 e.preventDefault();
                 scrollToCase("work");
               }}
-              className="rounded-md bg-ink px-5 py-2.5 text-sm font-medium text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
+              className="rounded-md bg-gradient-to-r from-violet to-blue px-5 py-2.5 text-sm font-medium text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             >
               {strings.hero.seeCaseStudies}
             </a>
@@ -466,11 +467,19 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     return () => el?.removeEventListener(CASE_EXPAND_EVENT, onExpand);
   }, [item.id]);
 
+  const toggleExpand = () => {
+    setExpanded((v) => {
+      if (!v) trackEvent("case_expanded", { case: item.id });
+      return !v;
+    });
+  };
+
   return (
     <article
       ref={ref}
       id={item.id}
-      className="group relative overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
+      onClick={toggleExpand}
+      className="group relative cursor-pointer overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
     >
       <div className="spectrum h-1 w-full opacity-80" />
       <div className="p-7">
@@ -507,6 +516,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
               <PopoverTrigger asChild>
                 <button
                   type="button"
+                  onClick={(e) => e.stopPropagation()}
                   className="mt-1 grid size-6 shrink-0 place-items-center rounded-full text-slate ring-1 ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
                   aria-label={strings.caseCard.glossaryAria}
                   title={strings.caseCard.glossaryAria}
@@ -514,7 +524,12 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                   <Languages className="size-3.5" strokeWidth={2} />
                 </button>
               </PopoverTrigger>
-              <PopoverContent side="left" align="start" className="w-72">
+              <PopoverContent
+                side="left"
+                align="start"
+                collisionPadding={16}
+                className="w-[min(18rem,calc(100vw-2rem))]"
+              >
                 <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
                   {strings.caseCard.glossaryHeading}
                 </div>
@@ -558,19 +573,14 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
         </div>
         <button
           type="button"
-          onClick={() => {
-            setExpanded((v) => {
-              if (!v) trackEvent("case_expanded", { case: item.id });
-              return !v;
-            });
-          }}
-          className="mt-5 flex items-center gap-1.5 font-mono text-[11px] font-medium text-cyan transition-colors hover:text-ink"
+          className="mt-5 flex items-center gap-1.5 font-mono text-[11px] font-medium text-cyan transition-colors group-hover:text-ink"
         >
           {expanded ? strings.caseCard.collapse : strings.caseCard.expand}
-          <ArrowUpRight
-            className={`size-3 transition-transform ${expanded ? "rotate-[135deg]" : ""}`}
-            strokeWidth={2.5}
-          />
+          {expanded ? (
+            <ChevronUp className="size-3.5" strokeWidth={2.5} />
+          ) : (
+            <ChevronDown className="size-3.5" strokeWidth={2.5} />
+          )}
         </button>
         <div className={expanded ? "" : "hidden"}>
           <ul
@@ -831,7 +841,12 @@ function BucketRow({
             <ArrowUpRight className="size-3" strokeWidth={2.5} />
           </button>
         </PopoverTrigger>
-        <PopoverContent side={popoverSide} align="center" className="w-80">
+        <PopoverContent
+          side={popoverSide}
+          align="center"
+          collisionPadding={16}
+          className="w-[min(20rem,calc(100vw-2rem))]"
+        >
           <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
           <div
             className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
@@ -1067,7 +1082,7 @@ function Contact({ content, strings }: { content: PortfolioContent; strings: UIS
               user={profile.emailUser}
               domain={profile.emailDomain}
               placeholder={strings.contact.emailPlaceholder}
-              className="rounded-md bg-ink px-6 py-3.5 text-center text-sm font-semibold text-white ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
+              className="rounded-md bg-gradient-to-r from-violet to-blue px-6 py-3.5 text-center text-sm font-semibold text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             />
             <div className="flex flex-wrap gap-4 font-mono text-xs text-slate">
               <span>Askalia</span>

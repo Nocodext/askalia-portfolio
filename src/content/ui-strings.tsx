@@ -12,7 +12,6 @@ export type UIStrings = {
     startProject: string;
   };
   hero: {
-    positioning: string;
     intro: ReactNode;
     seeCaseStudies: string;
     statCaseStudies: string;
@@ -84,7 +83,6 @@ export const uiStringsFr: UIStrings = {
     startProject: "Démarrer un projet",
   },
   hero: {
-    positioning: "[01] — Positionnement",
     intro: (
       <>
         Généraliste par choix, transverse par tempérament — hospitalier, presse numérique,
@@ -131,13 +129,13 @@ export const uiStringsFr: UIStrings = {
   },
   caseToc: { ariaLabel: "Sommaire des cas clients" },
   work: {
-    sectionLabel: "[02] — Cas clients",
+    sectionLabel: "[01] — Cas clients",
     disabledHeading: "Des défis qu'on disait impossibles, livrés en production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side-business)",
   },
   overview: {
-    sectionLabel: "[03] — Cartographie",
+    sectionLabel: "[02] — Cartographie",
     heading: (n) => (
       <>
         Ce que couvrent les {n} missions, <br />
@@ -148,18 +146,18 @@ export const uiStringsFr: UIStrings = {
       "Synthèse des secteurs, compétences techniques et produit, et rôles endossés, à partir des matrices d'intervention de chaque cas client.",
   },
   process: {
-    sectionLabel: "[04] — Méthode",
+    sectionLabel: "[03] — Méthode",
     heading: "Un plan lisible qui devient un système en marche.",
   },
   sideBusiness: {
-    sectionLabel: "[05] — Side-business",
+    sectionLabel: "[04] — Side-business",
     intro:
       "Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et outillage qui comblent les manques des plateformes que les équipes utilisent tous les jours.",
     productSuffix: "/ produit",
     llmsUsed: "LLMs utilisés",
   },
   contact: {
-    sectionLabel: "[06] — Contact",
+    sectionLabel: "[05] — Contact",
     heading: "Parlons du problème avant la solution.",
     body: "Une mission engagée à la fois. Décrivez le contexte et les contraintes : je vois au-delà du besoin exprimé pour capter ce qu'il recouvre vraiment, et ce que la technologie peut réellement débloquer — souvent plus que ce qu'on imagine. J'étudie la faisabilité, je cadre, je m'imprègne du métier et du fonctionnel, puis je porte l'architecture et les itérations de livraison — jusqu'à l'impact recherché : usage, facilitation, création de valeur.",
     emailPlaceholder: "Afficher l'email",
@@ -178,7 +176,6 @@ export const uiStringsEn: UIStrings = {
     startProject: "Start a Project",
   },
   hero: {
-    positioning: "[01] — Positioning",
     intro: (
       <>
         A generalist by choice, cross-functional by temperament — healthcare, digital publishing,
@@ -223,30 +220,30 @@ export const uiStringsEn: UIStrings = {
   },
   caseToc: { ariaLabel: "Case studies table of contents" },
   work: {
-    sectionLabel: "[02] — Case Studies",
+    sectionLabel: "[01] — Case Studies",
     disabledHeading: "Challenges everyone said were impossible, shipped to production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side project)",
   },
   overview: {
-    sectionLabel: "[03] — Overview",
+    sectionLabel: "[02] — Overview",
     heading: (n) => <>What the {n} missions cover, at a glance.</>,
     description:
       "A synthesis of sectors, technical and product skills, and roles held, drawn from each case study's intervention matrix.",
   },
   process: {
-    sectionLabel: "[04] — Method",
+    sectionLabel: "[03] — Method",
     heading: "A clear plan that becomes a working system.",
   },
   sideBusiness: {
-    sectionLabel: "[05] — Side Projects",
+    sectionLabel: "[04] — Side Projects",
     intro:
       "Four products built solo, from idea to production: browser extensions and tooling that fill the gaps in the platforms teams use every day.",
     productSuffix: "/ product",
     llmsUsed: "LLMs used",
   },
   contact: {
-    sectionLabel: "[06] — Contact",
+    sectionLabel: "[05] — Contact",
     heading: "Let's talk about the problem before the solution.",
     body: "One committed engagement at a time. Describe the context and the constraints: I look past the stated need to find what it's really about, and what technology can actually unlock — usually more than people expect. I study feasibility, scope the work, get immersed in the business and its workflows, then own the architecture and delivery iterations — through to the outcome that matters: adoption, ease of use, real value created.",
     emailPlaceholder: "Reveal email",

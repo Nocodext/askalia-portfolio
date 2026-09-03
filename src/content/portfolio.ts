@@ -22,7 +22,9 @@ export type CaseStudy = {
   sector: string;
   title: string;
   need: string;
+  needObjective?: string;
   highlights: Highlight[];
+  highlightGroups?: { functional: Highlight[]; technical: Highlight[] };
   stackSoftware: string[];
   stackHardware?: string[];
   hashtags: string[];
@@ -51,36 +53,40 @@ export const cases: CaseStudy[] = [
     id: "reanimation",
     index: "00",
     sector: "Santé · Hôpital / Réanimation",
-    title: "Plateforme d'information Soignant · Patient · Familles",
-    need: "Logiciel hospitalier faisant le lien informationnel entre soignants, patients en réanimation et familles.",
-    highlights: [
-      "Modélisation des flux hospitaliers de réanimation : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
-      "Migration d'une app legacy PHP/CMS vers une architecture NestJS hospitalière : hexagonale, event-driven, synchronisation IHE / PAM / HL7.",
-      "Migration MySQL legacy vers PostgreSQL : triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, ségrégation de schémas.",
-      "Transmission d'informations médicales et paramédicales, alerting familles / soignants et follow-up d'actions.",
-      "Interopérabilité SI-H CHU Montpellier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
-      "Implémentation des exigences HDS niveaux 4 à 6.",
-      {
-        text: "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI.",
-        objective:
-          "Objectif : le logiciel reflète à tout moment la réalité opérationnelle quotidienne du service hospitalier.",
-        detail: [
-          "Adaptateurs SFTP et MLLP/MLLPS implémentés — les 2 protocoles standards d'échange de données de l'industrie.",
-          "Import d'un pool de soignants paramédicaux via Excel pour aligner le logiciel avec la réalité du staffing en vigueur.",
-          "Intégration du dispositif de connexion soignant, type DPI (Dossier Patient Informatisé).",
-        ],
-      },
-      "Architecture résiliente par nœuds, Docker Compose LAN design, CLI d'ops interne.",
-      "Portail Famille & Soignant : e-CPS, OTP, 2FA, Citrix & RPA.",
-      "App mobile React Native pensée pour les familles : magic link, OTP, certificats mTLS, app links WhatsApp, notifications SMS.",
-      "Admin de démo vibecodée pour autonomiser l'équipe Sales.",
-      "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, diagrammes de flux, logigrammes et schémas d'architecture sur Whimsical.",
-      "Documentation DSI/RSSI : flux de données, ADR, registre de consignations, réglementaire, HDS, RGPD/DPO, cybersécurité, DMZ.",
-      "Tech lead & mentorat d'une petite équipe + stagiaire anglophone.",
-      "Gouvernance de la donnée : dépôts kSuite pour les partenaires, accès internes ajustés, clés SSH, coffre-fort en ligne, password manager.",
-      "Montage d'un code-knowledge-graph LLM comme mémoire vivante de la codebase.",
-      "Agents de dev, MCP et skills.",
-    ],
+    title:
+      "Plateforme hospitalière : continuité informationnelle Soignant · Familles · Patient en Réanimation DAR-B",
+    need: `Cette plateforme web et mobile connecte les familles de patients hospitalisés à l'équipe soignante : synchronisation automatique
+  avec les systèmes hospitaliers dès l'admission, transmissions et alertes en temps réel vers les
+  proches, sans ressaisie côté soignant. Complétion infos médicales par les proches.`,
+    needObjective:
+      "Objectif : réduire la charge de communication du personnel tout en gardant les familles informées et rassurées pendant le séjour.",
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "Démarche UX/UI conduite en co-création avec les agents hospitaliers.",
+        "Modélisation des flux hospitaliers de réanimation : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
+        "Transmission d'informations médicales et paramédicales, alerting familles / soignants et follow-up d'actions.",
+        "Import d'un pool de soignants paramédicaux via Excel pour aligner le logiciel avec la réalité du staffing en vigueur.",
+        "Portail Famille & Soignant : e-CPS, OTP, 2FA, Citrix & RPA.",
+        "App mobile React Native pensée pour les familles : magic link, OTP, certificats mTLS, app links WhatsApp, notifications SMS.",
+        "Admin de démo vibecodée pour autonomiser l'équipe Sales.",
+        "Intégration du dispositif de connexion soignant, type DPI (Dossier Patient Informatisé).",
+        "Documentation DSI/RSSI : flux de données, ADR, registre de consignations, réglementaire, HDS, RGPD/DPO, cybersécurité, DMZ.",
+        "Tech lead & mentorat d'une petite équipe + stagiaire anglophone.",
+        "Gouvernance de la donnée : dépôts kSuite pour les partenaires, accès internes ajustés, clés SSH, coffre-fort en ligne, password manager.",
+      ],
+      technical: [
+        "Migration d'une app legacy PHP/CMS vers une architecture NestJS hospitalière : hexagonale, event-driven, synchronisation IHE / PAM / HL7.",
+        "Migration MySQL legacy vers PostgreSQL : triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, ségrégation de schémas.",
+        "Interopérabilité SI-H CHU Montpellier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
+        "Implémentation des exigences HDS niveaux 4 à 6.",
+        "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI, via adaptateurs SFTP et MLLP/MLLPS — les 2 protocoles standards d'échange de données de l'industrie.",
+        "Architecture résiliente par nœuds, Docker Compose LAN design, CLI d'ops interne.",
+        "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, diagrammes de flux, logigrammes et schémas d'architecture sur Whimsical.",
+        "Montage d'un code-knowledge-graph LLM comme mémoire vivante de la codebase.",
+        "Agents de dev, MCP et skills.",
+      ],
+    },
     stackSoftware: [
       "NestJS",
       "PostgreSQL",
@@ -100,6 +106,7 @@ export const cases: CaseStudy[] = [
       "résilience",
       "temps réel",
       "Cloud Act",
+      "Secret médical",
     ],
     matrix: {
       roles: ["Tech lead", "Architecte", "Mentor", "Développeur mobile"],
@@ -152,140 +159,44 @@ export const cases: CaseStudy[] = [
     flagship: true,
   },
   {
-    id: "channel-manager",
+    id: "veille-tarifaire",
     index: "01",
-    sector: "SaaS · Channel manager",
-    title: "Un hub d'opportunités commerciales entre CRM partenaires",
-    need: "SaaS métier channel manager : un hub qui transforme les CRM de partenaires commerciaux en une base commune d'opportunités, sans échange manuel de fichiers clients — plus de 50 000 fiches entreprises enrichies croisées sur 3 CRM différents.",
-    logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
+    sector: "E-commerce · Pièces détachées automobile",
+    title: "Veille concurrentielle tarifaire temps réel — pièces détachées automobile",
+    need: "Plateforme de veille concurrentielle temps réel pour un e-commerçant leader de pièces détachées automobile : surveillance des prix pratiqués par la concurrence, moyennes par référence, appariement de références par proximité heuristique, et détection des stocks avérés ou présumés chez les 10 principaux concurrents européens ciblés.",
+    needObjective:
+      "Objectif : dresser un état des lieux pour la prise de décision en stratégie de pricing et prévision des stocks.",
     highlights: [
-      "Interopérabilité API Salesforce, Pipedrive et HubSpot : 3 API hétérogènes, 3 politiques de rate limiting.",
-      "Mix code / NoCode et compromis d'hébergement de données entre Bubble et PostgreSQL (RGPD).",
-      "Business process : implémentation + documentation en flowcharts.",
-      "Arbitrage architecture monolithe NestJS vs serverless stateless (Edge Functions Vercel).",
-      "Jobs asynchrones en MQ Redis, retries, rotation de tokens OAuth multiclients, résilience et reprise Redis.",
-      "Supervision de freelances, points et gestion client, mise en production.",
+      "Orchestration d'une armée de scrapers de sites web pour couvrir les 10 principaux concurrents européens.",
+      "Étude et contournement des systèmes anti-bots.",
+      "Description et enregistrement des scénarios-types de scraping par site concurrent.",
+      "Extraction, filtrage, nettoyage et structuration de la donnée collectée.",
+      "Dénormalisation de la donnée pour import dans l'outil de Business Intelligence.",
     ],
     stackSoftware: [
-      "NestJS",
-      "Bubble",
-      "Redis MQ",
-      "Vercel Edge",
-      "OAuth",
-      "Salesforce · Pipedrive · HubSpot",
+      "Web scraping",
+      "Bright Data",
+      "Contournement anti-bot",
+      "Pipeline ETL",
+      "Business Intelligence",
     ],
-    hashtags: ["RGPD", "scalabilité", "résilience"],
+    hashtags: ["scraping", "veille concurrentielle", "pricing", "anti-bot"],
     matrix: {
-      roles: ["Architecte", "Lead dev", "Supervision de freelances"],
-      functional: ["Enrichissement CRM croisé", "Business process", "Rate limiting multi-API"],
-      sectors: ["SaaS B2B", "Channel management"],
+      roles: ["Architecte", "Data engineer"],
+      functional: ["Veille concurrentielle", "Aide à la décision pricing", "Prévision des stocks"],
+      sectors: ["E-commerce", "Automobile / pièces détachées"],
       technical: [
-        "Architecture serverless",
-        "Files d'attente asynchrones",
-        "Authentification déléguée",
-        "APIs REST hétérogènes",
+        "Web scraping à grande échelle",
+        "Contournement anti-bot",
+        "Pipeline ETL",
+        "Business Intelligence",
       ],
-      ethical: ["RGPD", "Choix d'hébergement des données"],
+      ethical: ["Scraping raisonné (rate-limiting) et vérification KYC des sources ciblées"],
     },
-    duration: "3 ans",
-    scope: {
-      label: "Réalisé",
-      body: "Tout — faisabilité, conception & angles morts, backend, tests et cas limites, frontend, architecture code + NoCode, prod.",
-    },
-  },
-  {
-    id: "ocr-labo",
-    index: "02",
-    sector: "SaaS · Laboratoire d'analyses",
-    title: "Dématérialisation OCR des demandes d'analyses",
-    need: "Dématérialiser les demandes faites auprès d'un laboratoire d'analyses environnementales via OCR, pour passer du papier au numérique.",
-    highlights: [
-      "Chaîne : scan interne → OCR → JSON structuré vers lambda Pipedrive (puis N8N) → RPA de saisie dans le SIL via Citrix.",
-      "Panorama et comparatif de performance des offres OCR Cloud sur de la sémantique de biologie.",
-      "Drive sécurisé et PDF anonymisés pour le RGPD (brûlure binaire).",
-      "N8N self-hosted sur VPS o2switch, RPA Playwright headless via CDP pour piloter le logiciel desktop SIL.",
-      "Gestion de la phase de transition : étude, propositions, dossier de conception, implémentation, feedbacks, hosting, shipping, documentation et formation.",
-    ],
-    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "RGPD"],
-    hashtags: ["RGPD", "anonymisation"],
-    matrix: {
-      roles: ["Architecte", "Chef de projet transition"],
-      functional: ["Dématérialisation OCR", "RPA de saisie SIL", "Formation utilisateurs"],
-      sectors: ["Laboratoire d'analyses", "Environnement"],
-      technical: [
-        "Vision par ordinateur (OCR)",
-        "Automatisation de workflows",
-        "RPA (automatisation robotisée)",
-        "Hébergement self-hosted",
-      ],
-      ethical: ["RGPD", "Anonymisation des PDF"],
-    },
-    duration: "3 mois",
-    scope: { label: "Réalisé", body: "Tout." },
-  },
-  {
-    id: "patrimoine",
-    index: "03",
-    sector: "Progiciel interne · Gestion de patrimoine",
-    title: "CRM + ERP - cabinet gestion patrimoine",
-    need: "Progiciel interne : gérer le funnel de suivi client, la validation multiniveaux et l'arbre de permissions entre CRM et ERP d'un cabinet de gestion de patrimoine.",
-    highlights: [
-      "Phase de cadrage Product Design (UX/UI) en amont, pour aligner le progiciel sur les attentes métier.",
-      "Développement d'un CRM + ERP sous Bubble.",
-      "Dépôt de fichiers sécurisé et souverain (kSuite Drive) et dépôt de pièces légales via un SaaS FR agréé.",
-      "Sensibilisation de l'agence web aux risques liés au RGPD.",
-      "Déplacement des business workflows vers Pipedream.",
-      "Boucle de feedbacks et formation des équipes.",
-    ],
-    stackSoftware: ["Bubble", "Pipedream", "kSuite Drive", "RGPD", "RBAC"],
-    hashtags: ["souveraineté", "RGPD"],
-    matrix: {
-      roles: ["Product Builder", "Conseil RGPD"],
-      functional: [
-        "Cadrage UX/UI",
-        "CRM + ERP",
-        "Arbre de permissions multiniveaux",
-        "Formation des équipes",
-      ],
-      sectors: ["Gestion de patrimoine", "Finance"],
-      technical: ["No-code", "iPaaS (automatisation)", "RBAC (contrôle d'accès)"],
-      ethical: ["RGPD", "Souveraineté (kSuite Drive)"],
-    },
-    duration: "1 an",
-  },
-  {
-    id: "stt-ehpad",
-    index: "04",
-    sector: "IA · EHPAD / Santé",
-    title: "Etablissements pour seniors : comptes-rendus médicaux par speech-to-text",
-    need: "Permettre aux médecins et paramédicaux en EHPAD de produire comptes-rendus et notes vocales à caractère médical via speech-to-text, puis de les historiser pour le suivi et la transmission.",
-    highlights: [
-      "Encadrement de la donnée HDS et souveraineté des données.",
-      "Interopérabilité API avec les logiciels DUI des EHPAD.",
-      "Étude des modèles de coûts d'inférence IA et préconisations hardware + software : edge AI, Kyutai, Whisper (OpenAI), Apple M-series CoreML.",
-      "Transcription temps réel streamée, avec contraintes de voix variées, pollution sonore et accents étrangers.",
-      "Participation à des conférences IA.",
-      "Étude complète, propositions, estimations, spécifications, PoC et prototypes via agentic coding.",
-    ],
-    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
-    stackHardware: ["iPad", "NPU"],
-    hashtags: ["hospitalier", "souveraineté", "AI Act", "Cloud Act"],
-    matrix: {
-      roles: ["Étude & PoC", "Conseil hardware / software"],
-      functional: [
-        "Speech-to-text médical",
-        "Historisation des comptes-rendus",
-        "Interopérabilité DUI",
-      ],
-      sectors: ["EHPAD", "Santé"],
-      technical: ["Edge AI", "Reconnaissance vocale (ASR)", "Inférence embarquée (NPU)"],
-      ethical: ["HDS", "Souveraineté des données"],
-    },
-    duration: "5 jours",
   },
   {
     id: "energie",
-    index: "05",
+    index: "02",
     sector: "Énergie · Courtage",
     title: "Courtier énergies : Homologation API réseau Enedis & indices de marché",
     need: "Collecter les consommations de compteurs électriques et scraper les indices de prix électricité, carbone et gaz pour estimer le meilleur moment d'émettre un devis.",
@@ -309,6 +220,113 @@ export const cases: CaseStudy[] = [
       ethical: ["Certificats TLS & sécurité des accès"],
     },
     duration: "4 mois",
+  },
+  {
+    id: "ocr-labo",
+    index: "03",
+    sector: "SaaS · Laboratoire d'analyses",
+    title: "Dématérialisation OCR des demandes d'analyses biologiques",
+    need: "Dématérialiser les demandes faites auprès d'un laboratoire d'analyses environnementales via OCR, pour passer du papier au numérique.",
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "Chaîne : scan interne → OCR → JSON structuré vers lambda Pipedrive (puis N8N) → RPA de saisie dans le SIL via Citrix.",
+        "Gestion de la phase de transition : étude, propositions, dossier de conception, implémentation, feedbacks, hosting, shipping, documentation et formation.",
+      ],
+      technical: [
+        "Panorama et comparatif de performance des offres OCR Cloud pré-entrainées en sémantique et ontologies sur la biologie.",
+        "Drive sécurisé et PDF anonymisés pour le RGPD (brûlage binaire Python).",
+        "N8N self-hosted sur VPS o2switch, RPA Playwright headless via CDP pour piloter le logiciel desktop SIL.",
+      ],
+    },
+    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "RGPD"],
+    hashtags: ["RGPD", "anonymisation", "cloud", "souveraineté", "PME", "Labo"],
+    matrix: {
+      roles: ["Architecte", "Chef de projet transition"],
+      functional: ["Dématérialisation OCR", "RPA de saisie SIL", "Formation utilisateurs"],
+      sectors: ["Laboratoire d'analyses", "Environnement"],
+      technical: [
+        "Vision par ordinateur (OCR)",
+        "Automatisation de workflows",
+        "RPA (automatisation robotisée)",
+        "Hébergement self-hosted",
+      ],
+      ethical: ["RGPD", "Anonymisation des PDF"],
+    },
+    duration: "3 mois",
+    scope: { label: "Réalisé", body: "Tout." },
+  },
+  {
+    id: "channel-manager",
+    index: "04",
+    sector: "SaaS · Channel manager",
+    title: "Hub d'opportunités commerciales entre CRM partenaires",
+    need: "SaaS métier channel manager : un hub qui transforme les CRM de partenaires commerciaux en une base commune d'opportunités, sans échange manuel de fichiers clients — plus de 50 000 fiches entreprises enrichies croisées sur 3 CRM différents.",
+    logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
+    highlights: [
+      "Interopérabilité API Salesforce, Pipedrive et HubSpot : 3 API hétérogènes, 3 politiques de rate limiting.",
+      "Mix code / NoCode et compromis d'hébergement de données entre Bubble et PostgreSQL (RGPD).",
+      "Business process : implémentation + documentation en flowcharts.",
+      "Arbitrage architecture monolithe NestJS vs serverless stateless (Edge Functions Vercel).",
+      "Jobs asynchrones en MQ Redis, retries, rotation de tokens OAuth multiclients, résilience et reprise Redis.",
+      "Supervision de freelances, points et gestion client, mise en production.",
+    ],
+    stackSoftware: [
+      "NestJS",
+      "Bubble",
+      "Redis MQ",
+      "Vercel Edge",
+      "OAuth",
+      "Salesforce · Pipedrive · HubSpot",
+    ],
+    hashtags: ["RGPD", "scalabilité", "résilience", "sales-ops"],
+    matrix: {
+      roles: ["Architecte", "Lead dev", "Supervision de freelances"],
+      functional: ["Enrichissement CRM croisé", "Business process", "Rate limiting multi-API"],
+      sectors: ["SaaS B2B", "Channel management"],
+      technical: [
+        "Architecture serverless",
+        "Files d'attente asynchrones",
+        "Authentification déléguée",
+        "APIs REST hétérogènes",
+      ],
+      ethical: ["RGPD", "Choix d'hébergement des données"],
+    },
+    duration: "3 ans",
+    scope: {
+      label: "Réalisé",
+      body: "Tout — faisabilité, conception & angles morts, backend, tests et cas limites, frontend, architecture code + NoCode, prod.",
+    },
+  },
+  {
+    id: "patrimoine",
+    index: "05",
+    sector: "Progiciel interne · Gestion de patrimoine",
+    title: "CRM + ERP - cabinet gestion patrimoine",
+    need: "Progiciel interne : gérer le funnel de suivi client, la validation multiniveaux et l'arbre de permissions entre CRM et ERP d'un cabinet de gestion de patrimoine.",
+    highlights: [
+      "Phase de cadrage Product Design (UX/UI) en amont, pour aligner le progiciel sur les attentes métier.",
+      "Développement d'un CRM + ERP sous Bubble.",
+      "Dépôt de fichiers sécurisé et souverain (kSuite Drive) et dépôt de pièces légales via un SaaS FR agréé.",
+      "Sensibilisation de l'agence web aux risques liés au RGPD.",
+      "Déplacement des business workflows vers Pipedream.",
+      "Boucle de feedbacks et formation des équipes.",
+    ],
+    stackSoftware: ["Bubble", "Pipedream", "kSuite Drive", "RGPD", "RBAC"],
+    hashtags: ["souveraineté", "RGPD", "Documents confidentialité", "Secret professionnel"],
+    matrix: {
+      roles: ["Product Builder", "Conseil RGPD"],
+      functional: [
+        "Cadrage UX/UI",
+        "CRM + ERP",
+        "Arbre de permissions multiniveaux",
+        "Formation des équipes",
+      ],
+      sectors: ["Gestion de patrimoine", "Finance"],
+      technical: ["No-code", "iPaaS (automatisation)", "RBAC (contrôle d'accès)"],
+      ethical: ["RGPD", "Souveraineté (kSuite Drive)"],
+    },
+    duration: "1 an",
   },
   {
     id: "cad-web",
@@ -352,26 +370,34 @@ export const cases: CaseStudy[] = [
     duration: "6 mois",
   },
   {
-    id: "smur",
+    id: "stt-ehpad",
     index: "07",
-    sector: "Urgences · SMUR",
-    title: "Réseau temps réel de transport médicalisé",
-    need: "Désengorger le centre d'appel du SMUR en diffusant les demandes de trajet hôpital ↔ domicile médicalisé auprès d'un réseau de VTC et d'ambulanciers équipés.",
+    sector: "IA · EHPAD / Santé",
+    title: "Résidences médicalisées pour seniors : comptes-rendus médicaux par speech-to-text",
+    need: "Permettre aux médecins et paramédicaux en EHPAD de produire comptes-rendus et notes vocales à caractère médical via speech-to-text, puis de les historiser pour le suivi et la transmission.",
     highlights: [
-      "App mobile où chaque ambulancier signale en temps réel sa disponibilité, sa position, son équipement et ses habilitations.",
-      "Transfert de demande entre ambulanciers.",
-      "Backend temps réel et une partie du frontend QML / JS signals.",
+      "Encadrement de la donnée HDS et souveraineté des données.",
+      "Interopérabilité API avec les logiciels DUI des EHPAD.",
+      "Étude des modèles de coûts d'inférence IA et préconisations hardware + software : edge AI, Kyutai, Whisper (OpenAI), Apple M-series CoreML.",
+      "Transcription temps réel streamée, avec contraintes de voix variées, pollution sonore et accents étrangers.",
+      "Participation à des conférences IA.",
+      "Étude complète, propositions, estimations, spécifications, PoC et prototypes via agentic coding.",
     ],
-    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
-    hashtags: ["hospitalier", "temps réel", "résilience"],
+    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
+    stackHardware: ["iPad", "NPU"],
+    hashtags: ["hospitalier", "souveraineté", "AI Act", "Cloud Act"],
     matrix: {
-      roles: ["Lead backend", "Développeur frontend QML"],
-      functional: ["Dispatch temps réel", "Transfert de demandes entre ambulanciers"],
-      sectors: ["Urgences", "Transport médicalisé"],
-      technical: ["Mobile natif C++", "Full-stack réactif temps réel", "PaaS hébergement"],
-      ethical: ["Fiabilité en contexte d'urgence médicale"],
+      roles: ["Étude & PoC", "Conseil hardware / software"],
+      functional: [
+        "Speech-to-text médical",
+        "Historisation des comptes-rendus",
+        "Interopérabilité DUI",
+      ],
+      sectors: ["EHPAD", "Santé"],
+      technical: ["Edge AI", "Reconnaissance vocale (ASR)", "Inférence embarquée (NPU)"],
+      ethical: ["HDS", "Souveraineté des données"],
     },
-    duration: "3 mois",
+    duration: "5 jours",
   },
   {
     id: "ats-youtubers",
@@ -451,14 +477,40 @@ export const cases: CaseStudy[] = [
     },
     duration: "1 mois",
   },
+  {
+    id: "smur",
+    index: "10",
+    sector: "Urgences · SMUR",
+    title: "Réseau temps réel de transport médicalisé",
+    need: "Désengorger le centre d'appel du SMUR en diffusant les demandes de trajet hôpital ↔ domicile médicalisé auprès d'un réseau de VTC et d'ambulanciers équipés.",
+    highlights: [
+      "App mobile où chaque ambulancier signale en temps réel sa disponibilité, sa position, son équipement et ses habilitations.",
+      "Transfert de demande entre ambulanciers.",
+      "Backend temps réel et une partie du frontend QML / JS signals.",
+    ],
+    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
+    hashtags: ["hospitalier", "temps réel", "résilience"],
+    matrix: {
+      roles: ["Lead backend", "Développeur frontend QML"],
+      functional: ["Dispatch temps réel", "Transfert de demandes entre ambulanciers"],
+      sectors: ["Urgences", "Transport médicalisé"],
+      technical: ["Mobile natif C++", "Full-stack réactif temps réel", "PaaS hébergement"],
+      ethical: ["Fiabilité en contexte d'urgence médicale"],
+    },
+    duration: "3 mois",
+  },
 ];
+
+export type BulletWithLogo = { before: string; logo: string; after: string };
+export type Bullet = string | BulletWithLogo;
 
 export type SideProject = {
   id: string;
   name: string;
   index: string;
   pitch: string;
-  bullets: string[];
+  url?: string;
+  bullets: Bullet[];
   stack: string[];
   llms?: string[];
   logos?: string[];
@@ -472,9 +524,15 @@ export const sideProjects: SideProject[] = [
     name: "Nocodext for Bubble",
     pitch:
       "Outillage en extensions Chrome pour les agences NoCode Bubble : découvrabilité d'une app reprise et QA continue pour livrer du professionnel — totalement absent en natif dans Bubble.",
+    url: "https://nocodext.studio/bubble",
     bullets: [
       "Solopreneur : maquettages, dev frontend / backend / extensions Chrome.",
       "Pivot du ciblage vers le B2B (agences web) : hypothèses de valeur, itérations de pricing et repositionnement produit.",
+      {
+        before: "Intégration ",
+        logo: "/logos/side/stripe.svg",
+        after: " pour la gestion des abonnements et paiements récurrents.",
+      },
       "Feedback communautaire, stratégie de pricing, positionnement produit & features.",
       "Analyse de la cible, veille concurrentielle, design thinking, UX/UI.",
       "Travaux avancés en UX, UI, Interaction Design.",
@@ -502,6 +560,7 @@ export const sideProjects: SideProject[] = [
     name: "Breejd",
     pitch:
       "Après un job post LinkedIn : récupérer en masse, trier et exporter les répondants vers fichier plat, outil bureautique cloud ou ATS.",
+    url: "https://nocodext.studio/linkedin",
     bullets: [
       "Sneak-peek d'un profil candidat en mode incognito garanti et sans ban.",
       "UX/UI et interaction design du parcours de tri et d'export des répondants.",
@@ -519,6 +578,7 @@ export const sideProjects: SideProject[] = [
     name: "pin'npm",
     pitch:
       "NPMjs.com ne permet pas de bookmarker des librairies, même connecté. pin'npm répertorie et enrichit les packages directement in-page.",
+    url: "https://nocodext.studio/pinnpm",
     bullets: [
       "Bookmark de librairies NPM dans un side panel.",
       "Infos centralisées in-page : sécurité, CVE, vulnérabilités, maintenabilité.",
@@ -537,6 +597,7 @@ export const sideProjects: SideProject[] = [
     name: "Airtable explorer",
     pitch:
       "Les couleurs du dashboard Airtable ont disparu sur décision interne. L'extension signe leur retour — et rend le dashboard réellement navigable.",
+    url: "https://nocodext.studio/airtable",
     bullets: [
       "Atteindre les colonnes sans scroller quand il y en a beaucoup (par liste, par voix).",
       "Bookmark de colonnes, auto most-popular.",
@@ -606,6 +667,7 @@ export const overview: OverviewCategory[] = [
       { label: "Bureau d'étude & Bâtiment numérique", caseIds: ["cad-web"] },
       { label: "RH Tech & économie des créateurs", caseIds: ["ats-youtubers"] },
       { label: "Photographie & médias", caseIds: ["sftp-photographe"] },
+      { label: "E-commerce & automobile", caseIds: ["veille-tarifaire"] },
     ],
   },
   {
@@ -639,6 +701,10 @@ export const overview: OverviewCategory[] = [
         caseIds: ["patrimoine", "ats-youtubers", "sftp-photographe"],
       },
       { label: "IA & edge computing", caseIds: ["ocr-labo", "stt-ehpad"] },
+      {
+        label: "Web scraping & Business Intelligence",
+        caseIds: ["veille-tarifaire"],
+      },
     ],
   },
   {
@@ -661,6 +727,7 @@ export const overview: OverviewCategory[] = [
           "energie",
           "ats-youtubers",
           "sftp-photographe",
+          "veille-tarifaire",
         ],
       },
       { label: "Alerting & dispatch temps réel", caseIds: ["reanimation", "smur"] },
@@ -683,6 +750,7 @@ export const overview: OverviewCategory[] = [
           "energie",
           "cad-web",
           "sftp-photographe",
+          "veille-tarifaire",
         ],
       },
       {
@@ -695,6 +763,7 @@ export const overview: OverviewCategory[] = [
         caseIds: ["reanimation", "ocr-labo", "channel-manager"],
       },
       { label: "Développeur frontend / mobile", caseIds: ["smur", "reanimation"] },
+      { label: "Data engineer", caseIds: ["veille-tarifaire"] },
     ],
   },
 ];

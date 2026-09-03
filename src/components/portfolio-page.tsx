@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import type {
+  Bullet,
   CaseStudy,
   Highlight,
   OverviewBucket,
@@ -30,6 +31,8 @@ import {
   DraftingCompass,
   Youtube,
   Camera,
+  Tags,
+  ExternalLink,
   ArrowUpRight,
   ChevronDown,
   ChevronUp,
@@ -39,7 +42,8 @@ import {
 } from "lucide-react";
 
 type CaseIconConfig =
-  { icon: LucideIcon; color: "cyan" | "violet" | "amber" | "blue" | "red" } | { image: string };
+  | { icon: LucideIcon; color: "cyan" | "violet" | "amber" | "blue" | "red"; flip?: boolean }
+  | { image: string };
 
 const caseIcons: Record<string, CaseIconConfig> = {
   reanimation: { icon: HeartPulse, color: "cyan" },
@@ -47,11 +51,12 @@ const caseIcons: Record<string, CaseIconConfig> = {
   "ocr-labo": { icon: FlaskConical, color: "amber" },
   patrimoine: { icon: Landmark, color: "blue" },
   "stt-ehpad": { icon: Mic, color: "violet" },
-  energie: { icon: Zap, color: "amber" },
+  energie: { icon: Zap, color: "cyan" },
   "cad-web": { icon: DraftingCompass, color: "blue" },
   smur: { icon: Siren, color: "cyan" },
   "ats-youtubers": { icon: Youtube, color: "red" },
   "sftp-photographe": { icon: Camera, color: "blue" },
+  "veille-tarifaire": { icon: Tags, color: "violet", flip: true },
   nocodext: { image: "/logos/side/bubble-icon.png" },
   breejd: { image: "/logos/side/linkedin-icon.svg" },
   pinnpm: { image: "/logos/side/npm-icon.svg" },
@@ -116,14 +121,17 @@ function CaseIcon({ id, size = "lg" }: { id: string; size?: "lg" | "sm" }) {
     );
   }
 
-  const { icon: Icon, color } = conf;
+  const { icon: Icon, color, flip } = conf;
   const iconSize = size === "lg" ? "size-5" : "size-3.5";
   return (
     <span
       className={`relative grid ${box} shrink-0 place-items-center overflow-hidden rounded-full ${iconBadgeBg[color]} shadow-[0_8px_16px_-8px_rgba(16,19,26,0.45)]`}
     >
       <span className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/0 to-black/10" />
-      <Icon className={`relative ${iconSize} text-white`} strokeWidth={2} />
+      <Icon
+        className={`relative ${iconSize} text-white ${flip ? "-scale-x-100" : ""}`}
+        strokeWidth={2}
+      />
     </span>
   );
 }
@@ -440,7 +448,7 @@ function HighlightItem({ item }: { item: Highlight }) {
       <div className="flex-1">
         <span>{item.text}</span>
         {item.objective ? (
-          <p className="mt-1.5 text-xs italic text-slate">{item.objective}</p>
+          <p className="mt-1.5 text-xs underline italic text-slate">{item.objective}</p>
         ) : null}
         {item.detail ? (
           <ul className="mt-2 space-y-1.5 border-l-2 border-cyan/30 pl-3">
@@ -509,7 +517,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             </div>
           </div>
           <div className="mt-5 flex items-start justify-between gap-3">
-            <div className="flex max-w-prose items-start gap-3.5">
+            <div className="flex flex-1 items-start gap-3.5">
               <CaseIcon id={item.id} />
               <h3 className="min-w-0 font-display text-2xl font-semibold leading-tight tracking-tight text-balance">
                 {item.title}
@@ -554,13 +562,16 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             ) : null}
           </div>
         </div>
-        <p
-          className={`mt-4 border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate sm:max-w-prose ${
+        <div
+          className={`mt-4 border-l-4 bg-ink/[0.04] py-2.5 pl-4 sm:max-w-prose ${
             accentBorder[caseColor(item.id)]
           }`}
         >
-          {item.need}
-        </p>
+          <p className="text-sm text-pretty text-slate">{item.need}</p>
+          {item.needObjective ? (
+            <p className="mt-1.5 text-xs italic text-slate">{item.needObjective}</p>
+          ) : null}
+        </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-2">
             {item.hashtags.map((h) => (
@@ -579,7 +590,9 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                   key={src}
                   src={src}
                   alt=""
-                  className={src.includes("salesforce") ? "h-9 w-auto sm:h-12" : "h-6 w-auto sm:h-8"}
+                  className={
+                    src.includes("salesforce") ? "h-9 w-auto sm:h-12" : "h-6 w-auto sm:h-8"
+                  }
                 />
               ))}
             </div>
@@ -601,15 +614,40 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
           )}
         </button>
         <div className={expanded ? "" : "hidden"}>
-          <ul
-            className={`mt-6 space-y-2.5 ${
-              item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
-            }`}
-          >
-            {item.highlights.map((h, i) => (
-              <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
-            ))}
-          </ul>
+          {item.highlightGroups ? (
+            <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+                  {strings.matrixAxes.functional}
+                </div>
+                <ul className="mt-2.5 space-y-2.5">
+                  {item.highlightGroups.functional.map((h, i) => (
+                    <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+                  {strings.matrixAxes.technical}
+                </div>
+                <ul className="mt-2.5 space-y-2.5">
+                  {item.highlightGroups.technical.map((h, i) => (
+                    <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <ul
+              className={`mt-6 space-y-2.5 ${
+                item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
+              }`}
+            >
+              {item.highlights.map((h, i) => (
+                <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+              ))}
+            </ul>
+          )}
           {item.scope ? (
             <div className="mt-5 border-l-2 border-violet/40 pl-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
@@ -1020,7 +1058,21 @@ function SideBusiness({ content, strings }: { content: PortfolioContent; strings
                 {p.index} {strings.sideBusiness.productSuffix}
               </div>
               <div className="mt-3 flex items-center justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold">{p.name}</h3>
+                <h3 className="font-display text-xl font-semibold">
+                  {p.url ? (
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 transition-colors hover:text-cyan"
+                    >
+                      {p.name}
+                      <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                    </a>
+                  ) : (
+                    p.name
+                  )}
+                </h3>
                 {p.logos ? (
                   <div className="flex shrink-0 items-center gap-2">
                     {p.logos.map((src) => (
@@ -1036,10 +1088,27 @@ function SideBusiness({ content, strings }: { content: PortfolioContent; strings
               </div>
               <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
               <ul className="mt-4 space-y-2">
-                {p.bullets.map((b) => (
-                  <li key={b} className="flex gap-2.5 text-sm text-white/80">
+                {p.bullets.map((b, i) => (
+                  <li
+                    key={typeof b === "string" ? b : i}
+                    className="flex gap-2.5 text-sm text-white/80"
+                  >
                     <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
-                    <span className="text-pretty">{b}</span>
+                    <span className="text-pretty">
+                      {typeof b === "string" ? (
+                        b
+                      ) : (
+                        <>
+                          {b.before}
+                          <img
+                            src={b.logo}
+                            alt=""
+                            className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
+                          />
+                          {b.after}
+                        </>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -87,7 +87,8 @@ export const uiStringsFr: UIStrings = {
       <>
         Généraliste par choix, transverse par tempérament — hospitalier, presse numérique,
         e-learning, smart-city, laboratoire, énergie, bureau d'études, photographie, patrimoine,
-        recherche, business, courtage, IA, ...
+        BTP, Bâtiment numérique (BIM), Recherche, business, courtage, veille concurrencielle, IA,
+        ...
         <br />
         J'aime les défis, notamment ceux qu'on croit impossibles et je vais chercher le besoin réel
         derrière le besoin exprimé.
@@ -117,7 +118,7 @@ export const uiStringsFr: UIStrings = {
     roles: "Rôles",
     functional: "Fonctionnel",
     sectors: "Sectoriel",
-    technical: "Technologie",
+    technical: "Technologique",
     ethical: "Éthique",
   },
   caseCard: {

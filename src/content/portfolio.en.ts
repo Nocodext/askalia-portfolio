@@ -22,7 +22,9 @@ export type CaseStudy = {
   sector: string;
   title: string;
   need: string;
+  needObjective?: string;
   highlights: Highlight[];
+  highlightGroups?: { functional: Highlight[]; technical: Highlight[] };
   stackSoftware: string[];
   stackHardware?: string[];
   hashtags: string[];
@@ -53,34 +55,33 @@ export const cases: CaseStudy[] = [
     sector: "Healthcare · Hospital / ICU",
     title: "Care Team · Patient · Family Information Platform",
     need: "Hospital software bridging the information gap between care teams, ICU patients, and families.",
-    highlights: [
-      "Modeled ICU patient flows: admissions, monitoring, discharges, transfers, business rules, triggers and automations.",
-      "Migrated a legacy PHP/CMS app to a hospital-grade NestJS architecture: hexagonal, event-driven, IHE / PAM / HL7 synchronization.",
-      "Migrated legacy MySQL to PostgreSQL: triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, schema segregation.",
-      "Delivered medical and paramedical information, family/care-team alerting, and action follow-up.",
-      "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
-      "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
-      {
-        text: "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department.",
-        objective:
-          "Objective: the software reflects the ward's day-to-day operational reality at all times.",
-        detail: [
-          "Built SFTP and MLLP/MLLPS adapters — the industry's two standard data-exchange protocols.",
-          "Imported a paramedical staff pool via Excel to align the software with actual staffing on the ground.",
-          "Integrated the care-team login mechanism, of the DPI (electronic health record) type.",
-        ],
-      },
-      "Resilient node-based architecture, Docker Compose LAN design, internal ops CLI.",
-      "Family & Care Team portal: e-CPS (French health professional e-card), OTP, 2FA, Citrix & RPA.",
-      "React Native mobile app designed for families: magic link, OTP, mTLS certificates, WhatsApp app links, SMS notifications.",
-      "Vibe-coded demo admin panel to make the Sales team self-sufficient.",
-      "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, plus flowcharts, logic diagrams and architecture schemas on Whimsical.",
-      "IT/CISO documentation: data flows, ADRs, incident log register, regulatory, HDS, GDPR/DPO, cybersecurity, DMZ.",
-      "Tech lead & mentoring for a small team + an English-speaking intern.",
-      "Data governance: kSuite repositories for partners, scoped internal access, SSH keys, an online vault, password manager.",
-      "Built an LLM code-knowledge-graph as a living memory of the codebase.",
-      "Dev agents, MCP and skills.",
-    ],
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "UX/UI design process run in co-creation with hospital staff.",
+        "Modeled ICU patient flows: admissions, monitoring, discharges, transfers, business rules, triggers and automations.",
+        "Delivered medical and paramedical information, family/care-team alerting, and action follow-up.",
+        "Imported a paramedical staff pool via Excel to align the software with actual staffing on the ground.",
+        "Family & Care Team portal: e-CPS (French health professional e-card), OTP, 2FA, Citrix & RPA.",
+        "React Native mobile app designed for families: magic link, OTP, mTLS certificates, WhatsApp app links, SMS notifications.",
+        "Vibe-coded demo admin panel to make the Sales team self-sufficient.",
+        "Integrated the care-team login mechanism, of the DPI (electronic health record) type.",
+        "IT/CISO documentation: data flows, ADRs, incident log register, regulatory, HDS, GDPR/DPO, cybersecurity, DMZ.",
+        "Tech lead & mentoring for a small team + an English-speaking intern.",
+        "Data governance: kSuite repositories for partners, scoped internal access, SSH keys, an online vault, password manager.",
+      ],
+      technical: [
+        "Migrated a legacy PHP/CMS app to a hospital-grade NestJS architecture: hexagonal, event-driven, IHE / PAM / HL7 synchronization.",
+        "Migrated legacy MySQL to PostgreSQL: triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, schema segregation.",
+        "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
+        "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
+        "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters — the industry's two standard data-exchange protocols.",
+        "Resilient node-based architecture, Docker Compose LAN design, internal ops CLI.",
+        "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, plus flowcharts, logic diagrams and architecture schemas on Whimsical.",
+        "Built an LLM code-knowledge-graph as a living memory of the codebase.",
+        "Dev agents, MCP and skills.",
+      ],
+    },
     stackSoftware: [
       "NestJS",
       "PostgreSQL",
@@ -152,8 +153,102 @@ export const cases: CaseStudy[] = [
     flagship: true,
   },
   {
-    id: "channel-manager",
+    id: "veille-tarifaire",
     index: "01",
+    sector: "E-commerce · Automotive Spare Parts",
+    title: "Real-time competitive price monitoring — automotive spare parts",
+    need: "Real-time competitive intelligence platform for a leading e-commerce retailer of automotive spare parts: monitoring competitor pricing, per-reference averages, heuristic reference matching, and confirmed-or-presumed stock detection across the 10 main European competitors targeted.",
+    needObjective:
+      "Objective: build a reliable picture to support pricing strategy and stock-forecasting decisions.",
+    highlights: [
+      "Orchestrated a fleet of website scrapers to cover the 10 main European competitors.",
+      "Studied and defeated anti-bot systems.",
+      "Described and recorded per-site scraping scenarios.",
+      "Extracted, filtered, cleaned and structured the collected data.",
+      "Denormalized the data for import into the Business Intelligence tool.",
+    ],
+    stackSoftware: [
+      "Web scraping",
+      "Bright Data",
+      "Anti-bot evasion",
+      "ETL pipeline",
+      "Business Intelligence",
+    ],
+    hashtags: ["scraping", "competitive intelligence", "pricing", "anti-bot"],
+    matrix: {
+      roles: ["Architect", "Data engineer"],
+      functional: ["Competitive intelligence", "Pricing decision support", "Stock forecasting"],
+      sectors: ["E-commerce", "Automotive / spare parts"],
+      technical: [
+        "Large-scale web scraping",
+        "Anti-bot evasion",
+        "ETL pipeline",
+        "Business Intelligence",
+      ],
+      ethical: ["Responsible scraping (rate-limiting) and KYC verification of targeted sources"],
+    },
+  },
+  {
+    id: "energie",
+    index: "02",
+    sector: "Energy · Brokerage",
+    title: "Energy broker: Enedis grid API certification & market indices",
+    need: "Collect electricity meter consumption data and scrape electricity, carbon and gas price indices to estimate the best moment to issue a quote.",
+    highlights: [
+      "Certified an XML/SOAP API against Enedis's SGE web service, including TLS certificate management.",
+      "Managed the relationship with Enedis support and client follow-up.",
+      "14 endpoints and 54 unit tests on Make.com.",
+      "Switched to N8N to integrate JS scripts and AI agents: index scraping + Enedis data processing.",
+    ],
+    stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
+    hashtags: ["real-time", "cybersecurity", "scalability"],
+    matrix: {
+      roles: ["Integration Architect", "Enedis Support Liaison"],
+      functional: ["Meter data collection", "Market-index scraping", "Quote decision support"],
+      sectors: ["Energy", "Brokerage"],
+      technical: ["SOAP/XML web services", "No-code automation", "AI agents"],
+      ethical: ["TLS certificates & access security"],
+    },
+    duration: "4 months",
+  },
+  {
+    id: "ocr-labo",
+    index: "03",
+    sector: "SaaS · Analytical Laboratory",
+    title: "OCR-based digitization of lab test requests",
+    need: "Digitize requests submitted to an environmental testing lab via OCR, moving the workflow from paper to digital.",
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "Pipeline: internal scan → OCR → structured JSON to a Pipedrive lambda (then N8N) → RPA data entry into the LIMS via Citrix.",
+        "Managed the transition phase end to end: study, proposals, design document, implementation, feedback loops, hosting, shipping, documentation and training.",
+      ],
+      technical: [
+        "Landscape review and performance benchmark of cloud OCR providers on biology-specific semantics.",
+        "Secure drive and anonymized PDFs for GDPR compliance (binary shredding).",
+        "Self-hosted N8N on an o2switch VPS, headless Playwright RPA via CDP to drive the desktop LIMS software.",
+      ],
+    },
+    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "GDPR"],
+    hashtags: ["GDPR", "anonymization"],
+    matrix: {
+      roles: ["Architect", "Transition Project Lead"],
+      functional: ["OCR digitization", "LIMS data-entry RPA", "User training"],
+      sectors: ["Analytical Laboratory", "Environment"],
+      technical: [
+        "Computer vision (OCR)",
+        "Workflow automation",
+        "RPA (robotic process automation)",
+        "Self-hosted infrastructure",
+      ],
+      ethical: ["GDPR", "PDF anonymization"],
+    },
+    duration: "3 months",
+    scope: { label: "Delivered", body: "Everything." },
+  },
+  {
+    id: "channel-manager",
+    index: "04",
     sector: "SaaS · Channel manager",
     title: "A shared opportunity hub across partner CRMs",
     need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange — 50,000+ company records enriched and cross-matched across 3 different CRMs.",
@@ -194,38 +289,8 @@ export const cases: CaseStudy[] = [
     },
   },
   {
-    id: "ocr-labo",
-    index: "02",
-    sector: "SaaS · Analytical Laboratory",
-    title: "OCR-based digitization of lab test requests",
-    need: "Digitize requests submitted to an environmental testing lab via OCR, moving the workflow from paper to digital.",
-    highlights: [
-      "Pipeline: internal scan → OCR → structured JSON to a Pipedrive lambda (then N8N) → RPA data entry into the LIMS via Citrix.",
-      "Landscape review and performance benchmark of cloud OCR providers on biology-specific semantics.",
-      "Secure drive and anonymized PDFs for GDPR compliance (binary shredding).",
-      "Self-hosted N8N on an o2switch VPS, headless Playwright RPA via CDP to drive the desktop LIMS software.",
-      "Managed the transition phase end to end: study, proposals, design document, implementation, feedback loops, hosting, shipping, documentation and training.",
-    ],
-    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "GDPR"],
-    hashtags: ["GDPR", "anonymization"],
-    matrix: {
-      roles: ["Architect", "Transition Project Lead"],
-      functional: ["OCR digitization", "LIMS data-entry RPA", "User training"],
-      sectors: ["Analytical Laboratory", "Environment"],
-      technical: [
-        "Computer vision (OCR)",
-        "Workflow automation",
-        "RPA (robotic process automation)",
-        "Self-hosted infrastructure",
-      ],
-      ethical: ["GDPR", "PDF anonymization"],
-    },
-    duration: "3 months",
-    scope: { label: "Delivered", body: "Everything." },
-  },
-  {
     id: "patrimoine",
-    index: "03",
+    index: "05",
     sector: "Internal Software · Wealth Management",
     title: "CRM + ERP for a wealth-management firm",
     need: "Internal software: manage the client-tracking funnel, multi-level approval, and the permission tree between the CRM and ERP of a wealth-management firm.",
@@ -247,55 +312,6 @@ export const cases: CaseStudy[] = [
       ethical: ["GDPR", "Data sovereignty (kSuite Drive)"],
     },
     duration: "1 year",
-  },
-  {
-    id: "stt-ehpad",
-    index: "04",
-    sector: "AI · Senior Care Facilities / Healthcare",
-    title: "Senior care facilities: medical reports via speech-to-text",
-    need: "Let physicians and paramedical staff in senior care facilities produce medical reports and voice notes via speech-to-text, then archive them for follow-up and handover.",
-    highlights: [
-      "Governed the data under HDS and data-sovereignty requirements.",
-      "API interoperability with senior care facilities' electronic resident record (DUI) software.",
-      "Studied AI inference cost models and made hardware + software recommendations: edge AI, Kyutai, Whisper (OpenAI), Apple M-series CoreML.",
-      "Real-time streamed transcription, handling varied voices, background noise, and foreign accents.",
-      "Spoke at AI conferences.",
-      "Full study, proposals, estimates, specifications, PoC and prototypes via agentic coding.",
-    ],
-    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
-    stackHardware: ["iPad", "NPU"],
-    hashtags: ["healthcare", "data-sovereignty", "AI Act", "Cloud Act"],
-    matrix: {
-      roles: ["Study & PoC", "Hardware / Software Advisory"],
-      functional: ["Medical speech-to-text", "Report archiving", "DUI interoperability"],
-      sectors: ["Senior Care Facilities", "Healthcare"],
-      technical: ["Edge AI", "Speech recognition (ASR)", "On-device inference (NPU)"],
-      ethical: ["HDS", "Data sovereignty"],
-    },
-    duration: "5 days",
-  },
-  {
-    id: "energie",
-    index: "05",
-    sector: "Energy · Brokerage",
-    title: "Energy broker: Enedis grid API certification & market indices",
-    need: "Collect electricity meter consumption data and scrape electricity, carbon and gas price indices to estimate the best moment to issue a quote.",
-    highlights: [
-      "Certified an XML/SOAP API against Enedis's SGE web service, including TLS certificate management.",
-      "Managed the relationship with Enedis support and client follow-up.",
-      "14 endpoints and 54 unit tests on Make.com.",
-      "Switched to N8N to integrate JS scripts and AI agents: index scraping + Enedis data processing.",
-    ],
-    stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
-    hashtags: ["real-time", "cybersecurity", "scalability"],
-    matrix: {
-      roles: ["Integration Architect", "Enedis Support Liaison"],
-      functional: ["Meter data collection", "Market-index scraping", "Quote decision support"],
-      sectors: ["Energy", "Brokerage"],
-      technical: ["SOAP/XML web services", "No-code automation", "AI agents"],
-      ethical: ["TLS certificates & access security"],
-    },
-    duration: "4 months",
   },
   {
     id: "cad-web",
@@ -333,26 +349,30 @@ export const cases: CaseStudy[] = [
     duration: "6 months",
   },
   {
-    id: "smur",
+    id: "stt-ehpad",
     index: "07",
-    sector: "Emergency Medicine · Mobile Emergency Unit (SMUR)",
-    title: "Real-time network for medically-staffed transport",
-    need: "Relieve the SMUR (mobile emergency unit) call center by broadcasting hospital ↔ home medical-transport requests to a network of equipped private-hire drivers and ambulance crews.",
+    sector: "AI · Senior Care Facilities / Healthcare",
+    title: "Senior care facilities: medical reports via speech-to-text",
+    need: "Let physicians and paramedical staff in senior care facilities produce medical reports and voice notes via speech-to-text, then archive them for follow-up and handover.",
     highlights: [
-      "Mobile app where each paramedic reports availability, location, equipment and qualifications in real time.",
-      "Request handoff between paramedics.",
-      "Real-time backend and part of the QML / JS-signals frontend.",
+      "Governed the data under HDS and data-sovereignty requirements.",
+      "API interoperability with senior care facilities' electronic resident record (DUI) software.",
+      "Studied AI inference cost models and made hardware + software recommendations: edge AI, Kyutai, Whisper (OpenAI), Apple M-series CoreML.",
+      "Real-time streamed transcription, handling varied voices, background noise, and foreign accents.",
+      "Spoke at AI conferences.",
+      "Full study, proposals, estimates, specifications, PoC and prototypes via agentic coding.",
     ],
-    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
-    hashtags: ["healthcare", "real-time", "resilience"],
+    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
+    stackHardware: ["iPad", "NPU"],
+    hashtags: ["healthcare", "data-sovereignty", "AI Act", "Cloud Act"],
     matrix: {
-      roles: ["Backend Lead", "QML Frontend Developer"],
-      functional: ["Real-time dispatch", "Request handoff between paramedics"],
-      sectors: ["Emergency Medicine", "Medical Transport"],
-      technical: ["Native C++ mobile", "Real-time reactive full-stack", "PaaS hosting"],
-      ethical: ["Reliability in emergency medical context"],
+      roles: ["Study & PoC", "Hardware / Software Advisory"],
+      functional: ["Medical speech-to-text", "Report archiving", "DUI interoperability"],
+      sectors: ["Senior Care Facilities", "Healthcare"],
+      technical: ["Edge AI", "Speech recognition (ASR)", "On-device inference (NPU)"],
+      ethical: ["HDS", "Data sovereignty"],
     },
-    duration: "3 months",
+    duration: "5 days",
   },
   {
     id: "ats-youtubers",
@@ -430,14 +450,40 @@ export const cases: CaseStudy[] = [
     },
     duration: "1 month",
   },
+  {
+    id: "smur",
+    index: "10",
+    sector: "Emergency Medicine · Mobile Emergency Unit (SMUR)",
+    title: "Real-time network for medically-staffed transport",
+    need: "Relieve the SMUR (mobile emergency unit) call center by broadcasting hospital ↔ home medical-transport requests to a network of equipped private-hire drivers and ambulance crews.",
+    highlights: [
+      "Mobile app where each paramedic reports availability, location, equipment and qualifications in real time.",
+      "Request handoff between paramedics.",
+      "Real-time backend and part of the QML / JS-signals frontend.",
+    ],
+    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
+    hashtags: ["healthcare", "real-time", "resilience"],
+    matrix: {
+      roles: ["Backend Lead", "QML Frontend Developer"],
+      functional: ["Real-time dispatch", "Request handoff between paramedics"],
+      sectors: ["Emergency Medicine", "Medical Transport"],
+      technical: ["Native C++ mobile", "Real-time reactive full-stack", "PaaS hosting"],
+      ethical: ["Reliability in emergency medical context"],
+    },
+    duration: "3 months",
+  },
 ];
+
+export type BulletWithLogo = { before: string; logo: string; after: string };
+export type Bullet = string | BulletWithLogo;
 
 export type SideProject = {
   id: string;
   name: string;
   index: string;
   pitch: string;
-  bullets: string[];
+  url?: string;
+  bullets: Bullet[];
   stack: string[];
   llms?: string[];
   logos?: string[];
@@ -451,9 +497,15 @@ export const sideProjects: SideProject[] = [
     name: "Nocodext for Bubble",
     pitch:
       "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally — entirely missing natively in Bubble.",
+    url: "https://nocodext.studio/bubble",
     bullets: [
       "Solo-founder: wireframes, frontend / backend dev, Chrome extensions.",
       "Pivoted targeting to B2B (web agencies): value hypotheses, pricing iterations and product repositioning.",
+      {
+        before: "",
+        logo: "/logos/side/stripe.svg",
+        after: " integration for subscription management and recurring payments.",
+      },
       "Community feedback, pricing strategy, product positioning & features.",
       "Target audience analysis, competitive monitoring, design thinking, UX/UI.",
       "Advanced work in UX, UI, Interaction Design.",
@@ -481,6 +533,7 @@ export const sideProjects: SideProject[] = [
     name: "Breejd",
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
+    url: "https://nocodext.studio/linkedin",
     bullets: [
       "Sneak-peek a candidate profile in guaranteed incognito mode, ban-free.",
       "UX/UI and interaction design for the respondent sorting and export flow.",
@@ -498,6 +551,7 @@ export const sideProjects: SideProject[] = [
     name: "pin'npm",
     pitch:
       "NPMjs.com doesn't let you bookmark libraries, even when signed in. pin'npm catalogs and enriches packages directly in-page.",
+    url: "https://nocodext.studio/pinnpm",
     bullets: [
       "Bookmark NPM libraries in a side panel.",
       "Centralized in-page info: security, CVEs, vulnerabilities, maintainability.",
@@ -516,6 +570,7 @@ export const sideProjects: SideProject[] = [
     name: "Airtable explorer",
     pitch:
       "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back — and makes the dashboard genuinely navigable.",
+    url: "https://nocodext.studio/airtable",
     bullets: [
       "Reach columns without scrolling when there are many of them (by list, by voice).",
       "Bookmark columns, auto most-popular.",
@@ -575,6 +630,7 @@ export const overview: OverviewCategory[] = [
       { label: "Design office & Building Information Modeling", caseIds: ["cad-web"] },
       { label: "HR Tech & creator economy", caseIds: ["ats-youtubers"] },
       { label: "Photography & media", caseIds: ["sftp-photographe"] },
+      { label: "E-commerce & automotive", caseIds: ["veille-tarifaire"] },
     ],
   },
   {
@@ -608,6 +664,10 @@ export const overview: OverviewCategory[] = [
         caseIds: ["patrimoine", "ats-youtubers", "sftp-photographe"],
       },
       { label: "AI & edge computing", caseIds: ["ocr-labo", "stt-ehpad"] },
+      {
+        label: "Web scraping & Business Intelligence",
+        caseIds: ["veille-tarifaire"],
+      },
     ],
   },
   {
@@ -630,6 +690,7 @@ export const overview: OverviewCategory[] = [
           "energie",
           "ats-youtubers",
           "sftp-photographe",
+          "veille-tarifaire",
         ],
       },
       { label: "Real-time alerting & dispatch", caseIds: ["reanimation", "smur"] },
@@ -652,6 +713,7 @@ export const overview: OverviewCategory[] = [
           "energie",
           "cad-web",
           "sftp-photographe",
+          "veille-tarifaire",
         ],
       },
       {
@@ -664,6 +726,7 @@ export const overview: OverviewCategory[] = [
         caseIds: ["reanimation", "ocr-labo", "channel-manager"],
       },
       { label: "Frontend / mobile developer", caseIds: ["smur", "reanimation"] },
+      { label: "Data engineer", caseIds: ["veille-tarifaire"] },
     ],
   },
 ];

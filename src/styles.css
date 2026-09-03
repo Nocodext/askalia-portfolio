@@ -135,11 +135,9 @@
 }
 
 @utility spoke-flow {
+  /* Temporarily ignoring prefers-reduced-motion to confirm that's the cause
+     of "animation not visible" — re-add the guard once confirmed. */
   animation: spokeFlow 0.6s linear infinite;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
 }
 
 @keyframes fadeUp {

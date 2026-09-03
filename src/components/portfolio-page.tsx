@@ -86,7 +86,10 @@ function scrollToCase(id: string) {
   const el = document.getElementById(id);
   if (el) {
     el.dispatchEvent(new Event(CASE_EXPAND_EVENT));
-    const top = el.getBoundingClientRect().top + window.scrollY - 128;
+    // Same clearance on both breakpoints would eat too much of a mobile
+    // viewport's height — scale it down below the `md` nav-collapse breakpoint.
+    const offset = window.innerWidth < 768 ? 128 : 168;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: "instant" });
   }
   history.replaceState(null, "", `#${id}`);
@@ -180,28 +183,28 @@ const overviewColors = {
     ring: "ring-cyan/25",
     text: "text-cyan",
     bg: "bg-cyan/10",
-    head: "bg-gradient-to-r from-cyan to-cyan/75",
+    head: "bg-cyan",
     headText: "text-white",
   },
   violet: {
     ring: "ring-violet/25",
     text: "text-violet",
     bg: "bg-violet/10",
-    head: "bg-gradient-to-r from-violet to-violet/75",
+    head: "bg-violet",
     headText: "text-white",
   },
   amber: {
     ring: "ring-amber/25",
     text: "text-amber",
     bg: "bg-amber/10",
-    head: "bg-gradient-to-r from-amber to-amber/75",
+    head: "bg-amber",
     headText: "text-ink",
   },
   blue: {
     ring: "ring-blue/25",
     text: "text-blue",
     bg: "bg-blue/10",
-    head: "bg-gradient-to-r from-blue to-blue/75",
+    head: "bg-blue",
     headText: "text-white",
   },
 } as const;
@@ -552,7 +555,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
           </div>
         </div>
         <p
-          className={`mt-4 max-w-prose border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate ${
+          className={`mt-4 border-l-4 bg-ink/[0.04] py-2.5 pl-4 text-sm text-pretty text-slate sm:max-w-prose ${
             accentBorder[caseColor(item.id)]
           }`}
         >
@@ -570,13 +573,13 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             ))}
           </div>
           {item.logos ? (
-            <div className="flex shrink-0 items-center gap-5">
+            <div className="flex w-full items-center justify-center gap-4 sm:w-auto sm:shrink-0 sm:justify-start sm:gap-5">
               {item.logos.map((src) => (
                 <img
                   key={src}
                   src={src}
                   alt=""
-                  className={src.includes("salesforce") ? "h-12 w-auto" : "h-8 w-auto"}
+                  className={src.includes("salesforce") ? "h-9 w-auto sm:h-12" : "h-6 w-auto sm:h-8"}
                 />
               ))}
             </div>
@@ -895,7 +898,7 @@ function BucketRow({
             />
           ) : null}
           <TooltipProvider delayDuration={200}>
-            <ul className="mt-3 -mx-1">
+            <ul className={`-mx-1 ${hasRing ? "mt-3 border-t border-ink/10 pt-3" : "mt-3"}`}>
               {b.caseIds.map((id) => {
                 const item = cases.find((x) => x.id === id);
                 const project = sideProjects.find((x) => x.id === id);

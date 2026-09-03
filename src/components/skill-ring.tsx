@@ -37,13 +37,13 @@ export function SkillRing({ items, hubClassName, onSelect }: SkillRingProps) {
   return (
     <div className="relative mx-auto flex h-[210px] w-full items-center justify-center">
       <div
-        className="absolute rounded-full border border-slate/30"
-        style={{ width: radius * 2 + 34, height: radius * 2 + 34 }}
+        className="absolute rounded-full border border-dashed border-slate/30"
+        style={{ width: radius * 2 + 54, height: radius * 2 + 54 }}
       />
       {positions.map((p) => (
         <div
           key={p.id}
-          className={`absolute top-1/2 left-1/2 h-0.5 opacity-50 ${reducedMotion ? "" : "spoke-flow"}`}
+          className={`absolute top-1/2 left-1/2 h-0.5 opacity-100 ${reducedMotion ? "" : "spoke-flow"}`}
           style={{
             width: radius,
             transformOrigin: "0 50%",

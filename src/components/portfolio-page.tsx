@@ -219,17 +219,42 @@ const overviewColors = {
 
 function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { profile } = content;
+  const navRowRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  // Anchors the glow to the hovered tab itself (its own rect), not the raw
+  // cursor position — following the cursor read as a tracker trail, not a
+  // tab highlight.
+  const focusGlow = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const glow = glowRef.current;
+    const row = navRowRef.current;
+    if (!glow || !row) return;
+    const linkRect = e.currentTarget.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    glow.style.left = `${linkRect.left - rowRect.left + linkRect.width / 2}px`;
+    glow.style.top = `${linkRect.top - rowRect.top + linkRect.height / 2}px`;
+    glow.style.opacity = "1";
+  };
+
+  const hideGlow = () => {
+    if (glowRef.current) glowRef.current.style.opacity = "0";
+  };
+
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-ground/80 backdrop-blur-xl">
+    <header
+      className="sticky top-0 z-40 bg-ground/80 backdrop-blur-xl prism-edge"
+      style={{ clipPath: "inset(-100px 0px 0px 0px)" }}
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/50 to-white/0" />
       <div className="mx-auto max-w-6xl px-6">
-        <nav className="flex items-center justify-between py-4">
+        <nav className="flex items-stretch justify-between">
           <a
             href="#top"
             onClick={(e) => {
               e.preventDefault();
               scrollToCase("top");
             }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 py-4"
           >
             <span className="grid size-8 place-items-center rounded-md bg-ink font-mono text-xs font-medium text-white">
               {profile.initials}
@@ -241,14 +266,24 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
               / product architect
             </span>
           </a>
-          <div className="hidden items-center gap-7 text-sm font-medium text-slate md:flex">
+          <div
+            ref={navRowRef}
+            className="relative hidden items-stretch gap-7 text-sm font-medium text-slate md:flex"
+            onMouseLeave={hideGlow}
+          >
+            <div
+              ref={glowRef}
+              className="pointer-events-none absolute size-16 rounded-full bg-violet/70 opacity-0 blur-2xl transition-all duration-300"
+              style={{ left: 0, top: 0, transform: "translate(-50%, -50%)" }}
+            />
             <a
               href="#work"
               onClick={(e) => {
                 e.preventDefault();
                 scrollToCase("work");
               }}
-              className="transition-colors hover:text-ink"
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.caseStudies}
             </a>
@@ -258,7 +293,8 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
                 e.preventDefault();
                 scrollToCase("map");
               }}
-              className="transition-colors hover:text-ink"
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.cartography}
             </a>
@@ -268,7 +304,8 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
                 e.preventDefault();
                 scrollToCase("process");
               }}
-              className="transition-colors hover:text-ink"
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.method}
             </a>
@@ -278,7 +315,8 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
                 e.preventDefault();
                 scrollToCase("lab");
               }}
-              className="transition-colors hover:text-ink"
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.sideBusiness}
             </a>
@@ -288,12 +326,13 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
                 e.preventDefault();
                 scrollToCase("contact");
               }}
-              className="transition-colors hover:text-ink"
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.contact}
             </a>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 py-4">
             <a
               href={strings.nav.altLangHref}
               className="rounded-full px-2.5 py-1 font-mono text-xs font-medium text-slate ring-1 ring-inset ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
@@ -1172,6 +1211,7 @@ function Contact({ content, strings }: { content: PortfolioContent; strings: UIS
               user={profile.emailUser}
               domain={profile.emailDomain}
               placeholder={strings.contact.emailPlaceholder}
+              copiedMessage={strings.contact.copiedToClipboard}
               className="rounded-md bg-gradient-to-r from-violet to-blue px-6 py-4 text-center text-lg font-semibold text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             />
             <div className="flex flex-wrap gap-4 font-mono text-xs text-slate">

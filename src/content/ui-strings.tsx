@@ -68,6 +68,7 @@ export type UIStrings = {
     heading: string;
     body: string;
     emailPlaceholder: string;
+    copiedToClipboard: string;
   };
 };
 
@@ -162,6 +163,7 @@ export const uiStringsFr: UIStrings = {
     heading: "Parlons du problème avant la solution.",
     body: "Une mission engagée à la fois. Décrivez le contexte et les contraintes : je vois au-delà du besoin exprimé pour capter ce qu'il recouvre vraiment, et ce que la technologie peut réellement débloquer — souvent plus que ce qu'on imagine. J'étudie la faisabilité, je cadre, je m'imprègne du métier et du fonctionnel, puis je porte l'architecture et les itérations de livraison — jusqu'à l'impact recherché : usage, facilitation, création de valeur.",
     emailPlaceholder: "Afficher l'email",
+    copiedToClipboard: "Copié",
   },
 };
 
@@ -248,5 +250,6 @@ export const uiStringsEn: UIStrings = {
     heading: "Let's talk about the problem before the solution.",
     body: "One committed engagement at a time. Describe the context and the constraints: I look past the stated need to find what it's really about, and what technology can actually unlock — usually more than people expect. I study feasibility, scope the work, get immersed in the business and its workflows, then own the architecture and delivery iterations — through to the outcome that matters: adoption, ease of use, real value created.",
     emailPlaceholder: "Reveal email",
+    copiedToClipboard: "Copied",
   },
 };

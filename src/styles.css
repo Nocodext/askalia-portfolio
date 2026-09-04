@@ -140,6 +140,16 @@
   animation: spokeFlow 1.4s linear infinite;
 }
 
+@keyframes gradientDrift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 @keyframes chevronNudge {
   0%,
   100% {

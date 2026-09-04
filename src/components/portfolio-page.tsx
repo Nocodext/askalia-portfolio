@@ -192,6 +192,9 @@ const overviewColors = {
     text: "text-cyan",
     bg: "bg-cyan/10",
     head: "bg-cyan",
+    // Darkens toward the same hue (not a different color) so the white
+    // header text stays legible across the whole bar.
+    headerBg: "bg-[linear-gradient(90deg,var(--cyan),color-mix(in_oklch,var(--cyan),black_30%))]",
     headText: "text-white",
   },
   violet: {
@@ -199,6 +202,8 @@ const overviewColors = {
     text: "text-violet",
     bg: "bg-violet/10",
     head: "bg-violet",
+    headerBg:
+      "bg-[linear-gradient(90deg,var(--violet),color-mix(in_oklch,var(--violet),black_30%))]",
     headText: "text-white",
   },
   amber: {
@@ -206,6 +211,9 @@ const overviewColors = {
     text: "text-amber",
     bg: "bg-amber/10",
     head: "bg-amber",
+    // Amber's header text is dark, so it lightens instead of darkening.
+    headerBg:
+      "bg-[linear-gradient(90deg,var(--amber),color-mix(in_oklch,var(--amber),white_40%))]",
     headText: "text-ink",
   },
   blue: {
@@ -213,6 +221,7 @@ const overviewColors = {
     text: "text-blue",
     bg: "bg-blue/10",
     head: "bg-blue",
+    headerBg: "bg-[linear-gradient(90deg,var(--blue),color-mix(in_oklch,var(--blue),black_30%))]",
     headText: "text-white",
   },
 } as const;
@@ -242,7 +251,7 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
 
   return (
     <header
-      className="sticky top-0 z-40 bg-ground/80 backdrop-blur-xl prism-edge"
+      className="sticky top-0 z-40 border-b border-ink/8 bg-[oklch(0.93_0.008_260/85%)] backdrop-blur-xl prism-edge"
       style={{ clipPath: "inset(-100px 0px 0px 0px)" }}
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/50 to-white/0" />
@@ -867,10 +876,25 @@ function OverviewPanel({
   strings: UIStrings;
 }) {
   const c = overviewColors[category.color];
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  // A perfectly regular loop reads as a puzzle to decode ("what's the
+  // cycle?") rather than ambient decoration — vary the duration slightly
+  // each hover so the rhythm never feels quite the same twice.
+  const randomizeDrift = () => {
+    if (headerRef.current) {
+      headerRef.current.style.animationDuration = `${(2.3 + Math.random() * 1.4).toFixed(2)}s`;
+    }
+  };
+
   return (
-    <div className="overflow-hidden rounded-[min(1vw,14px)] ring-1 ring-ink/15 backdrop-blur-xl prism-edge">
+    <div
+      className="group overflow-hidden rounded-[min(1vw,14px)] ring-1 ring-ink/15 backdrop-blur-xl prism-edge"
+      onMouseEnter={randomizeDrift}
+    >
       <div
-        className={`px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] ${c.head} ${c.headText}`}
+        ref={headerRef}
+        className={`bg-[length:200%_100%] bg-[position:0%_50%] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.15em] group-hover:animate-[gradientDrift_2.5s_ease-in-out_infinite] ${c.headerBg} ${c.headText}`}
       >
         {category.label}
       </div>
@@ -947,7 +971,7 @@ function BucketRow({
         >
           <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
           <div
-            className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
+            className={`flex items-center gap-1.5 font-mono text-[11px] whitespace-nowrap uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
           >
             {hasRing ? (
               <span className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`} />
@@ -955,27 +979,29 @@ function BucketRow({
             {b.label}
           </div>
           {hasRing ? (
-            <SkillRing
-              hubClassName={c.head}
-              onSelect={scrollToCase}
-              items={b.caseIds.flatMap((id) => {
-                const item = cases.find((x) => x.id === id);
-                const project = sideProjects.find((x) => x.id === id);
-                const title = item?.title ?? project?.name;
-                if (!title) return [];
-                return [
-                  {
-                    id,
-                    title,
-                    color: ringColorVar[caseColor(id)],
-                    node: <CaseIcon id={id} size="sm" />,
-                  },
-                ];
-              })}
-            />
+            <div className="mt-3">
+              <SkillRing
+                hubClassName={c.head}
+                onSelect={scrollToCase}
+                items={b.caseIds.flatMap((id) => {
+                  const item = cases.find((x) => x.id === id);
+                  const project = sideProjects.find((x) => x.id === id);
+                  const title = item?.title ?? project?.name;
+                  if (!title) return [];
+                  return [
+                    {
+                      id,
+                      title,
+                      color: ringColorVar[caseColor(id)],
+                      node: <CaseIcon id={id} size="sm" />,
+                    },
+                  ];
+                })}
+              />
+            </div>
           ) : null}
           <TooltipProvider delayDuration={200}>
-            <ul className={`-mx-1 ${hasRing ? "mt-3 border-t border-ink/10 pt-3" : "mt-3"}`}>
+            <ul className="-mx-1 mt-3">
               {b.caseIds.map((id) => {
                 const item = cases.find((x) => x.id === id);
                 const project = sideProjects.find((x) => x.id === id);

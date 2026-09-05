@@ -271,9 +271,10 @@ export const cases: CaseStudy[] = [
     need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange — 50,000+ company records enriched and cross-matched across 3 different CRMs.",
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
     photos: [
-      { src: "/case-photos/channel-manager/01.webp", alt: "Screenshot of the opportunity hub" },
-      { src: "/case-photos/channel-manager/02.webp", alt: "Screenshot of the opportunity hub" },
-      { src: "/case-photos/channel-manager/03.webp", alt: "Screenshot of the opportunity hub" },
+      {
+        src: "/case-photos/channel-manager/03.webp",
+        alt: "Overall architecture diagram: Bubble, Vercel, Fly.io, CRMs",
+      },
       {
         src: "/case-photos/channel-manager/schema-1-sync-customer-partner.png",
         alt: "Functional diagram: first customer / partner synchronization",

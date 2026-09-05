@@ -297,9 +297,10 @@ export const cases: CaseStudy[] = [
     need: "SaaS métier channel manager : un hub qui transforme les CRM de partenaires commerciaux en une base commune d'opportunités, sans échange manuel de fichiers clients — plus de 50 000 fiches entreprises enrichies croisées sur 3 CRM différents.",
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
     photos: [
-      { src: "/case-photos/channel-manager/01.webp", alt: "Capture du hub de gestion d'opportunités" },
-      { src: "/case-photos/channel-manager/02.webp", alt: "Capture du hub de gestion d'opportunités" },
-      { src: "/case-photos/channel-manager/03.webp", alt: "Capture du hub de gestion d'opportunités" },
+      {
+        src: "/case-photos/channel-manager/03.webp",
+        alt: "Schéma d'architecture globale : Bubble, Vercel, Fly.io, CRMs",
+      },
       {
         src: "/case-photos/channel-manager/schema-1-sync-customer-partner.png",
         alt: "Schéma fonctionnel : première synchronisation client / partenaire",

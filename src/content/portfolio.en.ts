@@ -33,7 +33,10 @@ export type CaseStudy = {
   glossary?: GlossaryEntry[];
   logos?: string[];
   scope?: { label: string; body: string };
+  photos?: { src: string; alt: string }[];
+  challenges?: { constraint: string; response: string }[];
   flagship?: boolean;
+  hidden?: boolean;
 };
 
 export const profile = {
@@ -53,7 +56,7 @@ export const cases: CaseStudy[] = [
     id: "reanimation",
     index: "00",
     sector: "Healthcare · Hospital / ICU",
-    title: "Care Team · Patient · Family Information Platform",
+    title: "Hospit platform : Care Team · Patient · Family Information system",
     need: "Hospital software bridging the information gap between care teams, ICU patients, and families.",
     highlights: [],
     highlightGroups: {
@@ -76,10 +79,11 @@ export const cases: CaseStudy[] = [
         "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
         "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
         "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters — the industry's two standard data-exchange protocols.",
-        "Resilient node-based architecture, Docker Compose LAN design, internal ops CLI.",
+        "Resilient node-based architecture, Docker Compose LAN design",
         "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, plus flowcharts, logic diagrams and architecture schemas on Whimsical.",
         "Built an LLM code-knowledge-graph as a living memory of the codebase.",
         "Dev agents, MCP and skills.",
+        "Built a CLI improving the IT experience for the internal team and partners.",
       ],
     },
     stackSoftware: [
@@ -194,14 +198,27 @@ export const cases: CaseStudy[] = [
     sector: "Energy · Brokerage",
     title: "Energy broker: Enedis grid API certification & market indices",
     need: "Collect electricity meter consumption data and scrape electricity, carbon and gas price indices to estimate the best moment to issue a quote.",
+    photos: [
+      { src: "/case-photos/energie/01.webp", alt: "Screenshot of the energy brokerage platform" },
+      { src: "/case-photos/energie/02.webp", alt: "Screenshot of the energy brokerage platform" },
+      { src: "/case-photos/energie/03.webp", alt: "Screenshot of the energy brokerage platform" },
+      { src: "/case-photos/energie/04.webp", alt: "Screenshot of the energy brokerage platform" },
+    ],
     highlights: [
       "Certified an XML/SOAP API against Enedis's SGE web service, including TLS certificate management.",
-      "Managed the relationship with Enedis support and client follow-up.",
       "14 endpoints and 54 unit tests on Make.com.",
       "Switched to N8N to integrate JS scripts and AI agents: index scraping + Enedis data processing.",
     ],
+    challenges: [
+      {
+        constraint:
+          "Enedis IT department with variable response times, typical of a large organization in a regulated sector.",
+        response:
+          "Diplomacy, patience and persistence in the follow-up to keep the project moving at its own pace.",
+      },
+    ],
     stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
-    hashtags: ["real-time", "cybersecurity", "scalability"],
+    hashtags: ["IT department dialogue", "real-time", "cybersecurity", "scalability"],
     matrix: {
       roles: ["Integration Architect", "Enedis Support Liaison"],
       functional: ["Meter data collection", "Market-index scraping", "Quote decision support"],
@@ -253,6 +270,23 @@ export const cases: CaseStudy[] = [
     title: "A shared opportunity hub across partner CRMs",
     need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange — 50,000+ company records enriched and cross-matched across 3 different CRMs.",
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
+    photos: [
+      { src: "/case-photos/channel-manager/01.webp", alt: "Screenshot of the opportunity hub" },
+      { src: "/case-photos/channel-manager/02.webp", alt: "Screenshot of the opportunity hub" },
+      { src: "/case-photos/channel-manager/03.webp", alt: "Screenshot of the opportunity hub" },
+      {
+        src: "/case-photos/channel-manager/schema-1-sync-customer-partner.png",
+        alt: "Functional diagram: first customer / partner synchronization",
+      },
+      {
+        src: "/case-photos/channel-manager/schema-2-webhook-created.png",
+        alt: "Functional diagram: company-created webhook",
+      },
+      {
+        src: "/case-photos/channel-manager/schema-3-webhook-updated.png",
+        alt: "Functional diagram: company-updated webhook",
+      },
+    ],
     highlights: [
       "Salesforce, Pipedrive and HubSpot API interoperability: 3 heterogeneous APIs, 3 different rate-limiting policies.",
       "Code / no-code mix and data-hosting trade-offs between Bubble and PostgreSQL (GDPR).",
@@ -319,6 +353,12 @@ export const cases: CaseStudy[] = [
     sector: "Software Vendor · 3D Architecture",
     title: "BIM design office: porting a Windows 3D architecture app to web SaaS",
     need: "C++ desktop 3D software vendor for architects: prototype portability to a web SaaS version.",
+    photos: [
+      {
+        src: "/schemas/cad-web-aws-architecture.png",
+        alt: "AWS architecture diagram: Lambda, API Gateway, DocumentDB, EC2, SQS, SES, EventBridge, Glacier — BIM pipeline (ingestion, storage, archiving)",
+      },
+    ],
     highlights: [
       "Feasibility study for a hybrid Windows + Linux cloud infrastructure, roadmap, costing and specifications.",
       "Managed disk quotas, permissions and shares; subscription plans.",
@@ -380,6 +420,17 @@ export const cases: CaseStudy[] = [
     sector: "HR Tech · Creator Economy",
     title: "ATS platform for YouTube creators",
     need: "Community platform: build an ATS that matches internet users' professional skills through niche YouTube communities.",
+    photos: [
+      { src: "/case-photos/ats-youtubers/01.webp", alt: "Kanban view of recruitment by application status" },
+      { src: "/case-photos/ats-youtubers/02.webp", alt: "Figma mockup of the offers dashboard" },
+      { src: "/case-photos/ats-youtubers/03.webp", alt: "WhatsApp deeplink from customer support" },
+      { src: "/case-photos/ats-youtubers/04.webp", alt: "Recruitment dashboard in production" },
+      { src: "/case-photos/ats-youtubers/05.webp", alt: "Customizing an offer (emoji, color)" },
+      { src: "/case-photos/ats-youtubers/06.webp", alt: "Figma mockup of an offer's detail view" },
+      { src: "/case-photos/ats-youtubers/07.webp", alt: "Confirmation modals (delete, notify, reject, close)" },
+      { src: "/case-photos/ats-youtubers/08.webp", alt: "Figma mockup of a candidate's detail view" },
+      { src: "/case-photos/ats-youtubers/09.webp", alt: "Offer creation and publishing form" },
+    ],
     highlights: [
       "Implemented a complex Figma design in no-code, with strong attention to visual detail.",
       "Managed the full ATS funnel, from application to qualification, with advanced UI logic tailored to the candidate's profile.",
@@ -471,6 +522,69 @@ export const cases: CaseStudy[] = [
       ethical: ["Reliability in emergency medical context"],
     },
     duration: "3 months",
+  },
+  {
+    id: "multidiffusion-france-travail",
+    index: "11",
+    sector: "HR Tech · Job Ad Multi-posting",
+    title: "France Travail integration for a job-ad multi-posting hub",
+    need: "Job-ad multi-posting startup connecting its clients to the sector's staple platforms (Hellowork, Indeed, APEC, France Travail...): add the France Travail broadcasting service to the integrations catalog.",
+    photos: [
+      {
+        src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
+        alt: "Diagram of the data-flow contract between the hub and the France Travail microservice",
+      },
+    ],
+    highlights: [
+      "Defined the responsibility boundaries between the multi-posting hub and the France Travail microservice.",
+      "Close collaboration with the infrastructure & DevOps lead.",
+      "Data-flow contract between the internal job-ad hub and the dedicated broadcasting microservice",
+      "Compliance with France Travail's IT department specs and their certification process",
+      "Wrote specifications then implemented the microservice.",
+    ],
+    challenges: [
+      {
+        constraint: "Silent XML validation errors, false negatives, non-standard errors.",
+        response:
+          "Built a JSON → XML transformer against the SIRH-standard schema (XSD), to make previously fragile exchanges reliable.",
+      },
+      {
+        constraint:
+          "API rate limits requiring batch handling, on a frequently-evolving infrastructure with occasionally erratic behavior.",
+        response:
+          "Isolated NestJS microservice, deployed via CI/CD Kubernetes, with mocking and retry strategies.",
+      },
+      {
+        constraint: "External IT department, with its own processes and its own pace.",
+        response: "Smooth dialogue and patient explanation to keep things moving at the pace of a large organization.",
+      },
+      {
+        constraint: "Certification test acceptance criteria that had to be interpreted as we went.",
+        response: "Persistence and rigor through to full validation.",
+      },
+    ],
+    stackSoftware: ["Bubble", "NestJS", "HR-XML", "SOAP", "ArgoCD", "Kubernetes", "Docker", "TLS"],
+    hashtags: ["IT department dialogue", "API integration", "CI/CD", "resilience"],
+    matrix: {
+      roles: ["Integration Architect", "Backend Developer"],
+      functional: [
+        "Job-ad multi-posting",
+        "France Travail integration",
+        "IT compliance / certification",
+      ],
+      sectors: ["HR Tech", "Employment"],
+      technical: [
+        "Microservices (NestJS)",
+        "Standardized XML/SOAP integration",
+        "CI/CD Kubernetes",
+        "JSON → XML transformation (XSD)",
+      ],
+      ethical: [
+        "Secured exchanges (TLS certificate)",
+        "Compliance with France Travail's certification process",
+      ],
+    },
+    hidden: false,
   },
 ];
 

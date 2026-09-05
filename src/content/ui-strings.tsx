@@ -40,6 +40,9 @@ export type UIStrings = {
     interventionFields: string;
     expand: string;
     collapse: string;
+    viewPhotos: string;
+    backToGallery: string;
+    challengesLabel: string;
   };
   caseToc: { ariaLabel: string };
   work: {
@@ -87,16 +90,16 @@ export const uiStringsFr: UIStrings = {
     intro: (
       <>
         Généraliste par choix, transverse par tempérament — hospitalier, presse numérique,
-        e-learning, smart-city, laboratoire, énergie, bureau d'études, photographie, patrimoine,
-        BTP, Bâtiment numérique (BIM), Recherche, business, courtage, veille concurrencielle, IA,
-        ...
+        RH/emploi, e-learning, smart-city, laboratoire, énergie & courtage, bureau d'études Bâtiment
+        numérique, photographie, patrimoine, Recherche, business, courtage, veille concurrencielle,
+        IA, ...
         <br />
         J'aime les défis, notamment ceux qu'on croit impossibles et je vais chercher le besoin réel
         derrière le besoin exprimé.
         <br />
-        Conseiller et facilitateur de la transformation numérique & IA des entreprises de secteurs
-        traditionnels, du cadrage à la mise en production, puis à la transmission aux équipes qui la
-        portent.
+        Conseiller et facilitateur de la transformation numérique & IA des entreprises, nettement
+        tourné vers les TPE/PME/ETI de secteurs traditionnels, du cadrage à la mise en production,
+        puis à la transmission aux équipes qui la portent.
       </>
     ),
     seeCaseStudies: "Voir les cas clients",
@@ -128,6 +131,9 @@ export const uiStringsFr: UIStrings = {
     interventionFields: "Champs d'intervention",
     expand: "Voir le détail",
     collapse: "Réduire",
+    viewPhotos: "Voir les visuels",
+    backToGallery: "Retour à la galerie",
+    challengesLabel: "Contraintes & réponses apportées",
   },
   caseToc: { ariaLabel: "Sommaire des cas clients" },
   work: {
@@ -220,6 +226,9 @@ export const uiStringsEn: UIStrings = {
     interventionFields: "Areas of intervention",
     expand: "See details",
     collapse: "Collapse",
+    viewPhotos: "View visuals",
+    backToGallery: "Back to gallery",
+    challengesLabel: "Constraints & responses",
   },
   caseToc: { ariaLabel: "Case studies table of contents" },
   work: {

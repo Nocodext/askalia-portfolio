@@ -18,6 +18,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import { ContactEmail } from "@/components/contact-email";
 import { SkillRing } from "@/components/skill-ring";
 import {
@@ -33,6 +42,9 @@ import {
   Camera,
   Tags,
   ExternalLink,
+  Images,
+  ArrowLeft,
+  Briefcase,
   ArrowUpRight,
   ChevronDown,
   ChevronUp,
@@ -57,6 +69,7 @@ const caseIcons: Record<string, CaseIconConfig> = {
   "ats-youtubers": { icon: Youtube, color: "red" },
   "sftp-photographe": { icon: Camera, color: "blue" },
   "veille-tarifaire": { icon: Tags, color: "violet", flip: true },
+  "multidiffusion-france-travail": { icon: Briefcase, color: "blue" },
   nocodext: { image: "/logos/side/bubble-icon.png" },
   breejd: { image: "/logos/side/linkedin-icon.svg" },
   pinnpm: { image: "/logos/side/npm-icon.svg" },
@@ -519,6 +532,30 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
   const [expanded, setExpanded] = useState(!!item.flagship);
   const reducedMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+  const [photosApi, setPhotosApi] = useState<CarouselApi | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
+  const hasTrackedPhotoNav = useRef(false);
+  const carouselRootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!photosApi) return;
+    if (selectedPhoto !== null) {
+      photosApi.scrollTo(selectedPhoto, true);
+      // The clicked thumbnail unmounts when switching to detail view, so
+      // focus would otherwise fall back to the dialog root — pull it onto
+      // the carousel itself so its built-in arrow-key handling works.
+      carouselRootRef.current?.focus();
+    }
+    const onSelect = () => {
+      if (hasTrackedPhotoNav.current) return;
+      hasTrackedPhotoNav.current = true;
+      trackEvent("case_photos_navigated", { case: item.id });
+    };
+    photosApi.on("select", onSelect);
+    return () => {
+      photosApi.off("select", onSelect);
+    };
+  }, [photosApi, selectedPhoto, item.id]);
 
   useEffect(() => {
     if (location.hash === `#${item.id}`) setExpanded(true);
@@ -702,6 +739,101 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                 {item.scope.label}
               </div>
               <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
+            </div>
+          ) : null}
+          {item.photos ? (
+            <Dialog
+              onOpenChange={(open) => {
+                hasTrackedPhotoNav.current = false;
+                // Skip straight to fullscreen when there's nothing to pick from.
+                setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
+                if (open) trackEvent("case_photos_opened", { case: item.id });
+              }}
+            >
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+                >
+                  <Images className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewPhotos}
+                </button>
+              </DialogTrigger>
+              <DialogContent
+                className="max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
+                onEscapeKeyDown={(e) => {
+                  if (selectedPhoto !== null) {
+                    e.preventDefault();
+                    setSelectedPhoto(null);
+                  }
+                }}
+              >
+                <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
+                {selectedPhoto === null ? (
+                  <div
+                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-2.5 overflow-y-auto rounded-lg bg-white p-4"
+                    style={{ gridTemplateColumns: "repeat(auto-fit, 112px)" }}
+                  >
+                    {item.photos.map((p, i) => (
+                      <button
+                        key={p.src}
+                        type="button"
+                        onClick={() => setSelectedPhoto(i)}
+                        className="relative size-28 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
+                      >
+                        <img src={p.src} alt={p.alt} className="size-full object-contain" />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="relative mx-auto w-full max-w-5xl">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhoto(null)}
+                      className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                    >
+                      <ArrowLeft className="size-3.5" strokeWidth={2} />
+                      {strings.caseCard.backToGallery}
+                    </button>
+                    <Carousel
+                      ref={carouselRootRef}
+                      setApi={setPhotosApi}
+                      tabIndex={-1}
+                      className="w-full outline-none"
+                    >
+                      <CarouselContent>
+                        {item.photos.map((p) => (
+                          <CarouselItem key={p.src} className="flex items-center justify-center">
+                            <img
+                              src={p.src}
+                              alt={p.alt}
+                              className="max-h-[85vh] w-full rounded-lg object-contain"
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </Carousel>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {item.challenges ? (
+            <div className="mt-5">
+              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+                {strings.caseCard.challengesLabel}
+              </div>
+              <ul className="mt-2.5 space-y-3">
+                {item.challenges.map((pair) => (
+                  <li key={pair.constraint} className="border-l-2 border-amber/40 pl-3">
+                    <p className="text-xs text-pretty text-slate">{pair.constraint}</p>
+                    <p className="mt-1 text-sm text-pretty">{pair.response}</p>
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
 
@@ -1263,12 +1395,20 @@ function Contact({ content, strings }: { content: PortfolioContent; strings: UIS
 }
 
 export function PortfolioPage({
-  content,
+  content: rawContent,
   strings,
 }: {
   content: PortfolioContent;
   strings: UIStrings;
 }) {
+  // A single filter point so every section (nav, hero stats, TOC, case
+  // list, cartography) agrees on what's published without each one
+  // needing to know about the `hidden` flag.
+  const content: PortfolioContent = {
+    ...rawContent,
+    cases: rawContent.cases.filter((c) => !c.hidden),
+  };
+
   useEffect(() => {
     if (location.hash) scrollToCase(location.hash.slice(1));
   }, []);

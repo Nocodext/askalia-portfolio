@@ -33,7 +33,10 @@ export type CaseStudy = {
   glossary?: GlossaryEntry[];
   logos?: string[];
   scope?: { label: string; body: string };
+  photos?: { src: string; alt: string }[];
+  challenges?: { constraint: string; response: string }[];
   flagship?: boolean;
+  hidden?: boolean;
 };
 
 export const profile = {
@@ -81,10 +84,11 @@ export const cases: CaseStudy[] = [
         "Interopérabilité SI-H CHU Montpellier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
         "Implémentation des exigences HDS niveaux 4 à 6.",
         "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI, via adaptateurs SFTP et MLLP/MLLPS — les 2 protocoles standards d'échange de données de l'industrie.",
-        "Architecture résiliente par nœuds, Docker Compose LAN design, CLI d'ops interne.",
+        "Architecture résiliente par nœuds, Docker Compose LAN design.",
         "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, diagrammes de flux, logigrammes et schémas d'architecture sur Whimsical.",
         "Montage d'un code-knowledge-graph LLM comme mémoire vivante de la codebase.",
         "Agents de dev, MCP et skills.",
+        "Création d'une CLI facilitant la IT Experience équipe interne et partenaires.",
       ],
     },
     stackSoftware: [
@@ -94,19 +98,35 @@ export const cases: CaseStudy[] = [
       "HL7 / FHIR",
       "IHE · PAM",
       "React Native",
-      "HDS 4-6",
-      "Docker",
+      "Docker compose & LAN",
       "Infomaniak kSuite",
+      "Let's Encrypt",
+      "Brevo",
+      "Whimsical",
+      "Notion",
+      "Linear",
     ],
     hashtags: [
       "hospitalier",
       "souveraineté",
       "RGPD",
+      "HDS 4-6",
+      "ANSSI",
+      "PSSI-S",
+      "Agence Numérique en Santé",
+      "Direction Numérique en Santé",
+      "Dossier Patient (DPI)",
+      "Patient administation",
+      "EA : routage data",
+      "Dépôt SFTP",
+      "Clés SSH & homes Unix",
+      "Dossier médical",
       "cybersécurité",
       "résilience",
-      "temps réel",
+      "Live updates",
       "Cloud Act",
       "Secret médical",
+      "Coordination partenaires",
     ],
     matrix: {
       roles: ["Tech lead", "Architecte", "Mentor", "Développeur mobile"],
@@ -200,14 +220,27 @@ export const cases: CaseStudy[] = [
     sector: "Énergie · Courtage",
     title: "Courtier énergies : Homologation API réseau Enedis & indices de marché",
     need: "Collecter les consommations de compteurs électriques et scraper les indices de prix électricité, carbone et gaz pour estimer le meilleur moment d'émettre un devis.",
+    photos: [
+      { src: "/case-photos/energie/01.webp", alt: "Capture de la plateforme de courtage énergie" },
+      { src: "/case-photos/energie/02.webp", alt: "Capture de la plateforme de courtage énergie" },
+      { src: "/case-photos/energie/03.webp", alt: "Capture de la plateforme de courtage énergie" },
+      { src: "/case-photos/energie/04.webp", alt: "Capture de la plateforme de courtage énergie" },
+    ],
     highlights: [
       "Homologation d'une API XML/SOAP sur le webservice SGE d'Enedis, avec gestion de certificats TLS.",
-      "Diplomatie avec le service support Enedis et suivi client.",
       "14 endpoints et 54 tests unitaires sur Make.com.",
       "Bascule vers N8N pour intégrer scripts JS et agents IA : scraping des indices + traitement de la donnée Enedis.",
     ],
+    challenges: [
+      {
+        constraint:
+          "DSI Enedis aux délais de réponse variables, propres à une grande organisation d'un secteur régulé.",
+        response:
+          "Diplomatie, patience et persévérance dans le suivi pour faire avancer le dossier au bon rythme.",
+      },
+    ],
     stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
-    hashtags: ["temps réel", "cybersécurité", "scalabilité"],
+    hashtags: ["dialogue DSI", "temps réel", "cybersécurité", "scalabilité", "homologation de flux"],
     matrix: {
       roles: ["Architecte intégration", "Relation support Enedis"],
       functional: [
@@ -263,6 +296,23 @@ export const cases: CaseStudy[] = [
     title: "Hub d'opportunités commerciales entre CRM partenaires",
     need: "SaaS métier channel manager : un hub qui transforme les CRM de partenaires commerciaux en une base commune d'opportunités, sans échange manuel de fichiers clients — plus de 50 000 fiches entreprises enrichies croisées sur 3 CRM différents.",
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
+    photos: [
+      { src: "/case-photos/channel-manager/01.webp", alt: "Capture du hub de gestion d'opportunités" },
+      { src: "/case-photos/channel-manager/02.webp", alt: "Capture du hub de gestion d'opportunités" },
+      { src: "/case-photos/channel-manager/03.webp", alt: "Capture du hub de gestion d'opportunités" },
+      {
+        src: "/case-photos/channel-manager/schema-1-sync-customer-partner.png",
+        alt: "Schéma fonctionnel : première synchronisation client / partenaire",
+      },
+      {
+        src: "/case-photos/channel-manager/schema-2-webhook-created.png",
+        alt: "Schéma fonctionnel : webhook de création d'entreprise",
+      },
+      {
+        src: "/case-photos/channel-manager/schema-3-webhook-updated.png",
+        alt: "Schéma fonctionnel : webhook de mise à jour d'entreprise",
+      },
+    ],
     highlights: [
       "Interopérabilité API Salesforce, Pipedrive et HubSpot : 3 API hétérogènes, 3 politiques de rate limiting.",
       "Mix code / NoCode et compromis d'hébergement de données entre Bubble et PostgreSQL (RGPD).",
@@ -335,6 +385,12 @@ export const cases: CaseStudy[] = [
     title:
       "Bureau d'études BIM : portabilité d'un logiciel Architecture 3D sous Windows vers SaaS web",
     need: "Éditeur de logiciel desktop C++ 3D pour architectes : prototyper la portabilité vers une version web en SaaS.",
+    photos: [
+      {
+        src: "/schemas/cad-web-aws-architecture.png",
+        alt: "Schéma d'architecture AWS : Lambda, API Gateway, DocumentDB, EC2, SQS, SES, EventBridge, Glacier — pipeline BIM (ingestion, stockage, archivage)",
+      },
+    ],
     highlights: [
       "Étude de faisabilité d'une infrastructure cloud hybride Windows + Linux, feuille de route, chiffrage et spécifications.",
       "Gestion des quotas disque, permissions et partages ; plans de souscription.",
@@ -405,6 +461,17 @@ export const cases: CaseStudy[] = [
     sector: "RH Tech · Économie des créateurs",
     title: "Plateforme ATS pour créateurs YouTube",
     need: "Plateforme communautaire : créer un ATS qui fait matcher les compétences professionnelles d'internautes via des communautés YouTube sectorisées.",
+    photos: [
+      { src: "/case-photos/ats-youtubers/01.webp", alt: "Vue Kanban du recrutement par statut de candidature" },
+      { src: "/case-photos/ats-youtubers/02.webp", alt: "Maquette Figma du dashboard des offres" },
+      { src: "/case-photos/ats-youtubers/03.webp", alt: "Deeplink WhatsApp depuis le support client" },
+      { src: "/case-photos/ats-youtubers/04.webp", alt: "Tableau de bord de recrutement en production" },
+      { src: "/case-photos/ats-youtubers/05.webp", alt: "Personnalisation d'une offre (emoji, couleur)" },
+      { src: "/case-photos/ats-youtubers/06.webp", alt: "Maquette Figma du détail d'une offre" },
+      { src: "/case-photos/ats-youtubers/07.webp", alt: "Modales de confirmation (suppression, notification, refus, clôture)" },
+      { src: "/case-photos/ats-youtubers/08.webp", alt: "Maquette Figma du détail d'un candidat" },
+      { src: "/case-photos/ats-youtubers/09.webp", alt: "Formulaire de création et de publication d'une offre" },
+    ],
     highlights: [
       "Intégration d'un design Figma complexe en no-code, avec un fort sens du détail visuel.",
       "Gestion du tunnel ATS complet, de la candidature à la qualification, avec une logique UI poussée selon le profil du candidat.",
@@ -498,6 +565,79 @@ export const cases: CaseStudy[] = [
       ethical: ["Fiabilité en contexte d'urgence médicale"],
     },
     duration: "3 mois",
+  },
+  {
+    id: "multidiffusion-france-travail",
+    index: "11",
+    sector: "RH Tech · Multidiffusion d'offres d'emploi",
+    title: "Intégration France Travail au hub de multidiffusion d'offres d'emploi",
+    need: "Startup de multidiffusion d'annonces d'emploi connectant ses clients aux plateformes incontournables du secteur (Hellowork, Indeed, APEC, France Travail...) : ajouter le service de diffusion auprès de France Travail au catalogue d'intégrations.",
+    photos: [
+      {
+        src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
+        alt: "Schéma du contrat de flux entre le hub et le microservice France Travail",
+      },
+    ],
+    highlights: [
+      "Définition des frontières de responsabilité entre le hub de multidiffusion et le microservice France Travail.",
+      "Collaboration étroite avec le responsable infrastructure & DevOps.",
+      "Contrat de flux entre le hub interne d'annonces et le microservice dédié à la diffusion",
+      "Mise en conformité avec les spécifications de la DSI de France Travail et leur processus d'homologation.",
+      "Spécification et implémentation du microservice.",
+    ],
+    challenges: [
+      {
+        constraint: "Erreurs de validation XML silencieuses, faux négatifs, erreurs non standard.",
+        response:
+          "Construction d'un transformateur JSON → XML normé SIRH (XSD), pour fiabiliser des échanges jusque-là fragiles.",
+      },
+      {
+        constraint:
+          "Rate-limit de l'API à gérer par batch, sur une infrastructure aux évolutions fréquentes et comportements parfois erratiques.",
+        response:
+          "Microservice NestJS isolé, déployé en CI/CD Kubernetes, avec stratégies de mock et de relance.",
+      },
+      {
+        constraint: "DSI externe, avec ses propres processus et son propre rythme.",
+        response:
+          "Dialogue fluide et pédagogie pour maintenir l'avancement au rythme d'une grande organisation.",
+      },
+      {
+        constraint: "Critères d'acceptance des tests d'homologation à interpréter au fil de l'eau.",
+        response: "Persévérance et rigueur jusqu'à validation complète.",
+      },
+    ],
+    stackSoftware: [
+      "Bubble",
+      "NestJS",
+      "HR-XML",
+      "SOAP",
+      "ArgoCD",
+      "Kubernetes",
+      "Docker",
+      "Certificat TLS client",
+    ],
+    hashtags: ["dialogue DSI", "intégration API", "CI/CD", "micro service"],
+    matrix: {
+      roles: ["Architecte d'intégration", "Développeur backend"],
+      functional: [
+        "Multidiffusion d'offres d'emploi",
+        "Intégration France Travail",
+        "Conformité DSI / homologation",
+      ],
+      sectors: ["RH Tech", "Emploi"],
+      technical: [
+        "Microservices (NestJS)",
+        "Intégration XML/SOAP normée",
+        "CI/CD Kubernetes",
+        "Transformation JSON → XML (XSD)",
+      ],
+      ethical: [
+        "Sécurisation des échanges (certificat TLS)",
+        "Conformité au processus d'homologation France Travail",
+      ],
+    },
+    hidden: false,
   },
 ];
 

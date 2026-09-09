@@ -37,18 +37,20 @@ export type CaseStudy = {
   challenges?: { constraint: string; response: string }[];
   flagship?: boolean;
   hidden?: boolean;
+  liveDemo?: { previewVideo: string; demoHref: string; blogHref: string };
 };
 
 export const profile = {
   firstName: "Joris",
   lastName: "GROUILLET",
   initials: "JG",
-  role: "Product Architect",
+  role: "Product & technical Architect",
   tagline: "Product clarity. Technical fluency.",
   location: "France / Europe",
   emailUser: "hello",
   emailDomain: "askalia.net",
   sideBusinessBrand: "nocodext.studio",
+  linkedinUrl: "https://www.linkedin.com/in/jorisgrouillet/",
 };
 
 export const cases: CaseStudy[] = [
@@ -78,7 +80,7 @@ export const cases: CaseStudy[] = [
         "Migrated legacy MySQL to PostgreSQL: triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, schema segregation.",
         "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
         "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
-        "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters — the industry's two standard data-exchange protocols.",
+        "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters - the industry's two standard data-exchange protocols.",
         "Resilient node-based architecture, Docker Compose LAN design",
         "Knowledge base via Claude / MCP / Notion / Mermaid / Structurizr, plus flowcharts, logic diagrams and architecture schemas on Whimsical.",
         "Built an LLM code-knowledge-graph as a living memory of the codebase.",
@@ -127,31 +129,31 @@ export const cases: CaseStudy[] = [
     glossary: [
       {
         term: "PAM",
-        def: "Patient Administration Management software — handles patient identities, admissions and movements.",
+        def: "Patient Administration Management software - handles patient identities, admissions and movements.",
       },
       {
         term: "HL7",
-        def: "Health Level 7 — a family of standards for exchanging health data between hospital systems.",
+        def: "Health Level 7 - a family of standards for exchanging health data between hospital systems.",
       },
       {
         term: "MLLP",
-        def: "Minimal Lower Layer Protocol — the legacy transport protocol for HL7 messages on hospital networks.",
+        def: "Minimal Lower Layer Protocol - the legacy transport protocol for HL7 messages on hospital networks.",
       },
       {
         term: "FHIR",
-        def: "Fast Healthcare Interoperability Resources — the modern HL7 standard, built on REST/JSON APIs.",
+        def: "Fast Healthcare Interoperability Resources - the modern HL7 standard, built on REST/JSON APIs.",
       },
       {
         term: "DPI",
-        def: "Electronic Health Record (Dossier Patient Informatisé) — the digital medical file centralizing a patient's data.",
+        def: "Electronic Health Record (Dossier Patient Informatisé) - the digital medical file centralizing a patient's data.",
       },
       {
         term: "SFTP",
-        def: "SSH File Transfer Protocol — secure file transfer over SSH.",
+        def: "SSH File Transfer Protocol - secure file transfer over SSH.",
       },
       {
         term: "EAI",
-        def: "Enterprise Application Integration — the middleware layer connecting a hospital IT system's applications.",
+        def: "Enterprise Application Integration - the middleware layer connecting a hospital IT system's applications.",
       },
     ],
     flagship: true,
@@ -160,7 +162,7 @@ export const cases: CaseStudy[] = [
     id: "veille-tarifaire",
     index: "01",
     sector: "E-commerce · Automotive Spare Parts",
-    title: "Real-time competitive price monitoring — automotive spare parts",
+    title: "Real-time competitive price monitoring - automotive spare parts",
     need: "Real-time competitive intelligence platform for a leading e-commerce retailer of automotive spare parts: monitoring competitor pricing, per-reference averages, heuristic reference matching, and confirmed-or-presumed stock detection across the 10 main European competitors targeted.",
     needObjective:
       "Objective: build a reliable picture to support pricing strategy and stock-forecasting decisions.",
@@ -234,6 +236,24 @@ export const cases: CaseStudy[] = [
     sector: "SaaS · Analytical Laboratory",
     title: "OCR-based digitization of lab test requests",
     need: "Digitize requests submitted to an environmental testing lab via OCR, moving the workflow from paper to digital.",
+    photos: [
+      {
+        src: "/case-photos/ocr-bio/bon-prelevement-scan-brut.png",
+        alt: "Scanned paper sample-collection form, before OCR processing (client and lab details redacted)",
+      },
+      {
+        src: "/case-photos/ocr-bio/bon-prelevement-champs-detectes.png",
+        alt: "The same form with OCR-detected fields highlighted by category (sample bottle, time, collection site, tests requested)",
+      },
+      {
+        src: "/case-photos/ocr-bio/ocr-detection-endoscopes.png",
+        alt: "OCR detection on an endoscope sample-collection form: recognized text and detection polygon",
+      },
+      {
+        src: "/case-photos/ocr-bio/bon-prelevement-piezometre.png",
+        alt: "Sample-collection form for a piezometer, client and lab details redacted",
+      },
+    ],
     highlights: [],
     highlightGroups: {
       functional: [
@@ -268,7 +288,7 @@ export const cases: CaseStudy[] = [
     index: "04",
     sector: "SaaS · Channel manager",
     title: "A shared opportunity hub across partner CRMs",
-    need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange — 50,000+ company records enriched and cross-matched across 3 different CRMs.",
+    need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange - 50,000+ company records enriched and cross-matched across 3 different CRMs.",
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
     photos: [
       {
@@ -320,7 +340,7 @@ export const cases: CaseStudy[] = [
     duration: "3 years",
     scope: {
       label: "Delivered",
-      body: "Everything — feasibility, design & blind spots, backend, tests & edge cases, frontend, code + no-code architecture, production.",
+      body: "Everything - feasibility, design & blind spots, backend, tests & edge cases, frontend, code + no-code architecture, production.",
     },
   },
   {
@@ -356,10 +376,15 @@ export const cases: CaseStudy[] = [
     need: "C++ desktop 3D software vendor for architects: prototype portability to a web SaaS version.",
     photos: [
       {
-        src: "/schemas/cad-web-aws-architecture.png",
-        alt: "AWS architecture diagram: Lambda, API Gateway, DocumentDB, EC2, SQS, SES, EventBridge, Glacier — BIM pipeline (ingestion, storage, archiving)",
+        src: "/case-photos/cad-web/cad-web-aws-architecture.png",
+        alt: "AWS architecture diagram: Lambda, API Gateway, DocumentDB, EC2, SQS, SES, EventBridge, Glacier - BIM pipeline (ingestion, storage, archiving)",
       },
     ],
+    liveDemo: {
+      previewVideo: "/case-photos/cad-web/demo-preview.mp4",
+      demoHref: "/cad-web/demo-archi/studio/tour-helios-594a0176-2777-4ae3-a475-359332f8337f",
+      blogHref: "/cad-web/blog/",
+    },
     highlights: [
       "Feasibility study for a hybrid Windows + Linux cloud infrastructure, roadmap, costing and specifications.",
       "Managed disk quotas, permissions and shares; subscription plans.",
@@ -369,7 +394,7 @@ export const cases: CaseStudy[] = [
     ],
     stackSoftware: [
       "AWS (Lambda, EC2, S3, SQS, SNS, Cognito, Glacier)",
-      "MongoDB",
+      "DocumentDB",
       "WebGL",
       "React",
       "Node.js",
@@ -422,14 +447,23 @@ export const cases: CaseStudy[] = [
     title: "ATS platform for YouTube creators",
     need: "Community platform: build an ATS that matches internet users' professional skills through niche YouTube communities.",
     photos: [
-      { src: "/case-photos/ats-youtubers/01.webp", alt: "Kanban view of recruitment by application status" },
+      {
+        src: "/case-photos/ats-youtubers/01.webp",
+        alt: "Kanban view of recruitment by application status",
+      },
       { src: "/case-photos/ats-youtubers/02.webp", alt: "Figma mockup of the offers dashboard" },
       { src: "/case-photos/ats-youtubers/03.webp", alt: "WhatsApp deeplink from customer support" },
       { src: "/case-photos/ats-youtubers/04.webp", alt: "Recruitment dashboard in production" },
       { src: "/case-photos/ats-youtubers/05.webp", alt: "Customizing an offer (emoji, color)" },
       { src: "/case-photos/ats-youtubers/06.webp", alt: "Figma mockup of an offer's detail view" },
-      { src: "/case-photos/ats-youtubers/07.webp", alt: "Confirmation modals (delete, notify, reject, close)" },
-      { src: "/case-photos/ats-youtubers/08.webp", alt: "Figma mockup of a candidate's detail view" },
+      {
+        src: "/case-photos/ats-youtubers/07.webp",
+        alt: "Confirmation modals (delete, notify, reject, close)",
+      },
+      {
+        src: "/case-photos/ats-youtubers/08.webp",
+        alt: "Figma mockup of a candidate's detail view",
+      },
       { src: "/case-photos/ats-youtubers/09.webp", alt: "Offer creation and publishing form" },
     ],
     highlights: [
@@ -470,7 +504,7 @@ export const cases: CaseStudy[] = [
       "Post-production pipeline triggered on receipt: preview albums, formats optimized for social-media distribution, protective watermarking.",
       "Integrated a Stripe payment link for album sales.",
       "Pushed a no-code interface past its native limits to make it reactive.",
-      "Sourced a cloud host that accepts FTP — a constraint imposed by the professional camera's firmware.",
+      "Sourced a cloud host that accepts FTP - a constraint imposed by the professional camera's firmware.",
     ],
     stackSoftware: [
       "Unix",
@@ -557,7 +591,8 @@ export const cases: CaseStudy[] = [
       },
       {
         constraint: "External IT department, with its own processes and its own pace.",
-        response: "Smooth dialogue and patient explanation to keep things moving at the pace of a large organization.",
+        response:
+          "Smooth dialogue and patient explanation to keep things moving at the pace of a large organization.",
       },
       {
         constraint: "Certification test acceptance criteria that had to be interpreted as we went.",
@@ -611,7 +646,7 @@ export const sideProjects: SideProject[] = [
     index: "01",
     name: "Nocodext for Bubble",
     pitch:
-      "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally — entirely missing natively in Bubble.",
+      "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally - entirely missing natively in Bubble.",
     url: "https://nocodext.studio/bubble",
     bullets: [
       "Solo-founder: wireframes, frontend / backend dev, Chrome extensions.",
@@ -684,7 +719,7 @@ export const sideProjects: SideProject[] = [
     index: "04",
     name: "Airtable explorer",
     pitch:
-      "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back — and makes the dashboard genuinely navigable.",
+      "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back - and makes the dashboard genuinely navigable.",
     url: "https://nocodext.studio/airtable",
     bullets: [
       "Reach columns without scrolling when there are many of them (by list, by voice).",
@@ -843,5 +878,85 @@ export const overview: OverviewCategory[] = [
       { label: "Frontend / mobile developer", caseIds: ["smur", "reanimation"] },
       { label: "Data engineer", caseIds: ["veille-tarifaire"] },
     ],
+  },
+];
+
+// Translated from the original French/English quotes (see portfolio.ts) for
+// the English edition of the site.
+export const recommendations: import("./portfolio").Recommendation[] = [
+  {
+    id: "rec-william-jezequel",
+    name: "William Jezequel",
+    linkedinUrl: "https://www.linkedin.com/in/williamjezequel/",
+    photo: "/recommendations/william-jezequel.png",
+    role: "Fastest photographer in the West - Business, events, portraits",
+    relationship: "Client",
+    quote:
+      "I had the opportunity to work with Joris on my app Pixilive. The mission was to set up an FTP server on a private server and connect it to Bubble - a feature that had been on hold for several years, because I couldn't find anyone able to solve my problem. I especially appreciated his ability to make technical concepts accessible, which made our collaboration smooth and enjoyable. Joris doesn't just execute tasks; he brings ideas to the table and finds innovative solutions by looking at problems from a new angle. I highly recommend him to anyone looking for a skilled, creative developer for their project.",
+    linkedCaseId: "sftp-photographe",
+  },
+  {
+    id: "rec-guillaume-illien",
+    name: "Guillaume Illien",
+    linkedinUrl: "https://www.linkedin.com/in/illien/fr/",
+    photo: "/recommendations/guillaume-illien.png",
+    role: "Technical Team Lead - Full-Stack B2B Architecture Specialist",
+    relationship: "Client",
+    quote:
+      "I'm delighted to recommend Joris, with whom I had the pleasure of collaborating on a Chrome extension POC over the past year. His JavaScript expertise and his ability to navigate the complexities of Chrome extension development were a major asset to our team. He didn't just bring technical expertise - he also showed real passion for development and innovation.",
+    verified: true,
+  },
+  {
+    id: "rec-florent-de-lecluse",
+    name: "Florent de Lecluse",
+    linkedinUrl: "https://www.linkedin.com/in/florent-delecluse/",
+    photo: "/recommendations/florent-de-lecluse.png",
+    role: "Custom business software for technical SMEs",
+    relationship: "Direct manager",
+    quote:
+      "I had the opportunity to work with Joris for 2 years as Technical Director of the startup Zetoolbox. His senior developer expertise, combined with his no-code skills, let us handle highly complex application development and automation projects. Open to feedback, committed to doing things right, and always looking for a better solution - Joris is a genuine pleasure to work with.",
+    verified: true,
+    linkedCaseId: "patrimoine",
+  },
+  {
+    id: "rec-denis-ovtchinnikov",
+    name: "Denis Ovtchinnikov",
+    linkedinUrl: "https://www.linkedin.com/in/denis-o-61ba9619/",
+    photo: "/recommendations/denis-ovtchinnikov.png",
+    role: "DevOps Architect · CIO",
+    relationship: "Direct manager",
+    quote:
+      "It was a real pleasure to work with Joris. His deep expertise in full stack environment was a real help for our projects. I recommend him as a real expert in this area.",
+  },
+  {
+    id: "rec-issam-wakidi",
+    name: "Issam Wakidi",
+    linkedinUrl: "https://www.linkedin.com/in/issamwakidi/fr/",
+    photo: "/recommendations/issam-wakidi.png",
+    role: "Program Director - AI Strategy & Transformation",
+    relationship: "Direct manager",
+    quote:
+      "Joris is a developer with broad, cross-cutting knowledge and skills: his strength lies in how quickly he adapts to different tech stacks and tools, and how fast he grasps different business contexts. Joris contributes proactively to projects, with suggestions that are relevant at the technical and functional level, and more broadly at the business level.",
+    verified: true,
+    linkedCaseId: "smur",
+  },
+  {
+    id: "rec-alexandre-alzounies",
+    name: "Alexandre Alzounies",
+    linkedinUrl: "https://www.linkedin.com/in/alexandrealzounies/",
+    photo: "/recommendations/alexandre-alzounies.png",
+    role: "Technical Director",
+    relationship: "Direct manager",
+    quote: "I recommend Joris without hesitation!",
+  },
+  {
+    id: "rec-benedicte-laurent",
+    name: "Bénédicte Laurent",
+    linkedinUrl: "https://www.linkedin.com/in/benedictelaurent/",
+    photo: "/recommendations/benedicte-laurent.png",
+    role: "Brand strategy - naming, identity, business coaching",
+    relationship: "Vendor to Bénédicte",
+    quote:
+      "Joris understood and addressed the challenges we were tackling at Namae Concept. We have to juggle different linguistic and technical skills, which means working with people who are curious, autonomous, and proactive - both on the technology side and on user satisfaction.",
   },
 ];

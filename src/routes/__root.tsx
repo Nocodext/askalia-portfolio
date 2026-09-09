@@ -78,11 +78,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Portfolio — Product & Technical Architect + AI" },
-      { name: "description", content: "Freelance portfolio: product architecture, technical systems, and AI-powered products." },
+      { title: "Portfolio - Product & Technical Architect + AI" },
+      {
+        name: "description",
+        content:
+          "Freelance portfolio: product architecture, technical systems, and AI-powered products.",
+      },
       { name: "author", content: "Joris Grouillet" },
-      { property: "og:title", content: "Portfolio — Product & Technical Architect + AI" },
-      { property: "og:description", content: "Freelance portfolio: product architecture, technical systems, and AI-powered products." },
+      { property: "og:title", content: "Portfolio - Product & Technical Architect + AI" },
+      {
+        property: "og:description",
+        content:
+          "Freelance portfolio: product architecture, technical systems, and AI-powered products.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -96,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Space+Grotesk:wght@700&display=swap",
       },
     ],
   }),

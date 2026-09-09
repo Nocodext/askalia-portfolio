@@ -42,9 +42,13 @@
   --color-amber: var(--amber);
   --color-blue: var(--blue);
 
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --font-display: "Space Grotesk", ui-sans-serif, sans-serif;
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Roboto Mono", ui-monospace, monospace;
+  --font-display: "Roboto", ui-sans-serif, sans-serif;
+  /* Reserved for the hero's own headline - the one deliberate spot where a
+     distinctive display face earns its keep, instead of spreading it (and a
+     3rd font) across the whole site. */
+  --font-hero: "Space Grotesk", ui-sans-serif, sans-serif;
 }
 
 :root {
@@ -113,6 +117,9 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   html {
@@ -131,7 +138,7 @@
 @keyframes spokeFlow {
   to {
     /* Positive shift = dashes travel from element-x 0 (hub, transform-origin)
-       outward toward the icon end — hub-to-icon, not icon-to-hub. */
+       outward toward the icon end - hub-to-icon, not icon-to-hub. */
     background-position: 12px 0;
   }
 }
@@ -201,4 +208,37 @@
 
 @utility max-w-prose {
   max-width: 65ch;
+}
+
+/* Cork-board base for the Recommendations panel - a single, evenly spaced
+   dot grid rather than a dense speckle: enough of a texture cue without
+   competing with the pinned cards. */
+@utility cork-texture {
+  background-color: #b9895f;
+  background-image: radial-gradient(circle, rgba(58, 33, 15, 0.22) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Opacity-only on purpose: a translateY component here would fight the
+   card's own hover-lift transform (CSS animations win that tug-of-war over
+   a plain hover rule), so the "rise" stays out of the keyframe entirely. */
+@utility scroll-fade {
+  animation: fadeIn 0.6s ease-out both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 45%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fade {
+    animation: none;
+  }
 }

@@ -6,13 +6,13 @@ import { PortfolioPage } from "@/components/portfolio-page";
 export const Route = createFileRoute("/en")({
   head: () => ({
     meta: [
-      { title: "Joris Grouillet — Product Architect" },
+      { title: "Joris Grouillet - Product Architect" },
       {
         name: "description",
         content:
           "Product clarity. Technical fluency. Freelance portfolio of Joris Grouillet: product & technical architecture, healthcare, AI, interoperability, and side venture nocodext.studio.",
       },
-      { property: "og:title", content: "Joris Grouillet — Product Architect" },
+      { property: "og:title", content: "Joris Grouillet - Product Architect" },
       {
         property: "og:description",
         content:

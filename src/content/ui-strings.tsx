@@ -6,12 +6,14 @@ export type UIStrings = {
     cartography: string;
     method: string;
     sideBusiness: string;
+    recommendations: string;
     contact: string;
     altLangHref: string;
     altLangLabel: string;
     startProject: string;
   };
   hero: {
+    titleExplainer: ReactNode;
     intro: ReactNode;
     seeCaseStudies: string;
     statCaseStudies: string;
@@ -43,6 +45,10 @@ export type UIStrings = {
     viewPhotos: string;
     backToGallery: string;
     challengesLabel: string;
+    viewLiveDemo: string;
+    seeDemo: string;
+    seeBlog: string;
+    seeTestimonial: string;
   };
   caseToc: { ariaLabel: string };
   work: {
@@ -59,6 +65,7 @@ export type UIStrings = {
   process: {
     sectionLabel: string;
     heading: string;
+    intro: string;
   };
   sideBusiness: {
     sectionLabel: string;
@@ -66,12 +73,20 @@ export type UIStrings = {
     productSuffix: string;
     llmsUsed: string;
   };
+  recommendations: {
+    sectionLabel: string;
+    heading: string;
+    seeLinkedCase: string;
+    ctaText: string;
+    ctaAction: string;
+  };
   contact: {
     sectionLabel: string;
     heading: string;
     body: string;
     emailPlaceholder: string;
     copiedToClipboard: string;
+    cvLabel: string;
   };
 };
 
@@ -81,15 +96,28 @@ export const uiStringsFr: UIStrings = {
     cartography: "Cartographie",
     method: "Méthode",
     sideBusiness: "Side-business",
+    recommendations: "Recommandations",
     contact: "Contact",
     altLangHref: "/en",
     altLangLabel: "EN",
     startProject: "Démarrer un projet",
   },
   hero: {
+    titleExplainer: (
+      <>
+        À la croisée du produit et de la technique.
+        <br />
+        <br />
+        Mon parcours est celui d’un ingénieur très autodidacte et impliqué, qui s’est
+        progressivement rapproché du produit. J’aime partir d’un problème concret, aller voir
+        comment il se manifeste réellement sur le terrain, et faire évoluer la solution à mesure
+        qu’on apprend - sans perdre de vue ce qu’il faudra construire derrière. Ce que l’on imagine
+        et ce qui fonctionne réellement ne sont pas toujours la même chose.
+      </>
+    ),
     intro: (
       <>
-        Généraliste par choix, transverse par tempérament — hospitalier, presse numérique,
+        Généraliste par choix, transverse par tempérament - hospitalier, presse numérique,
         RH/emploi, e-learning, smart-city, laboratoire, énergie & courtage, bureau d'études Bâtiment
         numérique, photographie, patrimoine, Recherche, business, courtage, veille concurrencielle,
         IA, ...
@@ -131,19 +159,23 @@ export const uiStringsFr: UIStrings = {
     interventionFields: "Champs d'intervention",
     expand: "Voir le détail",
     collapse: "Réduire",
-    viewPhotos: "Voir les visuels",
+    viewPhotos: "La galerie",
     backToGallery: "Retour à la galerie",
     challengesLabel: "Contraintes & réponses apportées",
+    viewLiveDemo: "Voir en action",
+    seeDemo: "Voir la demo",
+    seeBlog: "Journal de bord",
+    seeTestimonial: "Voir le témoignage",
   },
   caseToc: { ariaLabel: "Sommaire des cas clients" },
   work: {
-    sectionLabel: "[01] — Cas clients",
+    sectionLabel: "[02] - Cas clients",
     disabledHeading: "Des défis qu'on disait impossibles, livrés en production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side-business)",
   },
   overview: {
-    sectionLabel: "[02] — Cartographie",
+    sectionLabel: "[03] - Cartographie",
     heading: (n) => (
       <>
         Ce que couvrent les {n} missions, <br />
@@ -154,22 +186,32 @@ export const uiStringsFr: UIStrings = {
       "Synthèse des secteurs, compétences techniques et produit, et rôles endossés, à partir des matrices d'intervention de chaque cas client.",
   },
   process: {
-    sectionLabel: "[03] — Méthode",
+    sectionLabel: "[04] - Méthode",
     heading: "Un plan lisible qui devient un système en marche.",
+    intro:
+      "Ne pas confondre ce que l'on imagine avec ce qui fonctionne réellement : une solution ne se conçoit pas entièrement à distance, dans un bureau d'études - le terrain apporte sa propre vérité, et il faut savoir l'écouter.",
   },
   sideBusiness: {
-    sectionLabel: "[04] — Side-business",
+    sectionLabel: "[05] - Side-business",
     intro:
       "Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et outillage qui comblent les manques des plateformes que les équipes utilisent tous les jours.",
     productSuffix: "/ produit",
     llmsUsed: "LLMs utilisés",
   },
+  recommendations: {
+    sectionLabel: "[06] - Recommandations",
+    heading: "Ce qu'en disent celles et ceux qui ont travaillé avec moi.",
+    seeLinkedCase: "Voir le cas client",
+    ctaText: "Soyez le prochain à avoir envie de me recommander",
+    ctaAction: "Me contacter",
+  },
   contact: {
-    sectionLabel: "[05] — Contact",
+    sectionLabel: "[07] - Contact",
     heading: "Parlons du problème avant la solution.",
-    body: "Une mission engagée à la fois. Décrivez le contexte et les contraintes : je vois au-delà du besoin exprimé pour capter ce qu'il recouvre vraiment, et ce que la technologie peut réellement débloquer — souvent plus que ce qu'on imagine. J'étudie la faisabilité, je cadre, je m'imprègne du métier et du fonctionnel, puis je porte l'architecture et les itérations de livraison — jusqu'à l'impact recherché : usage, facilitation, création de valeur.",
+    body: "Une mission engagée à la fois. Décrivez le contexte et les contraintes : je vois au-delà du besoin exprimé pour capter ce qu'il recouvre vraiment, et ce que la technologie peut réellement débloquer - souvent plus que ce qu'on imagine. J'étudie la faisabilité, je cadre, je m'imprègne du métier et du fonctionnel, puis je porte l'architecture et les itérations de livraison - jusqu'à l'impact recherché : usage, facilitation, création de valeur.",
     emailPlaceholder: "Afficher l'email",
     copiedToClipboard: "Copié",
+    cvLabel: "Télécharger le CV",
   },
 };
 
@@ -179,19 +221,32 @@ export const uiStringsEn: UIStrings = {
     cartography: "Overview",
     method: "Method",
     sideBusiness: "Side Projects",
+    recommendations: "Recommendations",
     contact: "Contact",
     altLangHref: "/",
     altLangLabel: "FR",
     startProject: "Start a Project",
   },
   hero: {
+    titleExplainer: (
+      <>
+        At the crossroads of product and engineering.
+        <br />
+        <br />
+        My path is that of a highly self-taught, hands-on engineer who gradually moved toward
+        product. I like starting from a concrete problem, going to see how it actually plays out
+        in the field, and evolving the solution as we learn - without losing sight of what will
+        need to be built behind it. What we imagine and what actually works aren't always the same
+        thing.
+      </>
+    ),
     intro: (
       <>
-        A generalist by choice, cross-functional by temperament — healthcare, digital publishing,
+        A generalist by choice, cross-functional by temperament - healthcare, digital publishing,
         e-learning, smart cities, laboratories, energy, engineering firms, photography, wealth
         management, research, brokerage, AI, and more.
         <br />
-        I go looking for the real need behind the one that gets asked for — especially on problems
+        I go looking for the real need behind the one that gets asked for - especially on problems
         everyone assumes are impossible.
         <br />I help traditional-industry companies through digital & AI transformation, from
         scoping to production, then hand it off cleanly to the teams who'll own it.
@@ -207,7 +262,7 @@ export const uiStringsEn: UIStrings = {
     juryLabel: "Technical expert jury",
     jurySchools: "Oreegami (digital school) · Ynov (software engineering)",
     ciiTitle:
-      "Crédit Impôt Innovation — France's state-approved R&D tax credit accreditation, valid through 2028",
+      "Crédit Impôt Innovation - France's state-approved R&D tax credit accreditation, valid through 2028",
     ciiLabel: "CII Tax Credit → 2028",
     intlTitle:
       "Comfortable working with English-speaking, international teams (e.g. an international intern)",
@@ -229,36 +284,50 @@ export const uiStringsEn: UIStrings = {
     viewPhotos: "View visuals",
     backToGallery: "Back to gallery",
     challengesLabel: "Constraints & responses",
+    viewLiveDemo: "See it in action",
+    seeDemo: "See the demo",
+    seeBlog: "Build log",
+    seeTestimonial: "See the testimonial",
   },
   caseToc: { ariaLabel: "Case studies table of contents" },
   work: {
-    sectionLabel: "[01] — Case Studies",
+    sectionLabel: "[01] - Case Studies",
     disabledHeading: "Challenges everyone said were impossible, shipped to production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side project)",
   },
   overview: {
-    sectionLabel: "[02] — Overview",
+    sectionLabel: "[02] - Overview",
     heading: (n) => <>What the {n} missions cover, at a glance.</>,
     description:
       "A synthesis of sectors, technical and product skills, and roles held, drawn from each case study's intervention matrix.",
   },
   process: {
-    sectionLabel: "[03] — Method",
+    sectionLabel: "[03] - Method",
     heading: "A clear plan that becomes a working system.",
+    intro:
+      "Not confusing what we imagine with what actually works: a solution can't be fully designed at a distance, from a design office - the field carries its own truth, and you have to know how to listen to it.",
   },
   sideBusiness: {
-    sectionLabel: "[04] — Side Projects",
+    sectionLabel: "[04] - Side Projects",
     intro:
       "Four products built solo, from idea to production: browser extensions and tooling that fill the gaps in the platforms teams use every day.",
     productSuffix: "/ product",
     llmsUsed: "LLMs used",
   },
+  recommendations: {
+    sectionLabel: "[05] - Recommendations",
+    heading: "What people who've worked with me have to say.",
+    seeLinkedCase: "See the case study",
+    ctaText: "Be the next person who feels like recommending me",
+    ctaAction: "Get in touch",
+  },
   contact: {
-    sectionLabel: "[05] — Contact",
+    sectionLabel: "[06] - Contact",
     heading: "Let's talk about the problem before the solution.",
-    body: "One committed engagement at a time. Describe the context and the constraints: I look past the stated need to find what it's really about, and what technology can actually unlock — usually more than people expect. I study feasibility, scope the work, get immersed in the business and its workflows, then own the architecture and delivery iterations — through to the outcome that matters: adoption, ease of use, real value created.",
+    body: "One committed engagement at a time. Describe the context and the constraints: I look past the stated need to find what it's really about, and what technology can actually unlock - usually more than people expect. I study feasibility, scope the work, get immersed in the business and its workflows, then own the architecture and delivery iterations - through to the outcome that matters: adoption, ease of use, real value created.",
     emailPlaceholder: "Reveal email",
     copiedToClipboard: "Copied",
+    cvLabel: "Download CV",
   },
 };

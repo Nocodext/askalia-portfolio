@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import type {
@@ -8,6 +8,7 @@ import type {
   OverviewBucket,
   OverviewCategory,
   PortfolioContent,
+  Recommendation,
 } from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import {
@@ -18,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   Carousel,
@@ -38,7 +40,6 @@ import {
   Zap,
   Siren,
   DraftingCompass,
-  Youtube,
   Camera,
   Tags,
   ExternalLink,
@@ -50,6 +51,9 @@ import {
   ChevronUp,
   GraduationCap,
   Languages,
+  Download,
+  Quote,
+  BadgeCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -66,7 +70,9 @@ const caseIcons: Record<string, CaseIconConfig> = {
   energie: { icon: Zap, color: "cyan" },
   "cad-web": { icon: DraftingCompass, color: "blue" },
   smur: { icon: Siren, color: "cyan" },
-  "ats-youtubers": { icon: Youtube, color: "red" },
+  "ats-youtubers": {
+    image: "https://cdn.jsdelivr.net/npm/simple-icons@16.30.0/icons/youtube.svg",
+  },
   "sftp-photographe": { icon: Camera, color: "blue" },
   "veille-tarifaire": { icon: Tags, color: "violet", flip: true },
   "multidiffusion-france-travail": { icon: Briefcase, color: "blue" },
@@ -105,12 +111,21 @@ function scrollToCase(id: string) {
   if (el) {
     el.dispatchEvent(new Event(CASE_EXPAND_EVENT));
     // Same clearance on both breakpoints would eat too much of a mobile
-    // viewport's height — scale it down below the `md` nav-collapse breakpoint.
+    // viewport's height - scale it down below the `md` nav-collapse breakpoint.
     const offset = window.innerWidth < 768 ? 128 : 168;
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: "instant" });
   }
   history.replaceState(null, "", `#${id}`);
+}
+
+function scrollToRecommendation(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  const ring = ["ring-2", "ring-cyan", "ring-offset-2", "ring-offset-white"];
+  el.classList.add(...ring);
+  window.setTimeout(() => el.classList.remove(...ring), 1800);
 }
 
 function caseColor(id: string): "cyan" | "violet" | "amber" | "blue" | "red" {
@@ -225,8 +240,7 @@ const overviewColors = {
     bg: "bg-amber/10",
     head: "bg-amber",
     // Amber's header text is dark, so it lightens instead of darkening.
-    headerBg:
-      "bg-[linear-gradient(90deg,var(--amber),color-mix(in_oklch,var(--amber),white_40%))]",
+    headerBg: "bg-[linear-gradient(90deg,var(--amber),color-mix(in_oklch,var(--amber),white_40%))]",
     headText: "text-ink",
   },
   blue: {
@@ -245,7 +259,7 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
   const glowRef = useRef<HTMLDivElement>(null);
 
   // Anchors the glow to the hovered tab itself (its own rect), not the raw
-  // cursor position — following the cursor read as a tracker trail, not a
+  // cursor position - following the cursor read as a tracker trail, not a
   // tab highlight.
   const focusGlow = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const glow = glowRef.current;
@@ -281,11 +295,11 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
             <span className="grid size-8 place-items-center rounded-md bg-ink font-mono text-xs font-medium text-white">
               {profile.initials}
             </span>
-            <span className="font-display text-sm font-semibold tracking-tight">
-              {profile.firstName} {profile.lastName}
-            </span>
-            <span className="hidden font-mono text-xs font-medium text-ink/70 sm:inline">
-              / product architect
+            <span className="flex flex-col leading-tight">
+              <span className="font-display text-s font-semibold tracking-tight">
+                {profile.firstName} {profile.lastName}
+              </span>
+              <span className="font-mono text-[11px] font-medium text-ink/60">{profile.role}</span>
             </span>
           </a>
           <div
@@ -343,6 +357,17 @@ function Nav({ content, strings }: { content: PortfolioContent; strings: UIStrin
               {strings.nav.sideBusiness}
             </a>
             <a
+              href="#recommendations"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("recommendations");
+              }}
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
+            >
+              {strings.nav.recommendations}
+            </a>
+            <a
               href="#contact"
               onClick={(e) => {
                 e.preventDefault();
@@ -384,14 +409,27 @@ function Hero({ content, strings }: { content: PortfolioContent; strings: UIStri
     <section id="top" className="mx-auto max-w-6xl px-6 pt-12 pb-16">
       <div className="mb-8 flex items-center gap-3">
         <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
-          {profile.role} — Freelance
+          [01] A propos
         </span>
         <span className="h-px flex-1 bg-line" />
         <span className="font-mono text-[11px] text-slate">{profile.location}</span>
       </div>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <h1 className="reveal d1 max-w-[18ch] font-display text-5xl font-bold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
+          <blockquote className="reveal d1 relative mb-8 rounded-r-xl border-l-4 border-violet bg-violet/5 py-5 pr-5 pl-6">
+            <Quote
+              className="absolute top-3 right-4 size-8 text-violet/15"
+              strokeWidth={2}
+              fill="currentColor"
+            />
+            <p className="relative font-display text-lg font-bold tracking-tight text-ink sm:text-xl">
+              {profile.role}
+            </p>
+            <p className="relative mt-2 max-w-[52ch] text-sm text-pretty text-ink/80 sm:text-base">
+              {strings.hero.titleExplainer}
+            </p>
+          </blockquote>
+          <h1 className="reveal d1 max-w-[18ch] font-hero text-5xl font-bold leading-[1.02] tracking-tight text-balance sm:text-6xl lg:text-7xl">
             Product clarity.
             <br />
             Technical fluency.
@@ -497,14 +535,14 @@ function Hero({ content, strings }: { content: PortfolioContent; strings: UIStri
 function HighlightItem({ item }: { item: Highlight }) {
   if (typeof item === "string") {
     return (
-      <li className="flex gap-3 text-sm text-pretty sm:break-inside-avoid sm:pb-2.5">
+      <li className="flex gap-3 text-[0.9em] text-pretty sm:break-inside-avoid sm:pb-2.5">
         <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
         <span>{item}</span>
       </li>
     );
   }
   return (
-    <li className="flex gap-3 text-sm text-pretty sm:break-inside-avoid sm:pb-2.5">
+    <li className="flex gap-3 text-[0.9em] text-pretty sm:break-inside-avoid sm:pb-2.5">
       <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
       <div className="flex-1">
         <span>{item.text}</span>
@@ -527,7 +565,16 @@ function HighlightItem({ item }: { item: Highlight }) {
 
 const CASE_EXPAND_EVENT = "cc:expand";
 
-function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
+function CaseCard({
+  item,
+  strings,
+  recommendations,
+}: {
+  item: CaseStudy;
+  strings: UIStrings;
+  recommendations: Recommendation[];
+}) {
+  const linkedRecommendation = recommendations.find((r) => r.linkedCaseId === item.id);
   const matrixAxes = useMatrixAxes(strings);
   const [expanded, setExpanded] = useState(!!item.flagship);
   const reducedMotion = useReducedMotion();
@@ -542,7 +589,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     if (selectedPhoto !== null) {
       photosApi.scrollTo(selectedPhoto, true);
       // The clicked thumbnail unmounts when switching to detail view, so
-      // focus would otherwise fall back to the dialog root — pull it onto
+      // focus would otherwise fall back to the dialog root - pull it onto
       // the carousel itself so its built-in arrow-key handling works.
       carouselRootRef.current?.focus();
     }
@@ -565,10 +612,22 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     return () => el?.removeEventListener(CASE_EXPAND_EVENT, onExpand);
   }, [item.id]);
 
-  const toggleExpand = () => {
-    // A click that ends a text-selection drag shouldn't also toggle — bail
-    // if the user is mid-selection anywhere on the page.
-    if (window.getSelection()?.toString()) return;
+  // A click that ends a text-selection drag shouldn't also toggle. Checking
+  // for *any* selection on the page was too broad - leftover text selected
+  // anywhere earlier (e.g. copying a paragraph, an accidental double-click)
+  // silently disabled every "Voir le détail" button until the user clicked
+  // to clear it. Track the actual mousedown/click positions on this element
+  // instead, so only a real drag on THIS control suppresses the toggle.
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const onToggleMouseDown = (e: React.MouseEvent) => {
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+  const toggleExpand = (e: React.MouseEvent) => {
+    const start = dragStartRef.current;
+    dragStartRef.current = null;
+    if (start && (Math.abs(e.clientX - start.x) > 5 || Math.abs(e.clientY - start.y) > 5)) {
+      return;
+    }
     setExpanded((v) => {
       if (!v) trackEvent("case_expanded", { case: item.id });
       return !v;
@@ -583,7 +642,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
     >
       <div className="spectrum h-1 w-full opacity-80" />
       <div className="p-7">
-        <div onClick={toggleExpand} className="cursor-pointer">
+        <div onMouseDown={onToggleMouseDown} onClick={toggleExpand} className="cursor-pointer">
           <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate">
             <span>
               {item.index} / {item.sector}
@@ -685,6 +744,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
         </div>
         <button
           type="button"
+          onMouseDown={onToggleMouseDown}
           onClick={toggleExpand}
           className="mx-auto mt-5 flex w-fit cursor-pointer items-center gap-1.5 rounded-full bg-white px-4 py-2 font-mono text-[11px] font-medium text-cyan shadow-[0_6px_16px_-6px_rgba(16,19,26,0.25)] ring-1 ring-ink/10 transition-colors hover:text-ink"
         >
@@ -761,7 +821,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                 </button>
               </DialogTrigger>
               <DialogContent
-                className="max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
+                className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
                 onEscapeKeyDown={(e) => {
                   if (selectedPhoto !== null) {
                     e.preventDefault();
@@ -821,6 +881,69 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
               </DialogContent>
             </Dialog>
           ) : null}
+          {item.liveDemo ? (
+            <Dialog
+              onOpenChange={(open) =>
+                open && trackEvent("case_live_demo_opened", { case: item.id })
+              }
+            >
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+                >
+                  <ExternalLink className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewLiveDemo}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
+                <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  src={item.liveDemo.previewVideo}
+                  className="block max-h-[80vh] w-full object-contain"
+                />
+                <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
+                  <a
+                    href={item.liveDemo.blogHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
+                  >
+                    {strings.caseCard.seeBlog}
+                  </a>
+                  <a
+                    href={item.liveDemo.demoHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
+                  >
+                    {strings.caseCard.seeDemo}
+                    <ArrowUpRight className="size-3.5" strokeWidth={2} />
+                  </a>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {linkedRecommendation ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollToRecommendation(linkedRecommendation.id);
+              }}
+              className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+            >
+              <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
+              {strings.caseCard.seeTestimonial}
+            </button>
+          ) : null}
           {item.challenges ? (
             <div className="mt-5">
               <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
@@ -852,7 +975,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
                   {item.matrix[axis.key as keyof typeof item.matrix].map((v) => (
                     <span
                       key={v}
-                      className={`rounded px-2 py-1 text-xs ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
+                      className={`rounded px-2 py-1 text-[13px] ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
                     >
                       {v}
                     </span>
@@ -866,7 +989,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
             <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
               Stack software
             </div>
-            <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px]">
+            <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
               {item.stackSoftware.map((s) => (
                 <span
                   key={s}
@@ -882,7 +1005,7 @@ function CaseCard({ item, strings }: { item: CaseStudy; strings: UIStrings }) {
               <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
                 Stack hardware
               </div>
-              <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px]">
+              <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
                 {item.stackHardware.map((s) => (
                   <span
                     key={s}
@@ -923,7 +1046,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   return (
     // top offsets by half the list's own rendered height (10 items, measured
     // ~298px) so the box is genuinely centered in the viewport via `top`
-    // itself — a transform-based translateY(-50%) paints outside the sticky
+    // itself - a transform-based translateY(-50%) paints outside the sticky
     // containment box and can rise above the section's top bound; `top`
     // participates in that bound correctly. Re-measure this if the number of
     // cases changes enough to shift the list's height noticeably.
@@ -986,7 +1109,12 @@ function Work({ content, strings }: { content: PortfolioContent; strings: UIStri
         <div className="lg:flex lg:items-start lg:gap-8">
           <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">
             {cases.map((item) => (
-              <CaseCard key={item.id} item={item} strings={strings} />
+              <CaseCard
+                key={item.id}
+                item={item}
+                strings={strings}
+                recommendations={content.recommendations}
+              />
             ))}
           </div>
           <CaseToc content={content} strings={strings} />
@@ -1011,7 +1139,7 @@ function OverviewPanel({
   const headerRef = useRef<HTMLDivElement>(null);
 
   // A perfectly regular loop reads as a puzzle to decode ("what's the
-  // cycle?") rather than ambient decoration — vary the duration slightly
+  // cycle?") rather than ambient decoration - vary the duration slightly
   // each hover so the rhythm never feels quite the same twice.
   const randomizeDrift = () => {
     if (headerRef.current) {
@@ -1182,7 +1310,7 @@ function Overview({ content, strings }: { content: PortfolioContent; strings: UI
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
         {strings.overview.sectionLabel}
       </span>
-      <h2 className="mt-3 max-w-[35ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
+      <h2 className="mt-3 max-w-[40ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
         {strings.overview.heading(cases.length)}
       </h2>
       <p className="mt-3 max-w-prose text-sm text-pretty text-slate">
@@ -1210,9 +1338,12 @@ function Process({ content, strings }: { content: PortfolioContent; strings: UIS
       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-cyan">
         {strings.process.sectionLabel}
       </span>
-      <h2 className="mt-3 max-w-[35ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
+      <h2 className="mt-3 max-w-[40ch] font-display text-3xl font-semibold leading-tight tracking-tight text-balance sm:text-4xl">
         {strings.process.heading}
       </h2>
+      <p className="mt-4 max-w-[62ch] text-sm text-pretty text-slate sm:text-base">
+        {strings.process.intro}
+      </p>
       <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[min(1vw,14px)] ring-1 ring-ink/10 md:grid-cols-3">
         {capabilities.map((c) => (
           <div
@@ -1347,6 +1478,257 @@ function SideBusiness({ content, strings }: { content: PortfolioContent; strings
   );
 }
 
+// Deterministic per-card tilt (a stable hash of the id, not Math.random) -
+// this page prerenders to static HTML, so a truly random value would pick a
+// different tilt on the server than on the client and desync at hydration.
+function tiltForId(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  const t = (((hash % 1000) + 1000) % 1000) / 1000; // 0..1, stable
+  return -2.5 + t * 5; // spread across -2.5..2.5deg
+}
+
+function RecommendationPin() {
+  const uid = useId();
+  const headGrad = `pin-head-${uid}`;
+  const needleGrad = `pin-needle-${uid}`;
+  return (
+    <span className="absolute top-0 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        className="rotate-[18deg] drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]"
+      >
+        <defs>
+          <linearGradient id={headGrad} x1="15%" y1="10%" x2="85%" y2="95%">
+            <stop offset="0%" stopColor="#fca5a5" />
+            <stop offset="45%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="#7f1d1d" />
+          </linearGradient>
+          <linearGradient id={needleGrad} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#f4f4f5" />
+            <stop offset="50%" stopColor="#a1a1aa" />
+            <stop offset="100%" stopColor="#52525b" />
+          </linearGradient>
+        </defs>
+        {/* needle, straight down in local coords - the group rotation gives it the jaunty lean */}
+        <path d="M11.3 13.2 L12.7 13.2 L12 22.5 Z" fill={`url(#${needleGrad})`} />
+        {/* neck, tapering from the head down to the needle */}
+        <path d="M8.4 9.3 L15.6 9.3 L13.1 13.6 L10.9 13.6 Z" fill={`url(#${headGrad})`} />
+        {/* domed head */}
+        <ellipse cx="12" cy="6.8" rx="6" ry="5.3" fill={`url(#${headGrad})`} />
+        {/* gloss highlight, off-center for a 3D sheen */}
+        <ellipse cx="9.6" cy="4.5" rx="1.8" ry="1.05" fill="#fff" opacity="0.55" />
+      </svg>
+    </span>
+  );
+}
+
+function RecommendationCard({
+  rec,
+  strings,
+  expanded = false,
+  onOpen,
+  onClose,
+}: {
+  rec: Recommendation;
+  strings: UIStrings;
+  expanded?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+}) {
+  const stopThenAct = (fn: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fn();
+  };
+
+  return (
+    <div
+      id={expanded ? undefined : rec.id}
+      onClick={expanded ? onClose : onOpen}
+      className={
+        expanded
+          ? "relative w-full max-w-md rounded-[min(1vw,10px)] bg-[#FFF6D8] p-7 pt-9 shadow-2xl ring-1 ring-black/10"
+          : "relative scroll-mt-24 cursor-pointer rounded-[min(1vw,10px)] bg-[#FFF6D8] p-6 pt-8 shadow-md ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-[0_18px_30px_-12px_rgba(58,33,15,0.45)]"
+      }
+    >
+      <div className="relative flex h-8 items-center justify-end">
+        <RecommendationPin />
+        <Quote className="size-8 text-ink/10" strokeWidth={2} fill="currentColor" />
+      </div>
+      <p className="mt-2 text-sm text-pretty text-slate sm:text-base">{rec.quote}</p>
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-dashed border-ink/15 pt-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <img
+            src={rec.photo}
+            alt=""
+            className="size-10 shrink-0 rounded-full object-cover ring-1 ring-ink/10"
+          />
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="truncate text-sm font-semibold text-ink">{rec.name}</span>
+              {rec.verified ? (
+                <BadgeCheck
+                  className="size-3.5 shrink-0 text-blue"
+                  strokeWidth={2}
+                  aria-label="LinkedIn verified"
+                />
+              ) : null}
+            </div>
+            <p className="mt-0.5 truncate text-xs text-slate">{rec.role}</p>
+            <p className="mt-1 font-mono text-[10px] text-slate/70">{rec.relationship}</p>
+          </div>
+        </div>
+        <a
+          href={rec.linkedinUrl}
+          target="_blank"
+          rel="noreferrer"
+          aria-label="LinkedIn"
+          onClick={(e) => e.stopPropagation()}
+          className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#007EBB] transition-opacity hover:opacity-80"
+        >
+          <img src="/logos/side/linkedin-icon.svg" alt="" className="size-5 rounded-full" />
+        </a>
+      </div>
+      {rec.linkedCaseId ? (
+        <button
+          type="button"
+          onClick={stopThenAct(() => scrollToCase(rec.linkedCaseId!))}
+          className="mt-4 flex w-fit cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+        >
+          <ArrowUpRight className="size-3.5" strokeWidth={2} />
+          {strings.recommendations.seeLinkedCase}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function RecommendationCtaCard({
+  strings,
+  profile,
+}: {
+  strings: UIStrings;
+  profile: PortfolioContent["profile"];
+}) {
+  return (
+    <div
+      style={{ transform: `rotate(${tiltForId("cta-card")}deg)` }}
+      className="scroll-fade mb-7 inline-block w-full break-inside-avoid"
+    >
+      <div className="relative flex flex-col items-center gap-4 rounded-[min(1vw,10px)] border-2 border-dashed border-ink/20 bg-[#FBE49A] p-7 pt-9 text-center shadow-md ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-[0_18px_30px_-12px_rgba(58,33,15,0.45)]">
+        <div className="relative flex h-8 w-full items-center justify-end">
+          <RecommendationPin />
+          <span className="text-3xl opacity-70" aria-hidden="true">
+            😉
+          </span>
+        </div>
+        <p className="max-w-[24ch] font-display text-lg font-semibold text-balance text-ink">
+          {strings.recommendations.ctaText}
+        </p>
+        <ContactEmail
+          user={profile.emailUser}
+          domain={profile.emailDomain}
+          placeholder={strings.contact.emailPlaceholder}
+          copiedMessage={strings.contact.copiedToClipboard}
+          className="rounded-md bg-gradient-to-r from-violet to-blue px-4 py-2 text-center font-mono text-[11px] font-medium text-white shadow-[0_6px_14px_-6px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
+        />
+      </div>
+    </div>
+  );
+}
+
+function Recommendations({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [overlayVisible, setOverlayVisible] = useState(false);
+
+  const openCard = (id: string) => {
+    setExpandedId(id);
+    requestAnimationFrame(() => requestAnimationFrame(() => setOverlayVisible(true)));
+    // Opening a card to read it full-size is a stronger signal than a
+    // passing glance at the grid - worth its own event.
+    trackEvent("recommendation_opened", { recommendation: id });
+  };
+
+  const closeCard = () => {
+    setOverlayVisible(false);
+    window.setTimeout(() => setExpandedId(null), 300);
+  };
+
+  useEffect(() => {
+    if (!expandedId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeCard();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expandedId]);
+
+  const expandedRec = expandedId
+    ? (content.recommendations.find((r) => r.id === expandedId) ?? null)
+    : null;
+
+  return (
+    <section id="recommendations" className="mx-auto max-w-6xl px-6 pb-16">
+      <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-violet">
+        <span className="size-1.5 rounded-full bg-violet" /> {strings.recommendations.sectionLabel}
+      </div>
+      <h2 className="mt-4 max-w-[45ch] font-display text-3xl font-bold leading-[1.1] tracking-tight text-balance sm:text-4xl">
+        {strings.recommendations.heading}
+      </h2>
+      <div className="cork-texture mt-8 rounded-[min(1vw,16px)] p-6 shadow-inner ring-1 ring-black/15 sm:p-8">
+        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+          {content.recommendations.flatMap((rec) => {
+            const card = (
+              <div
+                key={rec.linkedinUrl}
+                style={{ transform: `rotate(${tiltForId(rec.id)}deg)` }}
+                className="scroll-fade mb-7 inline-block w-full break-inside-avoid"
+              >
+                <div
+                  style={{
+                    opacity: expandedId === rec.id ? 0 : 1,
+                    transition: "opacity 300ms ease",
+                    pointerEvents: expandedId === rec.id ? "none" : undefined,
+                  }}
+                >
+                  <RecommendationCard rec={rec} strings={strings} onOpen={() => openCard(rec.id)} />
+                </div>
+              </div>
+            );
+            // The CTA card rides right after Denis's in document order so
+            // the column-balancing algorithm lands it directly beneath it,
+            // rather than wherever the last column happens to bottom out.
+            return rec.id === "rec-denis-ovtchinnikov"
+              ? [
+                  card,
+                  <RecommendationCtaCard key="cta-card" strings={strings} profile={content.profile} />,
+                ]
+              : [card];
+          })}
+        </div>
+      </div>
+      {expandedRec ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={closeCard}
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-6 backdrop-blur-sm transition-opacity duration-300 ${
+            overlayVisible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div
+            className={`transition-transform duration-300 ${overlayVisible ? "scale-100" : "scale-95"}`}
+          >
+            <RecommendationCard rec={expandedRec} strings={strings} expanded onClose={closeCard} />
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function Contact({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { profile } = content;
   return (
@@ -1372,24 +1754,33 @@ function Contact({ content, strings }: { content: PortfolioContent; strings: UIS
               copiedMessage={strings.contact.copiedToClipboard}
               className="rounded-md bg-gradient-to-r from-violet to-blue px-6 py-4 text-center text-lg font-semibold text-white shadow-[0_8px_20px_-8px_var(--violet)] ring-1 ring-inset ring-white/10 transition-transform hover:-translate-y-0.5"
             />
-            <div className="flex flex-wrap gap-4 font-mono text-xs text-slate">
-              <span>Askalia</span>
-              <span>·</span>
-              <span>{profile.sideBusinessBrand}</span>
-              <span>·</span>
-              <span>LinkedIn</span>
-              <span>·</span>
-              <span>{profile.location} · CET</span>
-            </div>
           </div>
         </div>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-ink/10 pt-6 font-mono text-xs text-slate">
+          <span>Askalia</span>
+          <span>{profile.sideBusinessBrand}</span>
+          <a
+            href={profile.linkedinUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-ink"
+          >
+            <span className="flex size-4 items-center justify-center rounded-full bg-[#007EBB]">
+              <img src="/logos/side/linkedin-icon.svg" alt="" className="size-3 rounded-full" />
+            </span>
+            LinkedIn
+          </a>
+          <span>{profile.location} · CET</span>
+        </div>
       </div>
-      <footer className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-ink/10 pt-6 font-mono text-[11px] text-slate">
-        <span>
-          © {new Date().getFullYear()} {profile.firstName} {profile.lastName} — {profile.role}
-        </span>
-        <span>{profile.tagline}</span>
-      </footer>
+      {false && (
+        <footer className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-ink/10 pt-6 font-mono text-[11px] text-slate">
+          <span>
+            © {new Date().getFullYear()} {profile.firstName} {profile.lastName} - {profile.role}
+          </span>
+          <span>{profile.tagline}</span>
+        </footer>
+      )}
     </section>
   );
 }
@@ -1414,12 +1805,18 @@ export function PortfolioPage({
   }, []);
 
   useEffect(() => {
-    const sectionIds = ["top", "work", "map", "process", "lab", "contact"];
+    const sectionIds = ["top", "work", "map", "process", "lab", "recommendations", "contact"];
     const seen = new Set<string>();
+    // Last section the visitor actually had in view - read on tab-hide/unload
+    // to know where in the page they were when they left, not just which
+    // sections they passed through.
+    const lastSectionRef = { current: "top" };
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !seen.has(entry.target.id)) {
+          if (!entry.isIntersecting) return;
+          lastSectionRef.current = entry.target.id;
+          if (!seen.has(entry.target.id)) {
             seen.add(entry.target.id);
             trackEvent("section_viewed", { section: entry.target.id });
           }
@@ -1431,7 +1828,20 @@ export function PortfolioPage({
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
     els.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "hidden") return;
+      trackEvent("session_exit", {
+        last_section: lastSectionRef.current,
+        reached_end: seen.has("contact"),
+      });
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   return (
@@ -1442,6 +1852,7 @@ export function PortfolioPage({
       <Overview content={content} strings={strings} />
       <Process content={content} strings={strings} />
       <SideBusiness content={content} strings={strings} />
+      <Recommendations content={content} strings={strings} />
       <Contact content={content} strings={strings} />
     </main>
   );

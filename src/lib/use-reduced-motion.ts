@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-// Only respects the OS "reduce motion" setting in production builds — in
+// Only respects the OS "reduce motion" setting in production builds - in
 // dev, animations always play regardless of the machine's own setting, so
 // testing them doesn't require toggling a system accessibility preference.
 export function useReducedMotion() {

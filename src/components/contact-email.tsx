@@ -9,7 +9,7 @@ type ContactEmailProps = {
 };
 
 // Keeps "user@domain" out of the prerendered HTML and out of any single
-// literal string in the JS bundle — only assembled client-side after mount,
+// literal string in the JS bundle - only assembled client-side after mount,
 // so plain-HTML scrapers never see a usable address.
 export function ContactEmail({
   user,
@@ -35,7 +35,7 @@ export function ContactEmail({
         className={`block ${className ?? ""}`}
         onClick={() => {
           // mailto: silently no-ops when the browser/OS has no default mail
-          // client configured — copy to clipboard too so the address is
+          // client configured - copy to clipboard too so the address is
           // always reachable even if nothing visibly happens on click.
           if (!email) return;
           navigator.clipboard?.writeText(email).then(() => {

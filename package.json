@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "prebuild": "npm run build:cad-web-demo",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:cad-web-demo": "cd cad-web/demo-archi && npm install && npm run build && rm -rf ../../public/cad-web/demo-archi && mkdir -p ../../public/cad-web && cp -r .output/public ../../public/cad-web/demo-archi",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."

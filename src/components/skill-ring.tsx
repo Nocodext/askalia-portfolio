@@ -14,9 +14,9 @@ type SkillRingProps = {
   onSelect: (id: string) => void;
 };
 
-// Positions are equal-angle, independent of item count or any weighting —
+// Positions are equal-angle, independent of item count or any weighting -
 // spatial proximity to the hub encodes "linked", nothing is sized by magnitude.
-// The hub carries no label (the bucket name above the ring already names it) —
+// The hub carries no label (the bucket name above the ring already names it) -
 // just the section color, so there's no long-label-in-a-small-circle problem.
 export function SkillRing({ items, hubClassName, onSelect }: SkillRingProps) {
   const reducedMotion = useReducedMotion();

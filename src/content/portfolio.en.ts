@@ -16,6 +16,10 @@ export type Highlight = string | HighlightDetail;
 
 export type GlossaryEntry = { term: string; def: string };
 
+export type GalleryPhoto = { src: string; alt: string };
+export type GalleryVideo = { youtubeId: string; title: string };
+export type GalleryItem = GalleryPhoto | GalleryVideo;
+
 export type CaseStudy = {
   id: string;
   index: string;
@@ -23,6 +27,8 @@ export type CaseStudy = {
   title: string;
   need: string;
   needObjective?: string;
+  ecosystem?: { name: string; logo?: string }[];
+  calloutImage?: string;
   highlights: Highlight[];
   highlightGroups?: { functional: Highlight[]; technical: Highlight[] };
   stackSoftware: string[];
@@ -33,7 +39,7 @@ export type CaseStudy = {
   glossary?: GlossaryEntry[];
   logos?: string[];
   scope?: { label: string; body: string };
-  photos?: { src: string; alt: string }[];
+  photos?: GalleryItem[];
   challenges?: { constraint: string; response: string }[];
   flagship?: boolean;
   hidden?: boolean;
@@ -63,6 +69,7 @@ export const cases: CaseStudy[] = [
     highlights: [],
     highlightGroups: {
       functional: [
+        "Brought on as a freelancer to be the company's first technical hire: full ownership of architecture decisions, in complete autonomy.",
         "UX/UI design process run in co-creation with hospital staff.",
         "Modeled ICU patient flows: admissions, monitoring, discharges, transfers, business rules, triggers and automations.",
         "Delivered medical and paramedical information, family/care-team alerting, and action follow-up.",
@@ -200,6 +207,7 @@ export const cases: CaseStudy[] = [
     sector: "Energy · Brokerage",
     title: "Energy broker: Enedis grid API certification & market indices",
     need: "Collect electricity meter consumption data and scrape electricity, carbon and gas price indices to estimate the best moment to issue a quote.",
+    ecosystem: [{ name: "HOHapp" }, { name: "MedesIE" }],
     photos: [
       { src: "/case-photos/energie/01.webp", alt: "Screenshot of the energy brokerage platform" },
       { src: "/case-photos/energie/02.webp", alt: "Screenshot of the energy brokerage platform" },
@@ -236,6 +244,7 @@ export const cases: CaseStudy[] = [
     sector: "SaaS · Analytical Laboratory",
     title: "OCR-based digitization of lab test requests",
     need: "Digitize requests submitted to an environmental testing lab via OCR, moving the workflow from paper to digital.",
+    ecosystem: [{ name: "Winlabo" }],
     photos: [
       {
         src: "/case-photos/ocr-bio/bon-prelevement-scan-brut.png",
@@ -289,6 +298,7 @@ export const cases: CaseStudy[] = [
     sector: "SaaS · Channel manager",
     title: "A shared opportunity hub across partner CRMs",
     need: "Channel-manager SaaS: a hub that turns partner CRMs into a shared pool of opportunities, with no manual client-file exchange - 50,000+ company records enriched and cross-matched across 3 different CRMs.",
+    ecosystem: [{ name: "Reveal" }],
     logos: ["/logos/crm/salesforce.svg", "/logos/crm/hubspot.svg", "/logos/crm/pipedrive.svg"],
     photos: [
       {
@@ -374,6 +384,7 @@ export const cases: CaseStudy[] = [
     sector: "Software Vendor · 3D Architecture",
     title: "BIM design office: porting a Windows 3D architecture app to web SaaS",
     need: "C++ desktop 3D software vendor for architects: prototype portability to a web SaaS version.",
+    ecosystem: [{ name: "Revit" }, { name: "ArchiCAD" }],
     photos: [
       {
         src: "/case-photos/cad-web/cad-web-aws-architecture.png",
@@ -446,6 +457,7 @@ export const cases: CaseStudy[] = [
     sector: "HR Tech · Creator Economy",
     title: "ATS platform for YouTube creators",
     need: "Community platform: build an ATS that matches internet users' professional skills through niche YouTube communities.",
+    ecosystem: [{ name: "YT.Careers" }, { name: "JobSaaS" }],
     photos: [
       {
         src: "/case-photos/ats-youtubers/01.webp",
@@ -499,6 +511,7 @@ export const cases: CaseStudy[] = [
     sector: "Event Photography · Cloud Post-Production",
     title: "Real-time FTP pipeline for event-photography post-production",
     need: "Outdoor event photography: massive upload and real-time cloud post-production of shoots, straight from the camera over a mobile network.",
+    ecosystem: [{ name: "Facely" }],
     highlights: [
       "Real-time, mobile-network-resilient application FTP server, with massive direct intake from the camera over 5G.",
       "Post-production pipeline triggered on receipt: preview albums, formats optimized for social-media distribution, protective watermarking.",
@@ -564,6 +577,7 @@ export const cases: CaseStudy[] = [
     sector: "HR Tech · Job Ad Multi-posting",
     title: "France Travail integration for a job-ad multi-posting hub",
     need: "Job-ad multi-posting startup connecting its clients to the sector's staple platforms (Hellowork, Indeed, APEC, France Travail...): add the France Travail broadcasting service to the integrations catalog.",
+    ecosystem: [{ name: "Indeed" }, { name: "HelloWork" }, { name: "HireSweet" }, { name: "Gojob" }],
     photos: [
       {
         src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
@@ -621,6 +635,168 @@ export const cases: CaseStudy[] = [
       ],
     },
     hidden: false,
+  },
+  {
+    id: "discovery-hub",
+    index: "12",
+    sector: "SaaS · Product Management",
+    title: "Product Discovery platform: breaking down silos between teams and partners",
+    need: "A SaaS that structures product discovery and reduces silos between the teams delivering features (engineering, UX, quality, finance, communications, marketing) and the partners waiting on releases and feeding back input.",
+    needObjective:
+      "Objective: give every stakeholder, internal and external, a shared, up-to-date view of product progress, with no re-typing or files flying between tools.",
+    ecosystem: [{ name: "Productboard" }],
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "Brought on as a freelancer to be the company's first technical hire: full ownership of architecture decisions, in complete autonomy.",
+        "Intercom, HubSpot, GitHub/GitLab, Trello, JIRA and Figma integrations, centralizing discovery, tickets, specs and customer feedback into a single flow.",
+        "Reactive dashboard shared across teams (engineering, UX, quality, finance, communications, marketing) and partners subscribed to releases.",
+        "Bidirectional sync: an update made in one tool (JIRA, Trello...) propagates everywhere, no manual re-entry.",
+        "Multi-SaaS contact merging to de-duplicate partner identities across the connected systems.",
+      ],
+      technical: [
+        "Inbound/outbound webhooks per integration, orchestrated with RxJS to handle asynchronous event streams.",
+        "Per-provider OAuth2 flows for delegated authentication on each third-party API.",
+        "Asynchronous multichannel batch notifications (email, SMS, SSE), with domain-reputation management and delivery-cost control.",
+        "Data modeling via Prisma on a NestJS architecture.",
+      ],
+    },
+    stackSoftware: [
+      "NestJS",
+      "RxJS",
+      "Prisma",
+      "OAuth2",
+      "React",
+      "Webhooks",
+      "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
+    ],
+    hashtags: [
+      "product-management",
+      "discovery",
+      "integrations",
+      "webhooks",
+      "multichannel notifications",
+      "domain reputation",
+    ],
+    matrix: {
+      roles: ["Tech Lead", "Architect"],
+      functional: [
+        "Structured product discovery",
+        "Cross-team silo reduction",
+        "Partner release distribution",
+      ],
+      sectors: ["B2B SaaS", "Product Management"],
+      technical: [
+        "Multiple API integrations",
+        "Asynchronous events (webhooks)",
+        "Delegated authentication (OAuth2)",
+        "Multichannel notifications",
+      ],
+      ethical: ["Domain reputation & deliverability", "Delivery cost control"],
+    },
+    duration: "1.5 years",
+  },
+  {
+    id: "assistant-redaction",
+    index: "13",
+    sector: "Translation · Writing · Press · Legal",
+    title: "Multilingual Edge AI writing assistant for professional writers",
+    need: "A real-time writing assistant that, depending on the client's business context, detects incorrect phrasing in multilingual text and suggests more appropriate terms based on register, terminology, ontology, etymology, idioms and set phrases.",
+    needObjective:
+      "Objective: make professional writers' terminology and style reliably correct, without the text ever leaving their workstation.",
+    ecosystem: [{ name: "Grammarly" }, { name: "MerciApp" }, { name: "TextMaster" }],
+    calloutImage: "/case-photos/assistant-redaction/panneau.png",
+    photos: [
+      {
+        src: "/case-photos/assistant-redaction/panneau.png",
+        alt: "Panel illustrating the platforms covered by the extension: Gmail, LinkedIn, Office 365",
+      },
+      {
+        src: "/case-photos/assistant-redaction/gmail-suggestions.png",
+        alt: "Engine integrated into the Gmail compose window: a misused term on the left, a banned abbreviation on the right",
+      },
+      {
+        youtubeId: "oE84p5Rf_-w",
+        title: "Chrome extension linguistic correction in a LinkedIn post",
+      },
+      {
+        youtubeId: "zH_-1HwT9Ns",
+        title: "Chrome extension linguistic correction in a LinkedIn comment",
+      },
+      {
+        src: "/case-photos/assistant-redaction/textarea-generique.png",
+        alt: "Engine integrated into a standard HTML text field, shown on sample dating-site copy",
+      },
+      {
+        src: "/case-photos/assistant-redaction/dashboard-glossaires.png",
+        alt: "Back-office web dashboard for managing multilingual business glossaries",
+      },
+      {
+        src: "/case-photos/assistant-redaction/panneau-compte-extension.png",
+        alt: "Extension account panel: active glossary, sync status, covered sites",
+      },
+    ],
+    highlights: [],
+    highlightGroups: {
+      functional: [
+        "Built the entire Chrome extension prototype: field experimentation, user feedback, iterations.",
+        "Compatible with the main office suites and text editors: Microsoft Word, Outlook, PowerPoint, LibreOffice, OnlyOffice, Google Docs, LinkedIn.",
+        "Contextualized rewrite suggestions: register, business terminology, ontology, etymology, idioms, set phrases.",
+        "Business glossary injection to tailor suggestions to each client vertical.",
+      ],
+      technical: [
+        "Edge AI embedded in the extension: no text ever sent to a server for analysis, full GDPR compliance and data sovereignty.",
+        "Integrated an NLP engine capable of full Edge AI — a rare capability in the open-source tooling available at the time.",
+        "HTML highlight overlay aligned pixel-perfect on the native text (font, size, line height), without ever altering it.",
+        "Self-hosted API server for glossary management and engine updates.",
+      ],
+    },
+    challenges: [
+      {
+        constraint:
+          "Guaranteeing that a client's text never left their machine, when very few solutions capable of running entirely on-device existed at the time.",
+        response: "An assistant that runs entirely on-device, with no text ever sent to an external server.",
+      },
+      {
+        constraint: "Offering real-time correction without ever slowing down or weighing on daily browser use.",
+        response:
+          "Heavy computation offloaded to a web worker so the interface never blocks: an extension that stays smooth no matter the volume of text analyzed.",
+      },
+      {
+        constraint:
+          "Surfacing the suggestion exactly where the error sits in the text, regardless of the software or formatting used.",
+        response: "A pixel-perfect highlight on the term in question, whatever the writing tool.",
+      },
+      {
+        constraint: "Offering suggestions that are both relevant and subtle, across a meaningful range of professions and sectors.",
+        response:
+          "Iterative glossary enrichment, vertical by vertical, driven by field feedback and prioritized by usage.",
+      },
+      {
+        constraint:
+          "Google Docs isn't exposed as a regular web page: its editor runs inside a locked-down HTML canvas, invisible to standard extensions.",
+        response:
+          "Worked around via Google Workspace's proprietary cloud API, the only available path to interact with this kind of editor.",
+      },
+      {
+        constraint: "Some targeted applications are purely desktop-based, with no DOM or web page to observe at all.",
+        response:
+          "Explored porting the engine to run via RPA - a first approach tested with Microsoft's Power Automate for desktop.",
+      },
+    ],
+    stackSoftware: ["Chrome extension", "Edge AI", "Embedded NLP", "Self-hosted API", "Business glossaries"],
+    hashtags: ["edge-ai", "data-sovereignty", "GDPR", "NLP", "browser extension", "translation"],
+    matrix: {
+      roles: ["Architect", "Product developer"],
+      functional: [
+        "Real-time writing assistant",
+        "Multilingual contextualized suggestions",
+        "Multi-vertical business coverage",
+      ],
+      sectors: ["Translation", "Writing / Press", "Legal"],
+      technical: ["Embedded Edge AI", "On-device NLP", "Browser extension", "Pixel-perfect HTML overlay"],
+      ethical: ["GDPR", "Data sovereignty", "Zero server-side text transmission"],
+    },
   },
 ];
 
@@ -746,7 +922,7 @@ export const capabilities = [
   {
     key: "02",
     title: "Architect",
-    body: "Event-driven, hexagonal, standards-based interoperability (HL7/FHIR, SOAP, CRM APIs), data sovereignty and HDS / GDPR compliance by design.",
+    body: "Event-driven, hexagonal, Domain-Driven Design: standards-based API interoperability, data sovereignty and GDPR compliance by design.",
     accent: "text-violet",
   },
   {
@@ -903,8 +1079,9 @@ export const recommendations: import("./portfolio").Recommendation[] = [
     role: "Technical Team Lead - Full-Stack B2B Architecture Specialist",
     relationship: "Client",
     quote:
-      "I'm delighted to recommend Joris, with whom I had the pleasure of collaborating on a Chrome extension POC over the past year. His JavaScript expertise and his ability to navigate the complexities of Chrome extension development were a major asset to our team. He didn't just bring technical expertise - he also showed real passion for development and innovation.",
+      "I'm delighted to recommend Joris, with whom I had the pleasure of collaborating on a Chrome extension prototype over the past year. His JavaScript expertise and his ability to navigate the complexities of Chrome extension development were a major asset to our team. He didn't just bring technical expertise - he also showed real passion for development and innovation.",
     verified: true,
+    linkedCaseId: "assistant-redaction",
   },
   {
     id: "rec-florent-de-lecluse",

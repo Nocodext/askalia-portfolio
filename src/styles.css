@@ -242,3 +242,14 @@
     animation: none;
   }
 }
+
+/* "Voir le témoignage" spotlight on a recommendation card — JS only
+   toggles these two class flags, the fade itself lives here. */
+@utility reco-inactive {
+  opacity: 0.35;
+  transition: opacity 500ms ease;
+}
+
+@utility reco-active {
+  transition: opacity 500ms ease;
+}

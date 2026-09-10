@@ -44,6 +44,7 @@ export type UIStrings = {
     collapse: string;
     viewPhotos: string;
     backToGallery: string;
+    positioningLabel: string;
     challengesLabel: string;
     viewLiveDemo: string;
     seeDemo: string;
@@ -161,7 +162,8 @@ export const uiStringsFr: UIStrings = {
     collapse: "Réduire",
     viewPhotos: "La galerie",
     backToGallery: "Retour à la galerie",
-    challengesLabel: "Contraintes & réponses apportées",
+    positioningLabel: "Écosystème",
+    challengesLabel: "Enjeux & solutions",
     viewLiveDemo: "Voir en action",
     seeDemo: "Voir la demo",
     seeBlog: "Journal de bord",
@@ -176,12 +178,7 @@ export const uiStringsFr: UIStrings = {
   },
   overview: {
     sectionLabel: "[03] - Cartographie",
-    heading: (n) => (
-      <>
-        Ce que couvrent les {n} missions, <br />
-        en un coup d'œil.
-      </>
-    ),
+    heading: (n) => <>Ce que couvrent les {n} missions, en un coup d'œil.</>,
     description:
       "Synthèse des secteurs, compétences techniques et produit, et rôles endossés, à partir des matrices d'intervention de chaque cas client.",
   },
@@ -234,10 +231,9 @@ export const uiStringsEn: UIStrings = {
         <br />
         <br />
         My path is that of a highly self-taught, hands-on engineer who gradually moved toward
-        product. I like starting from a concrete problem, going to see how it actually plays out
-        in the field, and evolving the solution as we learn - without losing sight of what will
-        need to be built behind it. What we imagine and what actually works aren't always the same
-        thing.
+        product. I like starting from a concrete problem, going to see how it actually plays out in
+        the field, and evolving the solution as we learn - without losing sight of what will need to
+        be built behind it. What we imagine and what actually works aren't always the same thing.
       </>
     ),
     intro: (
@@ -283,7 +279,8 @@ export const uiStringsEn: UIStrings = {
     collapse: "Collapse",
     viewPhotos: "View visuals",
     backToGallery: "Back to gallery",
-    challengesLabel: "Constraints & responses",
+    positioningLabel: "Ecosystem",
+    challengesLabel: "Challenges & solutions",
     viewLiveDemo: "See it in action",
     seeDemo: "See the demo",
     seeBlog: "Build log",

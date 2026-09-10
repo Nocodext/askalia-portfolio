@@ -54,6 +54,8 @@ import {
   Download,
   Quote,
   BadgeCheck,
+  Radar,
+  Play,
   type LucideIcon,
 } from "lucide-react";
 
@@ -76,6 +78,8 @@ const caseIcons: Record<string, CaseIconConfig> = {
   "sftp-photographe": { icon: Camera, color: "blue" },
   "veille-tarifaire": { icon: Tags, color: "violet", flip: true },
   "multidiffusion-france-travail": { icon: Briefcase, color: "blue" },
+  "discovery-hub": { icon: Radar, color: "amber" },
+  "assistant-redaction": { icon: Languages, color: "cyan" },
   nocodext: { image: "/logos/side/bubble-icon.png" },
   breejd: { image: "/logos/side/linkedin-icon.svg" },
   pinnpm: { image: "/logos/side/npm-icon.svg" },
@@ -124,8 +128,21 @@ function scrollToRecommendation(id: string) {
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   const ring = ["ring-2", "ring-cyan", "ring-offset-2", "ring-offset-white"];
-  el.classList.add(...ring);
-  window.setTimeout(() => el.classList.remove(...ring), 1800);
+  el.classList.add(...ring, "reco-active");
+
+  // Dim every other card on the board for a moment so the target one reads
+  // as spotlighted rather than merely ringed. The fade itself is a plain
+  // CSS class (see styles.css) — this just flags who's active/inactive.
+  const board = document.getElementById("recommendations");
+  const others = board
+    ? Array.from(board.querySelectorAll<HTMLElement>("[id^='rec-']")).filter((node) => node.id !== id)
+    : [];
+  others.forEach((node) => node.classList.add("reco-inactive"));
+
+  window.setTimeout(() => {
+    el.classList.remove(...ring, "reco-active");
+    others.forEach((node) => node.classList.remove("reco-inactive"));
+  }, 5000);
 }
 
 function caseColor(id: string): "cyan" | "violet" | "amber" | "blue" | "red" {
@@ -706,16 +723,43 @@ function CaseCard({
             ) : null}
           </div>
         </div>
-        <div
-          className={`mt-4 border-l-4 bg-ink/[0.04] py-2.5 pl-4 sm:max-w-prose ${
-            accentBorder[caseColor(item.id)]
-          }`}
-        >
-          <p className="text-sm text-pretty text-slate">{item.need}</p>
-          {item.needObjective ? (
-            <p className="mt-1.5 text-xs italic text-slate">{item.needObjective}</p>
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-stretch">
+          <div
+            className={`flex-1 border-l-4 bg-ink/[0.04] py-2.5 pl-4 sm:max-w-prose ${
+              accentBorder[caseColor(item.id)]
+            }`}
+          >
+            <p className="text-sm text-pretty text-slate">{item.need}</p>
+            {item.needObjective ? (
+              <p className="mt-1.5 text-xs italic text-slate">{item.needObjective}</p>
+            ) : null}
+          </div>
+          {item.calloutImage ? (
+            <img
+              src={item.calloutImage}
+              alt=""
+              className="h-auto w-full max-w-[220px] shrink-0 self-center rounded-md object-contain sm:self-stretch"
+            />
           ) : null}
         </div>
+        {item.ecosystem && item.ecosystem.length > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-violet">
+              {strings.caseCard.positioningLabel}
+            </span>
+            {item.ecosystem.map((e) => (
+              <span
+                key={e.name}
+                className="flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 font-mono text-xs text-ink ring-1 ring-inset ring-ink/10"
+              >
+                {e.logo ? (
+                  <img src={e.logo} alt="" className="size-3.5 shrink-0 rounded-sm object-contain" />
+                ) : null}
+                {e.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-2">
             {item.hashtags.map((h) => (
@@ -832,22 +876,36 @@ function CaseCard({
                 <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
                 {selectedPhoto === null ? (
                   <div
-                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-2.5 overflow-y-auto rounded-lg bg-white p-4"
-                    style={{ gridTemplateColumns: "repeat(auto-fit, 112px)" }}
+                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
+                    style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
                   >
-                    {item.photos.map((p, i) => (
-                      <button
-                        key={p.src}
-                        type="button"
-                        onClick={() => setSelectedPhoto(i)}
-                        className="relative size-28 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
-                      >
-                        <img src={p.src} alt={p.alt} className="size-full object-contain" />
-                      </button>
-                    ))}
+                    {item.photos.map((p, i) => {
+                      const isVideo = "youtubeId" in p;
+                      return (
+                        <button
+                          key={isVideo ? p.youtubeId : p.src}
+                          type="button"
+                          onClick={() => setSelectedPhoto(i)}
+                          className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
+                        >
+                          <img
+                            src={isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src}
+                            alt={isVideo ? p.title : p.alt}
+                            className="size-full object-cover"
+                          />
+                          {isVideo ? (
+                            <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
+                              <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
+                                <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
+                              </span>
+                            </span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
-                  <div className="relative mx-auto w-full max-w-5xl">
+                  <div className="relative mx-auto w-full max-w-6xl">
                     <button
                       type="button"
                       onClick={() => setSelectedPhoto(null)}
@@ -863,15 +921,32 @@ function CaseCard({
                       className="w-full outline-none"
                     >
                       <CarouselContent>
-                        {item.photos.map((p) => (
-                          <CarouselItem key={p.src} className="flex items-center justify-center">
-                            <img
-                              src={p.src}
-                              alt={p.alt}
-                              className="max-h-[85vh] w-full rounded-lg object-contain"
-                            />
-                          </CarouselItem>
-                        ))}
+                        {item.photos.map((p) => {
+                          const isVideo = "youtubeId" in p;
+                          return (
+                            <CarouselItem
+                              key={isVideo ? p.youtubeId : p.src}
+                              className="flex items-center justify-center"
+                            >
+                              {isVideo ? (
+                                <iframe
+                                  src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
+                                  title={p.title}
+                                  className="aspect-video w-full max-h-[85vh] rounded-lg"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                  allowFullScreen
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <img
+                                  src={p.src}
+                                  alt={p.alt}
+                                  className="max-h-[85vh] w-full rounded-lg object-contain"
+                                />
+                              )}
+                            </CarouselItem>
+                          );
+                        })}
                       </CarouselContent>
                       <CarouselPrevious className="left-2" />
                       <CarouselNext className="right-2" />
@@ -952,8 +1027,8 @@ function CaseCard({
               <ul className="mt-2.5 space-y-3">
                 {item.challenges.map((pair) => (
                   <li key={pair.constraint} className="border-l-2 border-amber/40 pl-3">
-                    <p className="text-xs text-pretty text-slate">{pair.constraint}</p>
-                    <p className="mt-1 text-sm text-pretty">{pair.response}</p>
+                    <p className="text-sm text-pretty text-slate">{pair.constraint}</p>
+                    <p className="mt-1 text-base text-pretty">{pair.response}</p>
                   </li>
                 ))}
               </ul>

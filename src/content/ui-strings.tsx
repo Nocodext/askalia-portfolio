@@ -45,6 +45,10 @@ export type UIStrings = {
     viewPhotos: string;
     backToGallery: string;
     positioningLabel: string;
+    prevCase: string;
+    nextCase: string;
+    functionalWork: string;
+    technicalWork: string;
     challengesLabel: string;
     viewLiveDemo: string;
     seeDemo: string;
@@ -163,6 +167,10 @@ export const uiStringsFr: UIStrings = {
     viewPhotos: "La galerie",
     backToGallery: "Retour à la galerie",
     positioningLabel: "Écosystème",
+    prevCase: "Cas précédent",
+    nextCase: "Cas suivant",
+    functionalWork: "Travaux fonctionnels",
+    technicalWork: "Travaux techniques",
     challengesLabel: "Enjeux & solutions",
     viewLiveDemo: "Voir en action",
     seeDemo: "Voir la demo",
@@ -280,6 +288,10 @@ export const uiStringsEn: UIStrings = {
     viewPhotos: "View visuals",
     backToGallery: "Back to gallery",
     positioningLabel: "Ecosystem",
+    prevCase: "Previous case",
+    nextCase: "Next case",
+    functionalWork: "Functional work",
+    technicalWork: "Technical work",
     challengesLabel: "Challenges & solutions",
     viewLiveDemo: "See it in action",
     seeDemo: "See the demo",

@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import type {
@@ -48,7 +49,8 @@ import {
   Briefcase,
   ArrowUpRight,
   ChevronDown,
-  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   GraduationCap,
   Languages,
   Download,
@@ -72,9 +74,7 @@ const caseIcons: Record<string, CaseIconConfig> = {
   energie: { icon: Zap, color: "cyan" },
   "cad-web": { icon: DraftingCompass, color: "blue" },
   smur: { icon: Siren, color: "cyan" },
-  "ats-youtubers": {
-    image: "https://cdn.jsdelivr.net/npm/simple-icons@16.30.0/icons/youtube.svg",
-  },
+  "ats-youtubers": { image: "/logos/side/youtube-icon.svg" },
   "sftp-photographe": { icon: Camera, color: "blue" },
   "veille-tarifaire": { icon: Tags, color: "violet", flip: true },
   "multidiffusion-france-travail": { icon: Briefcase, color: "blue" },
@@ -121,6 +121,22 @@ function scrollToCase(id: string) {
     window.scrollTo({ top, behavior: "instant" });
   }
   history.replaceState(null, "", `#${id}`);
+}
+
+// Opens a case's popup directly, without moving the background scroll
+// position first - once the modal covers the viewport a background scroll
+// only reads as a distracting flash behind the overlay, never as a cue the
+// visitor can act on. Updating the hash through the router's own `navigate`
+// (rather than a raw `history.replaceState`) matters here: the router's
+// scroll-restoration watcher reacts to every hash change it sees - including
+// ones we trigger ourselves outside of `navigate` - and falls back to
+// scrolling the target element into view unless the navigation explicitly
+// opts out via `hashScrollIntoView: false`. A bare `history.replaceState`
+// carries no such opt-out, so the watcher's own scroll would fire moments
+// later and move the background after all.
+function openCase(id: string, navigate: ReturnType<typeof useNavigate>) {
+  document.getElementById(id)?.dispatchEvent(new Event(CASE_EXPAND_EVENT));
+  navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
 }
 
 function scrollToRecommendation(id: string) {
@@ -585,70 +601,41 @@ const CASE_EXPAND_EVENT = "cc:expand";
 function CaseCard({
   item,
   strings,
-  recommendations,
+  onOpenDetail,
 }: {
   item: CaseStudy;
   strings: UIStrings;
-  recommendations: Recommendation[];
+  onOpenDetail: (id: string) => void;
 }) {
-  const linkedRecommendation = recommendations.find((r) => r.linkedCaseId === item.id);
-  const matrixAxes = useMatrixAxes(strings);
-  const [expanded, setExpanded] = useState(!!item.flagship);
   const reducedMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
-  const [photosApi, setPhotosApi] = useState<CarouselApi | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
-  const hasTrackedPhotoNav = useRef(false);
-  const carouselRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!photosApi) return;
-    if (selectedPhoto !== null) {
-      photosApi.scrollTo(selectedPhoto, true);
-      // The clicked thumbnail unmounts when switching to detail view, so
-      // focus would otherwise fall back to the dialog root - pull it onto
-      // the carousel itself so its built-in arrow-key handling works.
-      carouselRootRef.current?.focus();
-    }
-    const onSelect = () => {
-      if (hasTrackedPhotoNav.current) return;
-      hasTrackedPhotoNav.current = true;
-      trackEvent("case_photos_navigated", { case: item.id });
-    };
-    photosApi.on("select", onSelect);
-    return () => {
-      photosApi.off("select", onSelect);
-    };
-  }, [photosApi, selectedPhoto, item.id]);
-
-  useEffect(() => {
-    if (location.hash === `#${item.id}`) setExpanded(true);
+    if (location.hash === `#${item.id}`) onOpenDetail(item.id);
     const el = ref.current;
-    const onExpand = () => setExpanded(true);
+    const onExpand = () => onOpenDetail(item.id);
     el?.addEventListener(CASE_EXPAND_EVENT, onExpand);
     return () => el?.removeEventListener(CASE_EXPAND_EVENT, onExpand);
-  }, [item.id]);
+  }, [item.id, onOpenDetail]);
 
-  // A click that ends a text-selection drag shouldn't also toggle. Checking
-  // for *any* selection on the page was too broad - leftover text selected
-  // anywhere earlier (e.g. copying a paragraph, an accidental double-click)
-  // silently disabled every "Voir le détail" button until the user clicked
-  // to clear it. Track the actual mousedown/click positions on this element
-  // instead, so only a real drag on THIS control suppresses the toggle.
+  // A click that ends a text-selection drag shouldn't also open the detail
+  // popup. Checking for *any* selection on the page was too broad - leftover
+  // text selected anywhere earlier (e.g. copying a paragraph, an accidental
+  // double-click) silently disabled every "Voir le détail" trigger until the
+  // user clicked to clear it. Track the actual mousedown/click positions on
+  // this element instead, so only a real drag on THIS control suppresses it.
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const onToggleMouseDown = (e: React.MouseEvent) => {
     dragStartRef.current = { x: e.clientX, y: e.clientY };
   };
-  const toggleExpand = (e: React.MouseEvent) => {
+  const openDetail = (e: React.MouseEvent) => {
     const start = dragStartRef.current;
     dragStartRef.current = null;
     if (start && (Math.abs(e.clientX - start.x) > 5 || Math.abs(e.clientY - start.y) > 5)) {
       return;
     }
-    setExpanded((v) => {
-      if (!v) trackEvent("case_expanded", { case: item.id });
-      return !v;
-    });
+    onOpenDetail(item.id);
+    trackEvent("case_expanded", { case: item.id });
   };
 
   return (
@@ -659,7 +646,7 @@ function CaseCard({
     >
       <div className="spectrum h-1 w-full opacity-80" />
       <div className="p-7">
-        <div onMouseDown={onToggleMouseDown} onClick={toggleExpand} className="cursor-pointer">
+        <div onMouseDown={onToggleMouseDown} onClick={openDetail} className="cursor-pointer">
           <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate">
             <span>
               {item.index} / {item.sector}
@@ -789,318 +776,589 @@ function CaseCard({
         <button
           type="button"
           onMouseDown={onToggleMouseDown}
-          onClick={toggleExpand}
+          onClick={openDetail}
           className="mx-auto mt-5 flex w-fit cursor-pointer items-center gap-1.5 rounded-full bg-white px-4 py-2 font-mono text-[11px] font-medium text-cyan shadow-[0_6px_16px_-6px_rgba(16,19,26,0.25)] ring-1 ring-ink/10 transition-colors hover:text-ink"
         >
-          {expanded ? strings.caseCard.collapse : strings.caseCard.expand}
-          {expanded ? (
-            <ChevronUp className="size-3.5" strokeWidth={2.5} />
-          ) : (
-            <ChevronDown
-              className={`size-3.5 ${reducedMotion ? "" : "chevron-nudge"}`}
-              strokeWidth={2.5}
-            />
-          )}
+          {strings.caseCard.expand}
+          <ChevronDown
+            className={`size-3.5 ${reducedMotion ? "" : "chevron-nudge"}`}
+            strokeWidth={2.5}
+          />
         </button>
-        <div className={expanded ? "" : "hidden"}>
-          {item.highlightGroups ? (
-            <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-                  {strings.matrixAxes.functional}
-                </div>
-                <ul className="mt-2.5 space-y-2.5">
-                  {item.highlightGroups.functional.map((h, i) => (
-                    <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-                  {strings.matrixAxes.technical}
-                </div>
-                <ul className="mt-2.5 space-y-2.5">
-                  {item.highlightGroups.technical.map((h, i) => (
-                    <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ) : (
-            <ul
-              className={`mt-6 space-y-2.5 ${
-                item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
-              }`}
+      </div>
+    </article>
+  );
+}
+
+// Full case detail, shown inside the single shared CaseDetailDialog. Kept as
+// its own component (mounted with key={item.id}) so switching cases via
+// prev/next remounts it - local UI state (photo carousel position etc.)
+// resets automatically instead of leaking between cases, with no need to
+// manually reset each piece of state by hand.
+function CaseDetailBody({
+  item,
+  strings,
+  recommendations,
+  onClose,
+}: {
+  item: CaseStudy;
+  strings: UIStrings;
+  recommendations: Recommendation[];
+  onClose: () => void;
+}) {
+  const linkedRecommendation = recommendations.find((r) => r.linkedCaseId === item.id);
+  const matrixAxes = useMatrixAxes(strings);
+  const [photosApi, setPhotosApi] = useState<CarouselApi | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
+  const hasTrackedPhotoNav = useRef(false);
+  const carouselRootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!photosApi) return;
+    if (selectedPhoto !== null) {
+      photosApi.scrollTo(selectedPhoto, true);
+      // The clicked thumbnail unmounts when switching to detail view, so
+      // focus would otherwise fall back to the dialog root - pull it onto
+      // the carousel itself so its built-in arrow-key handling works.
+      carouselRootRef.current?.focus();
+    }
+    const onSelect = () => {
+      if (hasTrackedPhotoNav.current) return;
+      hasTrackedPhotoNav.current = true;
+      trackEvent("case_photos_navigated", { case: item.id });
+    };
+    photosApi.on("select", onSelect);
+    return () => {
+      photosApi.off("select", onSelect);
+    };
+  }, [photosApi, selectedPhoto, item.id]);
+
+  return (
+    <div className="p-7">
+      <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] text-slate">
+        <span>
+          {item.index} / {item.sector}
+        </span>
+        <div className="flex items-center gap-2">
+          {item.duration ? (
+            <span className="rounded-full bg-ink/5 px-2.5 py-0.5 ring-1 ring-inset ring-ink/10">
+              {item.duration}
+            </span>
+          ) : null}
+          {item.flagship ? (
+            <span className="rounded-full bg-amber/10 px-2.5 py-0.5 text-amber ring-1 ring-inset ring-amber/25">
+              Flagship
+            </span>
+          ) : null}
+        </div>
+      </div>
+      <div className="mt-5 flex items-start justify-between gap-3">
+        <div className="flex flex-1 items-start gap-3.5">
+          <CaseIcon id={item.id} />
+          <DialogTitle asChild>
+            <h3 className="min-w-0 font-display text-2xl font-semibold leading-tight tracking-tight text-balance">
+              {item.title}
+            </h3>
+          </DialogTitle>
+        </div>
+        {item.glossary ? (
+          <Popover
+            onOpenChange={(next) => {
+              if (next) trackEvent("popover_opened", { glossary_for: item.id });
+            }}
+          >
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1 grid size-6 shrink-0 place-items-center rounded-full text-slate ring-1 ring-ink/15 transition-colors hover:text-ink hover:ring-ink/30"
+                aria-label={strings.caseCard.glossaryAria}
+                title={strings.caseCard.glossaryAria}
+              >
+                <Languages className="size-3.5" strokeWidth={2} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="left"
+              align="start"
+              collisionPadding={16}
+              className="w-[min(18rem,calc(100vw-2rem))]"
             >
-              {item.highlights.map((h, i) => (
+              <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-slate">
+                {strings.caseCard.glossaryHeading}
+              </div>
+              <dl className="mt-3 space-y-2.5">
+                {item.glossary.map((g) => (
+                  <div key={g.term}>
+                    <dt className="font-mono text-xs font-semibold text-ink">{g.term}</dt>
+                    <dd className="mt-0.5 text-xs text-pretty text-slate">{g.def}</dd>
+                  </div>
+                ))}
+              </dl>
+            </PopoverContent>
+          </Popover>
+        ) : null}
+      </div>
+      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-stretch">
+        <div
+          className={`flex-1 border-l-4 bg-ink/[0.04] py-2.5 pl-4 sm:max-w-prose ${
+            accentBorder[caseColor(item.id)]
+          }`}
+        >
+          <p className="text-sm text-pretty text-slate">{item.need}</p>
+          {item.needObjective ? (
+            <p className="mt-1.5 text-xs italic text-slate">{item.needObjective}</p>
+          ) : null}
+        </div>
+        {item.calloutImage ? (
+          <img
+            src={item.calloutImage}
+            alt=""
+            className="h-auto w-full max-w-[220px] shrink-0 self-center rounded-md object-contain sm:self-stretch"
+          />
+        ) : null}
+      </div>
+      {item.ecosystem && item.ecosystem.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-violet">
+            {strings.caseCard.positioningLabel}
+          </span>
+          {item.ecosystem.map((e) => (
+            <span
+              key={e.name}
+              className="flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 font-mono text-xs text-ink ring-1 ring-inset ring-ink/10"
+            >
+              {e.logo ? (
+                <img src={e.logo} alt="" className="size-3.5 shrink-0 rounded-sm object-contain" />
+              ) : null}
+              {e.name}
+            </span>
+          ))}
+        </div>
+      ) : null}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {item.hashtags.map((h) => (
+            <span
+              key={h}
+              className="rounded-full bg-violet/10 px-2.5 py-1 font-mono text-xs text-violet ring-1 ring-inset ring-violet/25"
+            >
+              #{h.replace(/\s+/g, "-")}
+            </span>
+          ))}
+        </div>
+        {item.logos ? (
+          <div className="flex w-full items-center justify-center gap-4 sm:w-auto sm:shrink-0 sm:justify-start sm:gap-5">
+            {item.logos.map((src) => (
+              <img
+                key={src}
+                src={src}
+                alt=""
+                className={src.includes("salesforce") ? "h-9 w-auto sm:h-12" : "h-6 w-auto sm:h-8"}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+      {item.highlightGroups ? (
+        <div className="mt-6 grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+              {strings.caseCard.functionalWork}
+            </div>
+            <ul className="mt-2.5 space-y-2.5">
+              {item.highlightGroups.functional.map((h, i) => (
                 <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
               ))}
             </ul>
-          )}
-          {item.scope ? (
-            <div className="mt-5 border-l-2 border-violet/40 pl-3">
-              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-                {item.scope.label}
-              </div>
-              <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
+          </div>
+          <div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+              {strings.caseCard.technicalWork}
             </div>
-          ) : null}
-          {item.photos ? (
-            <Dialog
-              onOpenChange={(open) => {
-                hasTrackedPhotoNav.current = false;
-                // Skip straight to fullscreen when there's nothing to pick from.
-                setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
-                if (open) trackEvent("case_photos_opened", { case: item.id });
-              }}
-            >
-              <DialogTrigger asChild>
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
-                >
-                  <Images className="size-3.5" strokeWidth={2} />
-                  {strings.caseCard.viewPhotos}
-                </button>
-              </DialogTrigger>
-              <DialogContent
-                className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
-                onEscapeKeyDown={(e) => {
-                  if (selectedPhoto !== null) {
-                    e.preventDefault();
-                    setSelectedPhoto(null);
-                  }
-                }}
-              >
-                <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
-                {selectedPhoto === null ? (
-                  <div
-                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
-                    style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
-                  >
-                    {item.photos.map((p, i) => {
-                      const isVideo = "youtubeId" in p;
-                      return (
-                        <button
-                          key={isVideo ? p.youtubeId : p.src}
-                          type="button"
-                          onClick={() => setSelectedPhoto(i)}
-                          className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
-                        >
-                          <img
-                            src={isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src}
-                            alt={isVideo ? p.title : p.alt}
-                            className="size-full object-cover"
-                          />
-                          {isVideo ? (
-                            <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
-                              <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
-                                <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
-                              </span>
-                            </span>
-                          ) : null}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="relative mx-auto w-full max-w-6xl">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedPhoto(null)}
-                      className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
-                    >
-                      <ArrowLeft className="size-3.5" strokeWidth={2} />
-                      {strings.caseCard.backToGallery}
-                    </button>
-                    <Carousel
-                      ref={carouselRootRef}
-                      setApi={setPhotosApi}
-                      tabIndex={-1}
-                      className="w-full outline-none"
-                    >
-                      <CarouselContent>
-                        {item.photos.map((p) => {
-                          const isVideo = "youtubeId" in p;
-                          return (
-                            <CarouselItem
-                              key={isVideo ? p.youtubeId : p.src}
-                              className="flex items-center justify-center"
-                            >
-                              {isVideo ? (
-                                <iframe
-                                  src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
-                                  title={p.title}
-                                  className="aspect-video w-full max-h-[85vh] rounded-lg"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                  allowFullScreen
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <img
-                                  src={p.src}
-                                  alt={p.alt}
-                                  className="max-h-[85vh] w-full rounded-lg object-contain"
-                                />
-                              )}
-                            </CarouselItem>
-                          );
-                        })}
-                      </CarouselContent>
-                      <CarouselPrevious className="left-2" />
-                      <CarouselNext className="right-2" />
-                    </Carousel>
-                  </div>
-                )}
-              </DialogContent>
-            </Dialog>
-          ) : null}
-          {item.liveDemo ? (
-            <Dialog
-              onOpenChange={(open) =>
-                open && trackEvent("case_live_demo_opened", { case: item.id })
-              }
-            >
-              <DialogTrigger asChild>
-                <button
-                  type="button"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
-                >
-                  <ExternalLink className="size-3.5" strokeWidth={2} />
-                  {strings.caseCard.viewLiveDemo}
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
-                <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  src={item.liveDemo.previewVideo}
-                  className="block max-h-[80vh] w-full object-contain"
-                />
-                <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
-                  <a
-                    href={item.liveDemo.blogHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
-                  >
-                    {strings.caseCard.seeBlog}
-                  </a>
-                  <a
-                    href={item.liveDemo.demoHref}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
-                  >
-                    {strings.caseCard.seeDemo}
-                    <ArrowUpRight className="size-3.5" strokeWidth={2} />
-                  </a>
-                </div>
-              </DialogContent>
-            </Dialog>
-          ) : null}
-          {linkedRecommendation ? (
+            <ul className="mt-2.5 space-y-2.5">
+              {item.highlightGroups.technical.map((h, i) => (
+                <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <ul
+          className={`mt-6 space-y-2.5 ${
+            item.highlights.length > 4 ? "sm:columns-2 sm:gap-8 sm:space-y-0" : ""
+          }`}
+        >
+          {item.highlights.map((h, i) => (
+            <HighlightItem key={typeof h === "string" ? h : (h.text ?? i)} item={h} />
+          ))}
+        </ul>
+      )}
+      {item.scope ? (
+        <div className="mt-5 border-l-2 border-violet/40 pl-3">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+            {item.scope.label}
+          </div>
+          <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
+        </div>
+      ) : null}
+      {item.photos ? (
+        <Dialog
+          onOpenChange={(open) => {
+            hasTrackedPhotoNav.current = false;
+            // Skip straight to fullscreen when there's nothing to pick from.
+            setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
+            if (open) trackEvent("case_photos_opened", { case: item.id });
+          }}
+        >
+          <DialogTrigger asChild>
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                scrollToRecommendation(linkedRecommendation.id);
-              }}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+            >
+              <Images className="size-3.5" strokeWidth={2} />
+              {strings.caseCard.viewPhotos}
+            </button>
+          </DialogTrigger>
+          <DialogContent
+            className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
+            onEscapeKeyDown={(e) => {
+              if (selectedPhoto !== null) {
+                e.preventDefault();
+                setSelectedPhoto(null);
+              }
+            }}
+          >
+            <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
+            {selectedPhoto === null ? (
+              <div
+                className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
+                style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
+              >
+                {item.photos.map((p, i) => {
+                  const isVideo = "youtubeId" in p;
+                  return (
+                    <button
+                      key={isVideo ? p.youtubeId : p.src}
+                      type="button"
+                      onClick={() => setSelectedPhoto(i)}
+                      className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
+                    >
+                      <img
+                        src={isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src}
+                        alt={isVideo ? p.title : p.alt}
+                        className="size-full object-cover"
+                      />
+                      {isVideo ? (
+                        <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
+                          <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
+                            <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
+                          </span>
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="relative mx-auto w-full max-w-6xl">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPhoto(null)}
+                  className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                >
+                  <ArrowLeft className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.backToGallery}
+                </button>
+                <Carousel
+                  ref={carouselRootRef}
+                  setApi={setPhotosApi}
+                  tabIndex={-1}
+                  className="w-full outline-none"
+                >
+                  <CarouselContent>
+                    {item.photos.map((p) => {
+                      const isVideo = "youtubeId" in p;
+                      return (
+                        <CarouselItem
+                          key={isVideo ? p.youtubeId : p.src}
+                          className="flex items-center justify-center"
+                        >
+                          {isVideo ? (
+                            <iframe
+                              src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
+                              title={p.title}
+                              className="aspect-video w-full max-h-[85vh] rounded-lg"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                              loading="lazy"
+                            />
+                          ) : (
+                            <img
+                              src={p.src}
+                              alt={p.alt}
+                              className="max-h-[85vh] w-full rounded-lg object-contain"
+                            />
+                          )}
+                        </CarouselItem>
+                      );
+                    })}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2" />
+                  <CarouselNext className="right-2" />
+                </Carousel>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      ) : null}
+      {item.liveDemo ? (
+        <Dialog
+          onOpenChange={(open) => open && trackEvent("case_live_demo_opened", { case: item.id })}
+        >
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              onClick={(e) => e.stopPropagation()}
               className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
             >
-              <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
-              {strings.caseCard.seeTestimonial}
+              <ExternalLink className="size-3.5" strokeWidth={2} />
+              {strings.caseCard.viewLiveDemo}
             </button>
-          ) : null}
-          {item.challenges ? (
-            <div className="mt-5">
-              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-                {strings.caseCard.challengesLabel}
-              </div>
-              <ul className="mt-2.5 space-y-3">
-                {item.challenges.map((pair) => (
-                  <li key={pair.constraint} className="border-l-2 border-amber/40 pl-3">
-                    <p className="text-sm text-pretty text-slate">{pair.constraint}</p>
-                    <p className="mt-1 text-base text-pretty">{pair.response}</p>
-                  </li>
-                ))}
-              </ul>
+          </DialogTrigger>
+          <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
+            <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={item.liveDemo.previewVideo}
+              className="block max-h-[80vh] w-full object-contain"
+            />
+            <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
+              <a
+                href={item.liveDemo.blogHref}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
+              >
+                {strings.caseCard.seeBlog}
+              </a>
+              <a
+                href={item.liveDemo.demoHref}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
+              >
+                {strings.caseCard.seeDemo}
+                <ArrowUpRight className="size-3.5" strokeWidth={2} />
+              </a>
             </div>
-          ) : null}
-
-          <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-            {strings.caseCard.interventionFields}
+          </DialogContent>
+        </Dialog>
+      ) : null}
+      {linkedRecommendation ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+            scrollToRecommendation(linkedRecommendation.id);
+          }}
+          className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+        >
+          <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
+          {strings.caseCard.seeTestimonial}
+        </button>
+      ) : null}
+      {item.challenges ? (
+        <div className="mt-5">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+            {strings.caseCard.challengesLabel}
           </div>
-          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {matrixAxes.map((axis) => (
-              <div key={axis.key} className="overflow-hidden rounded-md ring-1 ring-ink/10">
-                <div
-                  className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] ${axis.head} ${axis.headText}`}
-                >
-                  {axis.label}
-                </div>
-                <div className="flex flex-wrap gap-1.5 bg-white p-3">
-                  {item.matrix[axis.key as keyof typeof item.matrix].map((v) => (
-                    <span
-                      key={v}
-                      className={`rounded px-2 py-1 text-[13px] ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
-                    >
-                      {v}
-                    </span>
-                  ))}
-                </div>
-              </div>
+          <ul className="mt-2.5 space-y-3">
+            {item.challenges.map((pair) => (
+              <li key={pair.constraint} className="border-l-2 border-amber/40 pl-3">
+                <p className="text-sm text-pretty text-slate">{pair.constraint}</p>
+                <p className="mt-1 text-base text-pretty">{pair.response}</p>
+              </li>
             ))}
-          </div>
+          </ul>
+        </div>
+      ) : null}
 
-          <div className="mt-6">
-            <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-              Stack software
+      <div className="mt-6 font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+        {strings.caseCard.interventionFields}
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-5">
+        {matrixAxes.map((axis) => (
+          <div key={axis.key} className="overflow-hidden rounded-md ring-1 ring-ink/10">
+            <div
+              className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] ${axis.head} ${axis.headText}`}
+            >
+              {axis.label}
             </div>
-            <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
-              {item.stackSoftware.map((s) => (
+            <div className="flex flex-wrap gap-1.5 bg-white p-3">
+              {item.matrix[axis.key as keyof typeof item.matrix].map((v) => (
                 <span
-                  key={s}
-                  className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10"
+                  key={v}
+                  className={`rounded px-2 py-1 text-[13px] ring-1 ring-inset ${axis.bg} ${axis.color} ${axis.ring}`}
                 >
-                  {s}
+                  {v}
                 </span>
               ))}
             </div>
           </div>
-          {item.stackHardware ? (
-            <div className="mt-4">
-              <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
-                Stack hardware
-              </div>
-              <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
-                {item.stackHardware.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-full bg-blue/10 px-2.5 py-1 text-blue ring-1 ring-inset ring-blue/25"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
+        ))}
+      </div>
+
+      <div className="mt-6">
+        <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+          Stack software
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+          {item.stackSoftware.map((s) => (
+            <span key={s} className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10">
+              {s}
+            </span>
+          ))}
         </div>
       </div>
-    </article>
+      {item.stackHardware ? (
+        <div className="mt-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-slate">
+            Stack hardware
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
+            {item.stackHardware.map((s) => (
+              <span
+                key={s}
+                className="rounded-full bg-blue/10 px-2.5 py-1 text-blue ring-1 ring-inset ring-blue/25"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// One shared dialog for every case's detail view, rendered once (not per
+// card). Switching cases only swaps which item it shows - it never closes
+// and reopens - so prev/next navigation doesn't cross-fade two separate
+// Dialog/Overlay instances into each other, which was the actual source of
+// the flicker with the earlier per-card-Dialog approach.
+function CaseDetailDialog({
+  cases,
+  openId,
+  onOpenIdChange,
+  strings,
+  recommendations,
+}: {
+  cases: CaseStudy[];
+  openId: string | null;
+  onOpenIdChange: (id: string | null) => void;
+  strings: UIStrings;
+  recommendations: Recommendation[];
+}) {
+  const index = openId ? cases.findIndex((c) => c.id === openId) : -1;
+  const item = index >= 0 ? cases[index] : null;
+  const prevId = item && index > 0 ? cases[index - 1]!.id : undefined;
+  const nextId = item && index < cases.length - 1 ? cases[index + 1]!.id : undefined;
+
+  // The scroll container is a single persistent DOM node shared across every
+  // case (only its CaseDetailBody child remounts, via `key`), so it keeps
+  // whatever scrollTop the previous case was left at unless reset here -
+  // navigating to a new case would otherwise silently open it mid-scroll.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [item?.id]);
+
+  const navigate = useNavigate();
+  // See openCase's comment: a raw `history.replaceState` here would leave
+  // the router's scroll-restoration watcher free to scroll the newly-shown
+  // case's background card into view a moment later, so the hash update has
+  // to go through `navigate` with both scroll behaviors turned off.
+  const goToCase = (id: string | undefined) => {
+    if (!id) return;
+    navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
+    onOpenIdChange(id);
+  };
+
+  return (
+    <Dialog
+      open={!!item}
+      onOpenChange={(open) => {
+        if (!open) onOpenIdChange(null);
+      }}
+    >
+      <DialogContent className="w-[min(92vw,860px)] max-w-none overflow-visible border-none bg-transparent p-0 shadow-none">
+        {/* Rendered even at the first/last case - invisible but still
+            hit-testable (opacity, not `hidden`/`visibility`), so a click at
+            that spot is swallowed by this no-op button instead of falling
+            through to the backdrop and closing the dialog. */}
+        <button
+          type="button"
+          onClick={() => goToCase(prevId)}
+          aria-label={strings.caseCard.prevCase}
+          aria-hidden={!prevId}
+          tabIndex={prevId ? 0 : -1}
+          className={`fixed top-1/2 left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
+            prevId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
+          }`}
+        >
+          <ChevronLeft className="size-4" strokeWidth={2.5} />
+        </button>
+        <button
+          type="button"
+          onClick={() => goToCase(nextId)}
+          aria-label={strings.caseCard.nextCase}
+          aria-hidden={!nextId}
+          tabIndex={nextId ? 0 : -1}
+          className={`fixed top-1/2 right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
+            nextId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
+          }`}
+        >
+          <ChevronRight className="size-4" strokeWidth={2.5} />
+        </button>
+        {/* Rounding lives on this outer overflow-hidden frame rather than on
+            the scrollable div directly below - a rounded element with its
+            own overflow:auto scrollbar gets its native scrollbar painted as
+            a plain straight bar that squares off the top/bottom-right
+            corners. Nesting an unrounded scroll container inside a rounded
+            clipping frame lets the frame's own overflow clip the scrollbar's
+            corners to match, without having to fight the browser's own
+            scrollbar rendering. */}
+        <div className="max-h-[85vh] overflow-hidden rounded-[min(1vw,14px)] bg-white ring-1 ring-ink/15 prism-edge">
+          <div ref={scrollRef} className="max-h-[85vh] overflow-y-auto overflow-x-hidden">
+            <div className="spectrum h-1 w-full opacity-80" />
+            {item ? (
+              <CaseDetailBody
+                key={item.id}
+                item={item}
+                strings={strings}
+                recommendations={recommendations}
+                onClose={() => onOpenIdChange(null)}
+              />
+            ) : null}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
   const [activeId, setActiveId] = useState<string>(cases[0]?.id ?? "");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1140,7 +1398,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
             onClick={(e) => {
               e.preventDefault();
               trackEvent("toc_click", { case: c.id });
-              scrollToCase(c.id);
+              openCase(c.id, navigate);
             }}
             className={`flex items-center gap-2.5 rounded-md py-1.5 pl-3 text-xs transition-colors ${
               active ? "font-medium text-ink" : "text-slate hover:text-ink"
@@ -1163,6 +1421,7 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
 
 function Work({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
+  const [openCaseId, setOpenCaseId] = useState<string | null>(null);
   return (
     <section id="work" className="border-y border-ink/10 bg-white/40">
       <div className="mx-auto max-w-6xl px-6 py-16">
@@ -1184,17 +1443,19 @@ function Work({ content, strings }: { content: PortfolioContent; strings: UIStri
         <div className="lg:flex lg:items-start lg:gap-8">
           <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">
             {cases.map((item) => (
-              <CaseCard
-                key={item.id}
-                item={item}
-                strings={strings}
-                recommendations={content.recommendations}
-              />
+              <CaseCard key={item.id} item={item} strings={strings} onOpenDetail={setOpenCaseId} />
             ))}
           </div>
           <CaseToc content={content} strings={strings} />
         </div>
       </div>
+      <CaseDetailDialog
+        cases={cases}
+        openId={openCaseId}
+        onOpenIdChange={setOpenCaseId}
+        strings={strings}
+        recommendations={content.recommendations}
+      />
     </section>
   );
 }
@@ -1271,6 +1532,13 @@ function BucketRow({
   const { cases, sideProjects } = content;
   const hasRing = b.caseIds.length >= 3;
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  // Cases open their popup in place; side projects (no popup) still scroll
+  // to their spot on the page.
+  const goToItem = (id: string) => {
+    if (cases.some((x) => x.id === id)) openCase(id, navigate);
+    else scrollToCase(id);
+  };
 
   return (
     <li className="flex items-center justify-between gap-3 border-t border-ink/10 py-2.5 first:border-t-0 first:pt-0">
@@ -1317,7 +1585,7 @@ function BucketRow({
             <div className="mt-3">
               <SkillRing
                 hubClassName={c.head}
-                onSelect={scrollToCase}
+                onSelect={goToItem}
                 items={b.caseIds.flatMap((id) => {
                   const item = cases.find((x) => x.id === id);
                   const project = sideProjects.find((x) => x.id === id);
@@ -1349,7 +1617,7 @@ function BucketRow({
                         href={`#${id}`}
                         onClick={(e) => {
                           e.preventDefault();
-                          scrollToCase(id);
+                          goToItem(id);
                         }}
                         className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
                       >
@@ -1617,6 +1885,7 @@ function RecommendationCard({
     e.stopPropagation();
     fn();
   };
+  const navigate = useNavigate();
 
   return (
     <div
@@ -1669,7 +1938,10 @@ function RecommendationCard({
       {rec.linkedCaseId ? (
         <button
           type="button"
-          onClick={stopThenAct(() => scrollToCase(rec.linkedCaseId!))}
+          onClick={stopThenAct(() => {
+            onClose?.();
+            openCase(rec.linkedCaseId!, navigate);
+          })}
           className="mt-4 flex w-fit cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
         >
           <ArrowUpRight className="size-3.5" strokeWidth={2} />
@@ -1876,7 +2148,12 @@ export function PortfolioPage({
   };
 
   useEffect(() => {
-    if (location.hash) scrollToCase(location.hash.slice(1));
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    // A case's own mount effect (see CaseCard) already opens its popup
+    // directly when the hash matches it, with no background scroll - doing
+    // it again here would just add the scroll-then-cover flash back in.
+    if (!content.cases.some((c) => c.id === id)) scrollToCase(id);
   }, []);
 
   useEffect(() => {

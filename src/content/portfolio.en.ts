@@ -827,6 +827,7 @@ export type BulletWithLogo = {
   after: string;
   alt?: string;
   large?: boolean;
+  offsetY?: string;
 };
 export type Bullet = string | BulletWithLogo;
 
@@ -925,7 +926,13 @@ export const sideProjects: SideProject[] = [
   {
     id: "airtable",
     index: "04",
-    name: { before: "", logo: "/logos/side/airtable.svg", after: " explorer", alt: "Airtable" },
+    name: {
+      before: "",
+      logo: "/logos/side/airtable.svg",
+      after: " explorer",
+      alt: "Airtable",
+      offsetY: "-5px",
+    },
     pitch:
       "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back - and makes the dashboard genuinely navigable.",
     url: "https://nocodext.studio/airtable",

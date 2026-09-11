@@ -356,6 +356,7 @@ export function SideBusiness({
                   <img
                     src={p.name.logo}
                     alt={p.name.alt ?? ""}
+                    style={p.name.offsetY ? { marginTop: p.name.offsetY } : undefined}
                     className={p.name.large ? "h-10 w-auto" : "h-7 w-auto"}
                   />
                   {p.name.after}

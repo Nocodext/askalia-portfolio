@@ -896,6 +896,10 @@ export type BulletWithLogo = {
   // bumps it past the shared inline-logo size when the wordmark itself
   // needs to carry more visual weight as the headline.
   large?: boolean;
+  // Per-logo vertical nudge (CSS margin-top) for marks whose glyph sits
+  // off-center within their own image box, throwing off items-center
+  // alignment against the text next to them.
+  offsetY?: string;
 };
 export type Bullet = string | BulletWithLogo;
 
@@ -1002,7 +1006,13 @@ export const sideProjects: SideProject[] = [
   {
     id: "airtable",
     index: "04",
-    name: { before: "", logo: "/logos/side/airtable.svg", after: " explorer", alt: "Airtable" },
+    name: {
+      before: "",
+      logo: "/logos/side/airtable.svg",
+      after: " explorer",
+      alt: "Airtable",
+      offsetY: "-5px",
+    },
     pitch:
       "Les couleurs du dashboard Airtable ont disparu sur décision interne. L'extension signe leur retour - et rend le dashboard réellement navigable.",
     url: "https://nocodext.studio/airtable",

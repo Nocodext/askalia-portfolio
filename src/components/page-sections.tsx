@@ -351,12 +351,10 @@ export function SideBusiness({
           <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
             {strings.sideBusiness.stackLabel}
           </div>
-          <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
-            {content.sideProjectsStack.map((s) => (
-              <span
-                key={s}
-                className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
-              >
+          <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] text-cyan/80">
+            {content.sideProjectsStack.map((s, i) => (
+              <span key={s} className="inline-flex items-center gap-2.5">
+                {i > 0 ? <span className="text-white/20">·</span> : null}
                 {s}
               </span>
             ))}
@@ -372,7 +370,7 @@ export function SideBusiness({
                 key={l.name}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 py-1.5 pr-3 pl-2 ring-1 ring-inset ring-white/15"
               >
-                <img src={l.logo} alt="" className="size-3.5 shrink-0" />
+                <img src={l.logo} alt="" className="size-5 shrink-0" />
                 {l.name}
               </span>
             ))}

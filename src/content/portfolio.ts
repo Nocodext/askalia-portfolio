@@ -904,7 +904,11 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: string[];
+  logos?: { src: string; style?: any }[];
+  // Text+logo combo shown at the right edge of the header row instead of
+  // `logos`, when a plain wordmark badge isn't enough (e.g. "for [LinkedIn
+  // logo]").
+  headerRight?: BulletWithLogo;
   business: string;
 };
 
@@ -928,7 +932,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "nocodext",
     index: "01",
-    name: "Nocodext for Bubble",
+    name: { before: "Nocodext for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
     pitch:
       "Outillage en extensions Chrome pour les agences NoCode Bubble : découvrabilité d'une app reprise et QA continue pour livrer du professionnel - totalement absent en natif dans Bubble.",
     url: "https://nocodext.studio/bubble",
@@ -946,18 +950,22 @@ export const sideProjects: SideProject[] = [
       "Agents de dev, MCP et skills.",
     ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: ["/logos/side/bubble.svg"],
+    logos: [
+      {
+        src: "/logos/side/bubble.svg",
+        style: {
+          width: "120px",
+          height: "auto",
+        },
+      },
+    ],
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
   },
   {
     id: "breedj",
     index: "02",
-    name: {
-      before: "Breedj (for ",
-      logo: "/logos/side/linkedin.svg",
-      after: ")",
-      alt: "LinkedIn",
-    },
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj" },
+    headerRight: { before: "for ", logo: "/logos/side/linkedin.svg", after: "", alt: "LinkedIn" },
     pitch:
       "Après un job post LinkedIn : récupérer en masse, trier et exporter les répondants vers fichier plat, outil bureautique cloud ou ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -968,7 +976,6 @@ export const sideProjects: SideProject[] = [
       "Réalisation intégrale, de l'idée à la production.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: ["/logos/side/breedj.png"],
     business: "2 leads RH prêts à bêta-tester.",
   },
   {
@@ -986,7 +993,15 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design du side panel et de l'intégration in-page.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: ["/logos/side/pinnpm.png"],
+    logos: [
+      {
+        src: "/logos/side/pinnpm.png",
+        style: {
+          width: "100px",
+          height: "auto",
+        },
+      },
+    ],
     business: "De l'idée à la prod.",
   },
   {
@@ -1005,7 +1020,15 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design de la navigation et de la coloration de l'interface native Airtable.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: ["/logos/side/airtable.svg"],
+    logos: [
+      {
+        src: "/logos/side/airtable.svg",
+        style: {
+          width: "120px",
+          height: "auto",
+        },
+      },
+    ],
     business: "1 lead prêt à bêta-tester.",
   },
 ];

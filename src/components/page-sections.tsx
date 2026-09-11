@@ -284,7 +284,6 @@ export function Hero({ content, strings }: { content: PortfolioContent; strings:
   );
 }
 
-
 export function Process({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { capabilities } = content;
   return (
@@ -314,7 +313,13 @@ export function Process({ content, strings }: { content: PortfolioContent; strin
   );
 }
 
-export function SideBusiness({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
+export function SideBusiness({
+  content,
+  strings,
+}: {
+  content: PortfolioContent;
+  strings: UIStrings;
+}) {
   const { sideProjects } = content;
   return (
     <section id="lab" className="mx-auto max-w-6xl px-6 pb-16">
@@ -344,6 +349,15 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
             const nameContent =
               typeof p.name === "string" ? (
                 p.name
+              ) : p.name.before === "" && p.name.after === "" ? (
+                // No surrounding text - the logo stands in for the whole
+                // name, so it reads as a wordmark headline rather than a
+                // small inline accent (see the `else` branch below).
+                <img
+                  src={p.name.logo}
+                  alt={p.name.alt ?? ""}
+                  className="h-7 w-auto align-text-bottom"
+                />
               ) : (
                 <>
                   {p.name.before}
@@ -380,14 +394,29 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
                       nameContent
                     )}
                   </h3>
-                  {p.logos ? (
+                  {p.headerRight ? (
+                    <div className="flex shrink-0 items-center gap-1 font-mono text-xs text-white/60">
+                      {p.headerRight.before}
+                      <img
+                        src={p.headerRight.logo}
+                        alt={p.headerRight.alt ?? ""}
+                        className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
+                      />
+                      {p.headerRight.after}
+                    </div>
+                  ) : p.logos ? (
                     <div className="flex shrink-0 items-center gap-2">
-                      {p.logos.map((src) => (
+                      {p.logos.map((logo) => (
                         <span
-                          key={src}
-                          className="inline-flex items-center rounded-md bg-white px-2 py-1"
+                          key={logo.src}
+                          className={`inline-flex items-center rounded-md ${!logo.src.includes("breedj") ? "bg-white" : ""} px-2 py-1`}
                         >
-                          <img src={src} alt="" className="h-4 w-auto" />
+                          <img
+                            src={logo.src}
+                            alt=""
+                            style={logo?.style || {}}
+                            className="h-4 w-auto"
+                          />
                         </span>
                       ))}
                     </div>

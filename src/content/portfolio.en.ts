@@ -832,7 +832,8 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: string[];
+  logos?: { src: string; style?: any }[];
+  headerRight?: BulletWithLogo;
   business: string;
 };
 
@@ -856,7 +857,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "nocodext",
     index: "01",
-    name: "Nocodext for Bubble",
+    name: { before: "Nocodext for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
     pitch:
       "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally - entirely missing natively in Bubble.",
     url: "https://nocodext.studio/bubble",
@@ -874,18 +875,14 @@ export const sideProjects: SideProject[] = [
       "Dev agents, MCP and skills.",
     ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: ["/logos/side/bubble.svg"],
+    logos: [{ src: "/logos/side/bubble.svg" }],
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
   },
   {
     id: "breedj",
     index: "02",
-    name: {
-      before: "Breedj (for ",
-      logo: "/logos/side/linkedin.svg",
-      after: ")",
-      alt: "LinkedIn",
-    },
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj" },
+    headerRight: { before: "for ", logo: "/logos/side/linkedin.svg", after: "", alt: "LinkedIn" },
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -896,7 +893,6 @@ export const sideProjects: SideProject[] = [
       "Built end to end, from idea to production.",
       "Dev agents, MCP and skills.",
     ],
-    logos: ["/logos/side/breedj.png"],
     business: "2 HR leads ready to beta-test.",
   },
   {
@@ -914,7 +910,7 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for the side panel and in-page integration.",
       "Dev agents, MCP and skills.",
     ],
-    logos: ["/logos/side/pinnpm.png"],
+    logos: [{ src: "/logos/side/pinnpm.png" }],
     business: "From idea to production.",
   },
   {
@@ -933,7 +929,7 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for navigation and coloring in Airtable's native interface.",
       "Dev agents, MCP and skills.",
     ],
-    logos: ["/logos/side/airtable.svg"],
+    logos: [{ src: "/logos/side/airtable.svg" }],
     business: "1 lead ready to beta-test.",
   },
 ];

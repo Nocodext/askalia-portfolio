@@ -1,15 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
 import type { OverviewBucket, OverviewCategory, PortfolioContent } from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
-import {
-  Popover,
-  PopoverArrow,
-  PopoverClose,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SkillRing } from "@/components/skill-ring";
 import { CaseIcon, caseColor, iconBadgeBg, ringColorVar } from "@/components/case-studies";
@@ -129,16 +123,100 @@ function BucketRow({
   const hasRing = b.caseIds.length >= 3;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  // "left"/"right" reliably runs out of room next to a trigger sitting near
-  // the screen edge on a narrow viewport, landing the popover off-center;
-  // "bottom" lets Radix's own collision handling keep it centered instead.
   const isMobile = useIsMobile();
   // Cases open their popup in place; side projects (no popup) still scroll
   // to their spot on the page.
   const goToItem = (id: string) => {
     if (cases.some((x) => x.id === id)) openCase(id, navigate);
     else scrollToCase(id);
+    setOpen(false);
   };
+
+  // On mobile there's no good trigger-relative side to anchor to - the row
+  // can sit anywhere in a long scrolling page, and Radix's own "left"/
+  // "right" positioning (plus its collision handling) still resolves
+  // relative to the trigger, never to the viewport itself. So instead of
+  // fighting that, mobile skips PopoverContent's Popper positioning
+  // entirely and renders a manually-controlled overlay centered on the
+  // page, the same pattern the Recommendations modal already uses.
+  useEffect(() => {
+    if (!isMobile || !open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMobile, open]);
+
+  const body = (
+    <>
+      <div
+        className={`flex items-center gap-1.5 font-mono text-[11px] whitespace-nowrap uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
+      >
+        {hasRing ? (
+          <span className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`} />
+        ) : null}
+        {b.label}
+      </div>
+      {hasRing ? (
+        <div className="mt-3">
+          <SkillRing
+            hubClassName={c.head}
+            onSelect={goToItem}
+            items={b.caseIds.flatMap((id) => {
+              const item = cases.find((x) => x.id === id);
+              const project = sideProjects.find((x) => x.id === id);
+              const title = item?.title ?? project?.name;
+              if (!title) return [];
+              return [
+                {
+                  id,
+                  title,
+                  color: ringColorVar[caseColor(id)],
+                  node: <CaseIcon id={id} size="sm" />,
+                },
+              ];
+            })}
+          />
+        </div>
+      ) : null}
+      <TooltipProvider delayDuration={200}>
+        <ul className="-mx-1 mt-3">
+          {b.caseIds.map((id) => {
+            const item = cases.find((x) => x.id === id);
+            const project = sideProjects.find((x) => x.id === id);
+            const title = item?.title ?? project?.name;
+            if (!title) return null;
+            return (
+              <li key={id}>
+                <a
+                  href={`#${id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToItem(id);
+                  }}
+                  className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
+                >
+                  <CaseIcon id={id} size="sm" />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="min-w-0 flex-1 truncate text-left">{title}</span>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">{title}</TooltipContent>
+                  </Tooltip>
+                  {project ? (
+                    <span className="shrink-0 font-mono text-[10px] font-normal text-slate">
+                      {strings.work.sideProjectSuffix}
+                    </span>
+                  ) : null}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </TooltipProvider>
+    </>
+  );
 
   return (
     <li className="flex items-center justify-between gap-3 border-t border-ink/10 py-2.5 first:border-t-0 first:pt-0">
@@ -166,82 +244,33 @@ function BucketRow({
             <ArrowUpRight className="size-3" strokeWidth={2.5} />
           </button>
         </PopoverTrigger>
-        <PopoverContent
-          side={isMobile ? "bottom" : popoverSide}
-          align="center"
-          collisionPadding={16}
-          className="w-[min(20rem,calc(100vw-2rem))]"
-        >
-          <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
-          <div
-            className={`flex items-center gap-1.5 font-mono text-[11px] whitespace-nowrap uppercase tracking-[0.15em] ${hasRing ? `font-semibold ${c.text}` : "text-slate"}`}
+        {!isMobile ? (
+          <PopoverContent
+            side={popoverSide}
+            align="center"
+            collisionPadding={16}
+            className="w-[min(20rem,calc(100vw-2rem))]"
           >
-            {hasRing ? (
-              <span className={`size-1.5 shrink-0 rounded-full ${iconBadgeBg[category.color]}`} />
-            ) : null}
-            {b.label}
-          </div>
-          {hasRing ? (
-            <div className="mt-3">
-              <SkillRing
-                hubClassName={c.head}
-                onSelect={goToItem}
-                items={b.caseIds.flatMap((id) => {
-                  const item = cases.find((x) => x.id === id);
-                  const project = sideProjects.find((x) => x.id === id);
-                  const title = item?.title ?? project?.name;
-                  if (!title) return [];
-                  return [
-                    {
-                      id,
-                      title,
-                      color: ringColorVar[caseColor(id)],
-                      node: <CaseIcon id={id} size="sm" />,
-                    },
-                  ];
-                })}
-              />
-            </div>
-          ) : null}
-          <TooltipProvider delayDuration={200}>
-            <ul className="-mx-1 mt-3">
-              {b.caseIds.map((id) => {
-                const item = cases.find((x) => x.id === id);
-                const project = sideProjects.find((x) => x.id === id);
-                const title = item?.title ?? project?.name;
-                if (!title) return null;
-                return (
-                  <li key={id}>
-                    <PopoverClose asChild>
-                      <a
-                        href={`#${id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          goToItem(id);
-                        }}
-                        className="flex items-center gap-2.5 rounded-md px-1 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink/5"
-                      >
-                        <CaseIcon id={id} size="sm" />
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="min-w-0 flex-1 truncate text-left">{title}</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom">{title}</TooltipContent>
-                        </Tooltip>
-                        {project ? (
-                          <span className="shrink-0 font-mono text-[10px] font-normal text-slate">
-                            {strings.work.sideProjectSuffix}
-                          </span>
-                        ) : null}
-                      </a>
-                    </PopoverClose>
-                  </li>
-                );
-              })}
-            </ul>
-          </TooltipProvider>
-        </PopoverContent>
+            <PopoverArrow className="fill-popover" stroke="var(--line)" strokeWidth={1} />
+            {body}
+          </PopoverContent>
+        ) : null}
       </Popover>
+      {isMobile && open ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-6 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-[min(20rem,calc(100vw-2rem))] rounded-md border bg-popover p-4 text-popover-foreground shadow-md"
+          >
+            {body}
+          </div>
+        </div>
+      ) : null}
     </li>
   );
 }

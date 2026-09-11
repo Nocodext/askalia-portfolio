@@ -313,6 +313,19 @@ export function Process({ content, strings }: { content: PortfolioContent; strin
   );
 }
 
+// Rendered as real text (Comfortaa) rather than the source raster PNG -
+// at the small sizes this mark is displayed at, downscaling the image
+// left it looking muddy/soft even though the source itself is sharp when
+// viewed at full size. Text stays crisp at any size.
+function NocodextWordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={`font-["Comfortaa"] font-bold ${className}`}>
+      <span className="text-black">nocod</span>
+      <span className="text-[#FF0000]">ext</span>
+    </span>
+  );
+}
+
 export function SideBusiness({
   content,
   strings,
@@ -329,7 +342,7 @@ export function SideBusiness({
           <span className="size-1.5 rounded-full bg-cyan" /> {strings.sideBusiness.sectionLabel}
         </div>
         <div className="mt-5 inline-flex rounded-md bg-white px-4 py-2.5">
-          <img src="/logos/nocodext.png" alt="nocodext.studio" className="h-7 w-auto sm:h-8" />
+          <NocodextWordmark className="text-2xl sm:text-3xl" />
         </div>
         <p className="mt-3 max-w-[58ch] text-sm text-pretty text-white/70">
           {strings.sideBusiness.intro}
@@ -353,12 +366,16 @@ export function SideBusiness({
               typeof p.name === "string" ? null : (
                 <>
                   {p.name.before}
-                  <img
-                    src={p.name.logo}
-                    alt={p.name.alt ?? ""}
-                    style={p.name.offsetY ? { marginTop: p.name.offsetY } : undefined}
-                    className={p.name.large ? "h-10 w-auto" : "h-7 w-auto"}
-                  />
+                  {p.name.logo === "/logos/nocodext.png" ? (
+                    <NocodextWordmark className="text-2xl" />
+                  ) : (
+                    <img
+                      src={p.name.logo}
+                      alt={p.name.alt ?? ""}
+                      style={p.name.offsetY ? { marginTop: p.name.offsetY } : undefined}
+                      className={p.name.large ? "h-10 w-auto" : "h-7 w-auto"}
+                    />
+                  )}
                   {p.name.after}
                   {p.headerRight ? (
                     <>
@@ -480,11 +497,11 @@ export function SideBusiness({
                     <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
                       {strings.sideBusiness.llmsUsed}
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-amber">
+                    <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
                       {p.llms.map((l) => (
                         <span
                           key={l}
-                          className="rounded-full bg-amber/10 px-2.5 py-1 ring-1 ring-inset ring-amber/25"
+                          className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
                         >
                           {l}
                         </span>

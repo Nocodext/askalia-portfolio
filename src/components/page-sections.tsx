@@ -340,92 +340,108 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
           ))}
         </div>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {sideProjects.map((p) => (
-            <div
-              key={p.id}
-              id={p.id}
-              className="rounded-[min(1vw,14px)] bg-white/5 p-6 ring-1 ring-white/10"
-            >
-              <div className="font-mono text-[11px] text-white/50">
-                {p.index} {strings.sideBusiness.productSuffix}
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold">
-                  {p.url ? (
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 transition-colors hover:text-cyan"
-                    >
-                      {p.name}
-                      <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
-                    </a>
-                  ) : (
-                    p.name
-                  )}
-                </h3>
-                {p.logos ? (
-                  <div className="flex shrink-0 items-center gap-2">
-                    {p.logos.map((src) => (
-                      <span
-                        key={src}
-                        className="inline-flex items-center rounded-md bg-white px-2 py-1"
+          {sideProjects.map((p) => {
+            const nameContent =
+              typeof p.name === "string" ? (
+                p.name
+              ) : (
+                <>
+                  {p.name.before}
+                  <img
+                    src={p.name.logo}
+                    alt={p.name.alt ?? ""}
+                    className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
+                  />
+                  {p.name.after}
+                </>
+              );
+            return (
+              <div
+                key={p.id}
+                id={p.id}
+                className="rounded-[min(1vw,14px)] bg-white/5 p-6 ring-1 ring-white/10"
+              >
+                <div className="font-mono text-[11px] text-white/50">
+                  {p.index} {strings.sideBusiness.productSuffix}
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <h3 className="font-display text-xl font-semibold">
+                    {p.url ? (
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 transition-colors hover:text-cyan"
                       >
-                        <img src={src} alt="" className="h-4 w-auto" />
+                        {nameContent}
+                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                      </a>
+                    ) : (
+                      nameContent
+                    )}
+                  </h3>
+                  {p.logos ? (
+                    <div className="flex shrink-0 items-center gap-2">
+                      {p.logos.map((src) => (
+                        <span
+                          key={src}
+                          className="inline-flex items-center rounded-md bg-white px-2 py-1"
+                        >
+                          <img src={src} alt="" className="h-4 w-auto" />
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
+                <ul className="mt-4 space-y-2">
+                  {p.bullets.map((b, i) => (
+                    <li
+                      key={typeof b === "string" ? b : i}
+                      className="flex gap-2.5 text-sm text-white/80"
+                    >
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
+                      <span className="text-pretty">
+                        {typeof b === "string" ? (
+                          b
+                        ) : (
+                          <>
+                            {b.before}
+                            <img
+                              src={b.logo}
+                              alt=""
+                              className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
+                            />
+                            {b.after}
+                          </>
+                        )}
                       </span>
-                    ))}
+                    </li>
+                  ))}
+                </ul>
+                {p.llms ? (
+                  <div className="mt-4">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
+                      {strings.sideBusiness.llmsUsed}
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-amber">
+                      {p.llms.map((l) => (
+                        <span
+                          key={l}
+                          className="rounded-full bg-amber/10 px-2.5 py-1 ring-1 ring-inset ring-amber/25"
+                        >
+                          {l}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 ) : null}
-              </div>
-              <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
-              <ul className="mt-4 space-y-2">
-                {p.bullets.map((b, i) => (
-                  <li
-                    key={typeof b === "string" ? b : i}
-                    className="flex gap-2.5 text-sm text-white/80"
-                  >
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
-                    <span className="text-pretty">
-                      {typeof b === "string" ? (
-                        b
-                      ) : (
-                        <>
-                          {b.before}
-                          <img
-                            src={b.logo}
-                            alt=""
-                            className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
-                          />
-                          {b.after}
-                        </>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              {p.llms ? (
-                <div className="mt-4">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
-                    {strings.sideBusiness.llmsUsed}
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-amber">
-                    {p.llms.map((l) => (
-                      <span
-                        key={l}
-                        className="rounded-full bg-amber/10 px-2.5 py-1 ring-1 ring-inset ring-amber/25"
-                      >
-                        {l}
-                      </span>
-                    ))}
-                  </div>
+                <div className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-cyan">
+                  {p.business}
                 </div>
-              ) : null}
-              <div className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-cyan">
-                {p.business}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

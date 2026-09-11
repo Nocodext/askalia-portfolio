@@ -62,7 +62,7 @@ const caseIcons: Record<string, CaseIconConfig> = {
   "discovery-hub": { icon: Radar, color: "amber" },
   "assistant-redaction": { icon: Languages, color: "cyan" },
   nocodext: { image: "/logos/side/bubble-icon.png" },
-  breejd: { image: "/logos/side/linkedin-icon.svg" },
+  breedj: { image: "/logos/side/linkedin-icon.svg" },
   pinnpm: { image: "/logos/side/npm-icon.svg" },
   airtable: { image: "/logos/side/airtable-icon.svg" },
 };
@@ -350,7 +350,11 @@ function CaseCard({
                 className="flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 font-mono text-xs text-ink ring-1 ring-inset ring-ink/10"
               >
                 {e.logo ? (
-                  <img src={e.logo} alt="" className="size-3.5 shrink-0 rounded-sm object-contain" />
+                  <img
+                    src={e.logo}
+                    alt=""
+                    className="size-3.5 shrink-0 rounded-sm object-contain"
+                  />
                 ) : null}
                 {e.name}
               </span>
@@ -656,7 +660,9 @@ function CaseDetailBody({
                       className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
                     >
                       <img
-                        src={isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src}
+                        src={
+                          isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src
+                        }
                         alt={isVideo ? p.title : p.alt}
                         className="size-full object-cover"
                       />
@@ -832,7 +838,10 @@ function CaseDetailBody({
         </div>
         <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
           {item.stackSoftware.map((s) => (
-            <span key={s} className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10">
+            <span
+              key={s}
+              className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10"
+            >
               {s}
             </span>
           ))}

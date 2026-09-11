@@ -578,7 +578,12 @@ export const cases: CaseStudy[] = [
     sector: "HR Tech · Job Ad Multi-posting",
     title: "France Travail integration for a job-ad multi-posting hub",
     need: "Job-ad multi-posting startup connecting its clients to the sector's staple platforms (Hellowork, Indeed, APEC, France Travail...): add the France Travail broadcasting service to the integrations catalog.",
-    ecosystem: [{ name: "Indeed" }, { name: "HelloWork" }, { name: "HireSweet" }, { name: "Gojob" }],
+    ecosystem: [
+      { name: "Indeed" },
+      { name: "HelloWork" },
+      { name: "HireSweet" },
+      { name: "Gojob" },
+    ],
     photos: [
       {
         src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
@@ -756,10 +761,12 @@ export const cases: CaseStudy[] = [
       {
         constraint:
           "Guaranteeing that a client's text never left their machine, when very few solutions capable of running entirely on-device existed at the time.",
-        response: "An assistant that runs entirely on-device, with no text ever sent to an external server.",
+        response:
+          "An assistant that runs entirely on-device, with no text ever sent to an external server.",
       },
       {
-        constraint: "Offering real-time correction without ever slowing down or weighing on daily browser use.",
+        constraint:
+          "Offering real-time correction without ever slowing down or weighing on daily browser use.",
         response:
           "Heavy computation offloaded to a web worker so the interface never blocks: an extension that stays smooth no matter the volume of text analyzed.",
       },
@@ -769,7 +776,8 @@ export const cases: CaseStudy[] = [
         response: "A pixel-perfect highlight on the term in question, whatever the writing tool.",
       },
       {
-        constraint: "Offering suggestions that are both relevant and subtle, across a meaningful range of professions and sectors.",
+        constraint:
+          "Offering suggestions that are both relevant and subtle, across a meaningful range of professions and sectors.",
         response:
           "Iterative glossary enrichment, vertical by vertical, driven by field feedback and prioritized by usage.",
       },
@@ -780,12 +788,19 @@ export const cases: CaseStudy[] = [
           "Worked around via Google Workspace's proprietary cloud API, the only available path to interact with this kind of editor.",
       },
       {
-        constraint: "Some targeted applications are purely desktop-based, with no DOM or web page to observe at all.",
+        constraint:
+          "Some targeted applications are purely desktop-based, with no DOM or web page to observe at all.",
         response:
           "Explored porting the engine to run via RPA - a first approach tested with Microsoft's Power Automate for desktop.",
       },
     ],
-    stackSoftware: ["Chrome extension", "Edge AI", "Embedded NLP", "Self-hosted API", "Business glossaries"],
+    stackSoftware: [
+      "Chrome extension",
+      "Edge AI",
+      "Embedded NLP",
+      "Self-hosted API",
+      "Business glossaries",
+    ],
     hashtags: ["edge-ai", "data-sovereignty", "GDPR", "NLP", "browser extension", "translation"],
     matrix: {
       roles: ["Architect", "Product developer"],
@@ -795,18 +810,23 @@ export const cases: CaseStudy[] = [
         "Multi-vertical business coverage",
       ],
       sectors: ["Translation", "Writing / Press", "Legal"],
-      technical: ["Embedded Edge AI", "On-device NLP", "Browser extension", "Pixel-perfect HTML overlay"],
+      technical: [
+        "Embedded Edge AI",
+        "On-device NLP",
+        "Browser extension",
+        "Pixel-perfect HTML overlay",
+      ],
       ethical: ["GDPR", "Data sovereignty", "Zero server-side text transmission"],
     },
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string };
+export type BulletWithLogo = { before: string; logo: string; after: string; alt?: string };
 export type Bullet = string | BulletWithLogo;
 
 export type SideProject = {
   id: string;
-  name: string;
+  name: string | BulletWithLogo;
   index: string;
   pitch: string;
   url?: string;
@@ -820,7 +840,7 @@ export type SideProject = {
 // onto it too) - shown once under the section headline instead of
 // repeated on every card.
 export const sideProjectsStack: string[] = [
-  "Supabase (OTP, edge functions, triggers, RBAC)",
+  "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
   "Stripe",
   "React",
   "shadcn/ui",
@@ -858,9 +878,14 @@ export const sideProjects: SideProject[] = [
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
   },
   {
-    id: "breejd",
+    id: "breedj",
     index: "02",
-    name: "Breejd",
+    name: {
+      before: "Breedj (for ",
+      logo: "/logos/side/linkedin.svg",
+      after: ")",
+      alt: "LinkedIn",
+    },
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -871,7 +896,7 @@ export const sideProjects: SideProject[] = [
       "Built end to end, from idea to production.",
       "Dev agents, MCP and skills.",
     ],
-    logos: ["/logos/side/linkedin.svg"],
+    logos: ["/logos/side/breedj.png"],
     business: "2 HR leads ready to beta-test.",
   },
   {
@@ -1003,10 +1028,10 @@ export const overview: OverviewCategory[] = [
     color: "violet",
     description: "Types of product value delivered, client missions and side ventures included.",
     buckets: [
-      { label: "Product strategy & positioning", caseIds: ["nocodext", "breejd"] },
+      { label: "Product strategy & positioning", caseIds: ["nocodext", "breedj"] },
       {
         label: "Product Design (UX/UI/Interaction)",
-        caseIds: ["nocodext", "patrimoine", "breejd", "pinnpm", "airtable", "ats-youtubers"],
+        caseIds: ["nocodext", "patrimoine", "breedj", "pinnpm", "airtable", "ats-youtubers"],
       },
       {
         label: "Business automation & integration",

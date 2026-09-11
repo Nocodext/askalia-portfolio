@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
-import type { OverviewBucket, OverviewCategory, PortfolioContent } from "@/content/portfolio";
+import {
+  sideProjectNameText,
+  type OverviewBucket,
+  type OverviewCategory,
+  type PortfolioContent,
+} from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -166,7 +171,7 @@ function BucketRow({
             items={b.caseIds.flatMap((id) => {
               const item = cases.find((x) => x.id === id);
               const project = sideProjects.find((x) => x.id === id);
-              const title = item?.title ?? project?.name;
+              const title = item?.title ?? (project ? sideProjectNameText(project.name) : undefined);
               if (!title) return [];
               return [
                 {
@@ -185,7 +190,7 @@ function BucketRow({
           {b.caseIds.map((id) => {
             const item = cases.find((x) => x.id === id);
             const project = sideProjects.find((x) => x.id === id);
-            const title = item?.title ?? project?.name;
+            const title = item?.title ?? (project ? sideProjectNameText(project.name) : undefined);
             if (!title) return null;
             return (
               <li key={id}>

@@ -633,7 +633,12 @@ export const cases: CaseStudy[] = [
     sector: "RH Tech · Multidiffusion d'offres d'emploi",
     title: "Intégration France Travail au hub de multidiffusion d'offres d'emploi",
     need: "Startup de multidiffusion d'annonces d'emploi connectant ses clients aux plateformes incontournables du secteur (Hellowork, Indeed, APEC, France Travail...) : ajouter le service de diffusion auprès de France Travail au catalogue d'intégrations.",
-    ecosystem: [{ name: "Indeed" }, { name: "HelloWork" }, { name: "HireSweet" }, { name: "Gojob" }],
+    ecosystem: [
+      { name: "Indeed" },
+      { name: "HelloWork" },
+      { name: "HireSweet" },
+      { name: "Gojob" },
+    ],
     photos: [
       {
         src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
@@ -848,7 +853,8 @@ export const cases: CaseStudy[] = [
           "Contournement via l'API cloud propriétaire de Google Workspace, seule voie disponible pour interagir avec ce type d'éditeur.",
       },
       {
-        constraint: "Certaines applications ciblées sont purement desktop, sans DOM ni page web à observer.",
+        constraint:
+          "Certaines applications ciblées sont purement desktop, sans DOM ni page web à observer.",
         response:
           "Étude d'un portage du moteur piloté par RPA - une première approche testée avec Power Automate for desktop, de Microsoft.",
       },
@@ -881,12 +887,18 @@ export const cases: CaseStudy[] = [
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string };
+export type BulletWithLogo = { before: string; logo: string; after: string; alt?: string };
 export type Bullet = string | BulletWithLogo;
+
+// Plain-text fallback for contexts (tooltips, aria labels, the SkillRing
+// hub) that can't render an inline logo image.
+export function sideProjectNameText(name: string | BulletWithLogo): string {
+  return typeof name === "string" ? name : `${name.before}${name.alt ?? ""}${name.after}`;
+}
 
 export type SideProject = {
   id: string;
-  name: string;
+  name: string | BulletWithLogo;
   index: string;
   pitch: string;
   url?: string;
@@ -900,7 +912,7 @@ export type SideProject = {
 // onto it too) - shown once under the section headline instead of
 // repeated on every card.
 export const sideProjectsStack: string[] = [
-  "Supabase (OTP, edge functions, triggers, RBAC)",
+  "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
   "Stripe",
   "React",
   "shadcn/ui",
@@ -938,9 +950,14 @@ export const sideProjects: SideProject[] = [
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
   },
   {
-    id: "breejd",
+    id: "breedj",
     index: "02",
-    name: "Breejd",
+    name: {
+      before: "Breedj (for ",
+      logo: "/logos/side/linkedin.svg",
+      after: ")",
+      alt: "LinkedIn",
+    },
     pitch:
       "Après un job post LinkedIn : récupérer en masse, trier et exporter les répondants vers fichier plat, outil bureautique cloud ou ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -951,7 +968,7 @@ export const sideProjects: SideProject[] = [
       "Réalisation intégrale, de l'idée à la production.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: ["/logos/side/linkedin.svg"],
+    logos: ["/logos/side/breedj.png"],
     business: "2 leads RH prêts à bêta-tester.",
   },
   {
@@ -1190,10 +1207,10 @@ export const overview: OverviewCategory[] = [
     color: "violet",
     description: "Types de valeur produit livrée, missions clients et side-business inclus.",
     buckets: [
-      { label: "Stratégie produit & positionnement", caseIds: ["nocodext", "breejd"] },
+      { label: "Stratégie produit & positionnement", caseIds: ["nocodext", "breedj"] },
       {
         label: "Product Design (UX/UI/Interaction)",
-        caseIds: ["nocodext", "patrimoine", "breejd", "pinnpm", "airtable", "ats-youtubers"],
+        caseIds: ["nocodext", "patrimoine", "breedj", "pinnpm", "airtable", "ats-youtubers"],
       },
       {
         label: "Automatisation & intégration métier",

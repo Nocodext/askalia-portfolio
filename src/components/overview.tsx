@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SkillRing } from "@/components/skill-ring";
 import { CaseIcon, caseColor, iconBadgeBg, ringColorVar } from "@/components/case-studies";
 import { openCase, scrollToCase } from "@/lib/case-navigation";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import { ArrowUpRight } from "lucide-react";
 
 const overviewColors = {
@@ -128,6 +129,10 @@ function BucketRow({
   const hasRing = b.caseIds.length >= 3;
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  // "left"/"right" reliably runs out of room next to a trigger sitting near
+  // the screen edge on a narrow viewport, landing the popover off-center;
+  // "bottom" lets Radix's own collision handling keep it centered instead.
+  const isMobile = useIsMobile();
   // Cases open their popup in place; side projects (no popup) still scroll
   // to their spot on the page.
   const goToItem = (id: string) => {
@@ -162,7 +167,7 @@ function BucketRow({
           </button>
         </PopoverTrigger>
         <PopoverContent
-          side={popoverSide}
+          side={isMobile ? "bottom" : popoverSide}
           align="center"
           collisionPadding={16}
           className="w-[min(20rem,calc(100vw-2rem))]"

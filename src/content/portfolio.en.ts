@@ -811,11 +811,26 @@ export type SideProject = {
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  stack: string[];
   llms?: string[];
   logos?: string[];
   business: string;
 };
+
+// Shared across all four nocode products (Airtable explorer is migrating
+// onto it too) - shown once under the section headline instead of
+// repeated on every card.
+export const sideProjectsStack: string[] = [
+  "Supabase (OTP, edge functions, triggers, RBAC)",
+  "Stripe",
+  "React",
+  "shadcn/ui",
+  "Tailwind",
+  "Plasmo",
+  "Brevo",
+  "GCP",
+  "Sentry",
+  "PostHog",
+];
 
 export const sideProjects: SideProject[] = [
   {
@@ -838,18 +853,6 @@ export const sideProjects: SideProject[] = [
       "Advanced work in UX, UI, Interaction Design.",
       "Dev agents, MCP and skills.",
     ],
-    stack: [
-      "Supabase (OTP, edge functions, triggers, RBAC)",
-      "Stripe",
-      "React",
-      "shadcn/ui",
-      "Tailwind",
-      "Plasmo",
-      "Brevo",
-      "GCP",
-      "Sentry",
-      "PostHog",
-    ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
     logos: ["/logos/side/bubble.svg"],
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
@@ -868,7 +871,6 @@ export const sideProjects: SideProject[] = [
       "Built end to end, from idea to production.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["Same stack as Nocodext for Bubble"],
     logos: ["/logos/side/linkedin.svg"],
     business: "2 HR leads ready to beta-test.",
   },
@@ -887,7 +889,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for the side panel and in-page integration.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["Same stack as Nocodext for Bubble"],
     logos: ["/logos/side/pinnpm.png"],
     business: "From idea to production.",
   },
@@ -907,7 +908,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for navigation and coloring in Airtable's native interface.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["JS vanilla legacy"],
     logos: ["/logos/side/airtable.svg"],
     business: "1 lead ready to beta-test.",
   },

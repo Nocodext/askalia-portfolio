@@ -891,11 +891,26 @@ export type SideProject = {
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  stack: string[];
   llms?: string[];
   logos?: string[];
   business: string;
 };
+
+// Shared across all four nocode products (Airtable explorer is migrating
+// onto it too) - shown once under the section headline instead of
+// repeated on every card.
+export const sideProjectsStack: string[] = [
+  "Supabase (OTP, edge functions, triggers, RBAC)",
+  "Stripe",
+  "React",
+  "shadcn/ui",
+  "Tailwind",
+  "Plasmo",
+  "Brevo",
+  "GCP",
+  "Sentry",
+  "PostHog",
+];
 
 export const sideProjects: SideProject[] = [
   {
@@ -918,18 +933,6 @@ export const sideProjects: SideProject[] = [
       "Travaux avancés en UX, UI, Interaction Design.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: [
-      "Supabase (OTP, edge functions, triggers, RBAC)",
-      "Stripe",
-      "React",
-      "shadcn/ui",
-      "Tailwind",
-      "Plasmo",
-      "Brevo",
-      "GCP",
-      "Sentry",
-      "PostHog",
-    ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
     logos: ["/logos/side/bubble.svg"],
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
@@ -948,7 +951,6 @@ export const sideProjects: SideProject[] = [
       "Réalisation intégrale, de l'idée à la production.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["Même stack que Nocodext for Bubble"],
     logos: ["/logos/side/linkedin.svg"],
     business: "2 leads RH prêts à bêta-tester.",
   },
@@ -967,7 +969,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design du side panel et de l'intégration in-page.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["Même stack que Nocodext for Bubble"],
     logos: ["/logos/side/pinnpm.png"],
     business: "De l'idée à la prod.",
   },
@@ -987,7 +988,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design de la navigation et de la coloration de l'interface native Airtable.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["JS vanilla legacy"],
     logos: ["/logos/side/airtable.svg"],
     business: "1 lead prêt à bêta-tester.",
   },
@@ -1045,6 +1045,7 @@ export type PortfolioContent = {
   profile: typeof profile;
   cases: CaseStudy[];
   sideProjects: SideProject[];
+  sideProjectsStack: string[];
   capabilities: Capability[];
   overview: OverviewCategory[];
   recommendations: Recommendation[];

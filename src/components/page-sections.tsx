@@ -329,6 +329,16 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
         <p className="mt-3 max-w-[58ch] text-sm text-pretty text-white/70">
           {strings.sideBusiness.intro}
         </p>
+        <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
+          {content.sideProjectsStack.map((s) => (
+            <span
+              key={s}
+              className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
+            >
+              {s}
+            </span>
+          ))}
+        </div>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
           {sideProjects.map((p) => (
             <div
@@ -394,16 +404,6 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
                   </li>
                 ))}
               </ul>
-              <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
-                {p.stack.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
               {p.llms ? (
                 <div className="mt-4">
                   <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">

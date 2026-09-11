@@ -199,7 +199,7 @@ export const uiStringsFr: UIStrings = {
   sideBusiness: {
     sectionLabel: "[06] - Side-business",
     intro:
-      "Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et outillage qui comblent les manques des plateformes que les équipes utilisent tous les jours.",
+      "Quatre produits menés en solopreneur, de l'idée à la production : des extensions navigateur qui apportent aux power users les fonctionnalités d'interface qu'aucune de ces plateformes ne propose nativement.",
     productSuffix: "/ produit",
     llmsUsed: "LLMs utilisés",
   },
@@ -320,7 +320,7 @@ export const uiStringsEn: UIStrings = {
   sideBusiness: {
     sectionLabel: "[05] - Side Projects",
     intro:
-      "Four products built solo, from idea to production: browser extensions and tooling that fill the gaps in the platforms teams use every day.",
+      "Four products built solo, from idea to production: browser extensions that give power users the interface features none of these platforms ever shipped natively.",
     productSuffix: "/ product",
     llmsUsed: "LLMs used",
   },

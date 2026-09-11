@@ -76,6 +76,7 @@ export type UIStrings = {
     sectionLabel: string;
     intro: string;
     productSuffix: string;
+    stackLabel: string;
     llmsUsed: string;
   };
   recommendations: {
@@ -201,6 +202,7 @@ export const uiStringsFr: UIStrings = {
     intro:
       "Quatre produits menés en solopreneur, de l'idée à la production : des extensions navigateur qui apportent aux power users les fonctionnalités d'interface qu'aucune de ces plateformes ne propose nativement.",
     productSuffix: "/ produit",
+    stackLabel: "Stack",
     llmsUsed: "LLMs utilisés",
   },
   recommendations: {
@@ -322,6 +324,7 @@ export const uiStringsEn: UIStrings = {
     intro:
       "Four products built solo, from idea to production: browser extensions that give power users the interface features none of these platforms ever shipped natively.",
     productSuffix: "/ product",
+    stackLabel: "Stack",
     llmsUsed: "LLMs used",
   },
   recommendations: {

@@ -916,7 +916,6 @@ export type SideProject = {
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  llms?: string[];
   // Extra text+logo appended into the name pill (e.g. "... for [LinkedIn
   // logo]").
   headerRight?: BulletWithLogo;
@@ -938,6 +937,8 @@ export const sideProjectsStack: string[] = [
   "Sentry",
   "PostHog",
 ];
+
+export const sideProjectsLlms: string[] = ["Claude", "ChatGPT", "Perplexity", "Gemini"];
 
 export const sideProjects: SideProject[] = [
   {
@@ -961,7 +962,6 @@ export const sideProjects: SideProject[] = [
       "Travaux avancés en UX, UI, Interaction Design.",
       "Agents de dev, MCP et skills.",
     ],
-    llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
   },
   {
@@ -1082,6 +1082,7 @@ export type PortfolioContent = {
   cases: CaseStudy[];
   sideProjects: SideProject[];
   sideProjectsStack: string[];
+  sideProjectsLlms: string[];
   capabilities: Capability[];
   overview: OverviewCategory[];
   recommendations: Recommendation[];

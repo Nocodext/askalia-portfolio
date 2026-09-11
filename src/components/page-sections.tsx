@@ -347,15 +347,35 @@ export function SideBusiness({
         <p className="mt-3 max-w-[58ch] text-sm text-pretty text-white/70">
           {strings.sideBusiness.intro}
         </p>
-        <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
-          {content.sideProjectsStack.map((s) => (
-            <span
-              key={s}
-              className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
-            >
-              {s}
-            </span>
-          ))}
+        <div className="mt-5">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
+            {strings.sideBusiness.stackLabel}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
+            {content.sideProjectsStack.map((s) => (
+              <span
+                key={s}
+                className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
+            {strings.sideBusiness.llmsUsed}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
+            {content.sideProjectsLlms.map((l) => (
+              <span
+                key={l}
+                className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
+              >
+                {l}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
           {sideProjects.map((p) => {
@@ -492,23 +512,6 @@ export function SideBusiness({
                     </li>
                   ))}
                 </ul>
-                {p.llms ? (
-                  <div className="mt-4">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
-                      {strings.sideBusiness.llmsUsed}
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
-                      {p.llms.map((l) => (
-                        <span
-                          key={l}
-                          className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
-                        >
-                          {l}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
                 <div className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-cyan">
                   {p.business}
                 </div>

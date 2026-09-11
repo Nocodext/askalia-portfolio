@@ -838,7 +838,6 @@ export type SideProject = {
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  llms?: string[];
   headerRight?: BulletWithLogo;
   business: string;
 };
@@ -858,6 +857,8 @@ export const sideProjectsStack: string[] = [
   "Sentry",
   "PostHog",
 ];
+
+export const sideProjectsLlms: string[] = ["Claude", "ChatGPT", "Perplexity", "Gemini"];
 
 export const sideProjects: SideProject[] = [
   {
@@ -881,7 +882,6 @@ export const sideProjects: SideProject[] = [
       "Advanced work in UX, UI, Interaction Design.",
       "Dev agents, MCP and skills.",
     ],
-    llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
   },
   {

@@ -385,7 +385,40 @@ export function SideBusiness({
                 </div>
                 <h3 className="mt-3 font-display text-xl font-semibold">
                   {typeof p.name !== "string" ? (
-                    p.url ? (
+                    p.id === "breedj" && p.headerRight && p.url ? (
+                      // Experimental two-tone pill: Breedj's own mark reads
+                      // fine directly on a dark fill (no white backing
+                      // needed, unlike every other logo here), so splitting
+                      // the pill lets that show instead of flattening
+                      // everything to the same white background.
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-white/50 transition-colors hover:text-cyan"
+                      >
+                        <span className="inline-flex items-stretch overflow-hidden rounded-md">
+                          <span className="flex items-center bg-ink px-3 py-1.5 ring-1 ring-inset ring-white/10">
+                            <img
+                              src={p.name.logo}
+                              alt={p.name.alt ?? ""}
+                              className="h-10 w-auto"
+                            />
+                          </span>
+                          <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 text-ink">
+                            <span className="font-mono text-xs text-slate">
+                              {p.headerRight.before.trim()}
+                            </span>
+                            <img
+                              src={p.headerRight.logo}
+                              alt={p.headerRight.alt ?? ""}
+                              className="h-5 w-auto"
+                            />
+                          </span>
+                        </span>
+                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                      </a>
+                    ) : p.url ? (
                       <a
                         href={p.url}
                         target="_blank"

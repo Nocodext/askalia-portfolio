@@ -904,7 +904,7 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: { src: string; style?: any }[];
+  logos?: string[];
   // Text+logo combo shown at the right edge of the header row instead of
   // `logos`, when a plain wordmark badge isn't enough (e.g. "for [LinkedIn
   // logo]").
@@ -950,15 +950,6 @@ export const sideProjects: SideProject[] = [
       "Agents de dev, MCP et skills.",
     ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: [
-      {
-        src: "/logos/side/bubble.svg",
-        style: {
-          width: "120px",
-          height: "auto",
-        },
-      },
-    ],
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
   },
   {
@@ -993,21 +984,13 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design du side panel et de l'intégration in-page.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: [
-      {
-        src: "/logos/side/pinnpm.png",
-        style: {
-          width: "100px",
-          height: "auto",
-        },
-      },
-    ],
+    logos: ["/logos/side/pinnpm.png"],
     business: "De l'idée à la prod.",
   },
   {
     id: "airtable",
     index: "04",
-    name: "Airtable explorer",
+    name: { before: "", logo: "/logos/side/airtable.svg", after: " explorer", alt: "Airtable" },
     pitch:
       "Les couleurs du dashboard Airtable ont disparu sur décision interne. L'extension signe leur retour - et rend le dashboard réellement navigable.",
     url: "https://nocodext.studio/airtable",
@@ -1019,15 +1002,6 @@ export const sideProjects: SideProject[] = [
       "Masquer des tables aux membres à rôle limité sans licence Collaborateur payante.",
       "UX/UI et interaction design de la navigation et de la coloration de l'interface native Airtable.",
       "Agents de dev, MCP et skills.",
-    ],
-    logos: [
-      {
-        src: "/logos/side/airtable.svg",
-        style: {
-          width: "120px",
-          height: "auto",
-        },
-      },
     ],
     business: "1 lead prêt à bêta-tester.",
   },

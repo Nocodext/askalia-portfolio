@@ -832,7 +832,7 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: { src: string; style?: any }[];
+  logos?: string[];
   headerRight?: BulletWithLogo;
   business: string;
 };
@@ -875,7 +875,6 @@ export const sideProjects: SideProject[] = [
       "Dev agents, MCP and skills.",
     ],
     llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: [{ src: "/logos/side/bubble.svg" }],
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
   },
   {
@@ -910,13 +909,13 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for the side panel and in-page integration.",
       "Dev agents, MCP and skills.",
     ],
-    logos: [{ src: "/logos/side/pinnpm.png" }],
+    logos: ["/logos/side/pinnpm.png"],
     business: "From idea to production.",
   },
   {
     id: "airtable",
     index: "04",
-    name: "Airtable explorer",
+    name: { before: "", logo: "/logos/side/airtable.svg", after: " explorer", alt: "Airtable" },
     pitch:
       "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back - and makes the dashboard genuinely navigable.",
     url: "https://nocodext.studio/airtable",
@@ -929,7 +928,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for navigation and coloring in Airtable's native interface.",
       "Dev agents, MCP and skills.",
     ],
-    logos: [{ src: "/logos/side/airtable.svg" }],
     business: "1 lead ready to beta-test.",
   },
 ];

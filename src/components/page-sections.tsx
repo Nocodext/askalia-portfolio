@@ -313,6 +313,21 @@ export function Process({ content, strings }: { content: PortfolioContent; strin
   );
 }
 
+// One consistent size for every side-business logo, whether it sits in the
+// right-edge badge slot or inline within the header text - pin'npm and
+// Airtable explorer's badges were the reference size everything else got
+// pulled to match. Breedj's own mark already reads fine on the dark card
+// background and doesn't get the white backing the others need.
+function ProductLogo({ src, alt }: { src: string; alt?: string | undefined }) {
+  const img = <img src={src} alt={alt ?? ""} className="h-7 w-auto" />;
+  if (src.includes("breedj")) return img;
+  return (
+    <span className="inline-flex items-center rounded-md bg-white px-2 py-1 align-text-bottom">
+      {img}
+    </span>
+  );
+}
+
 export function SideBusiness({
   content,
   strings,
@@ -349,23 +364,10 @@ export function SideBusiness({
             const nameContent =
               typeof p.name === "string" ? (
                 p.name
-              ) : p.name.before === "" && p.name.after === "" ? (
-                // No surrounding text - the logo stands in for the whole
-                // name, so it reads as a wordmark headline rather than a
-                // small inline accent (see the `else` branch below).
-                <img
-                  src={p.name.logo}
-                  alt={p.name.alt ?? ""}
-                  className="h-7 w-auto align-text-bottom"
-                />
               ) : (
                 <>
                   {p.name.before}
-                  <img
-                    src={p.name.logo}
-                    alt={p.name.alt ?? ""}
-                    className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
-                  />
+                  <ProductLogo src={p.name.logo} alt={p.name.alt} />
                   {p.name.after}
                 </>
               );
@@ -397,27 +399,13 @@ export function SideBusiness({
                   {p.headerRight ? (
                     <div className="flex shrink-0 items-center gap-1 font-mono text-xs text-white/60">
                       {p.headerRight.before}
-                      <img
-                        src={p.headerRight.logo}
-                        alt={p.headerRight.alt ?? ""}
-                        className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
-                      />
+                      <ProductLogo src={p.headerRight.logo} alt={p.headerRight.alt} />
                       {p.headerRight.after}
                     </div>
                   ) : p.logos ? (
                     <div className="flex shrink-0 items-center gap-2">
-                      {p.logos.map((logo) => (
-                        <span
-                          key={logo.src}
-                          className={`inline-flex items-center rounded-md ${!logo.src.includes("breedj") ? "bg-white" : ""} px-2 py-1`}
-                        >
-                          <img
-                            src={logo.src}
-                            alt=""
-                            style={logo?.style || {}}
-                            className="h-4 w-auto"
-                          />
-                        </span>
+                      {p.logos.map((src) => (
+                        <ProductLogo key={src} src={src} />
                       ))}
                     </div>
                   ) : null}

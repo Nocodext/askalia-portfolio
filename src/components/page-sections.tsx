@@ -365,7 +365,7 @@ export function SideBusiness({
                         {p.headerRight.before.trim()}
                       </span>
                       <img
-                        src="/logos/side/linkedin-icon.svg"
+                        src={p.headerRight.logo}
                         alt={p.headerRight.alt ?? ""}
                         className="h-5 w-auto"
                       />
@@ -389,10 +389,12 @@ export function SideBusiness({
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink transition-opacity hover:opacity-90"
+                        className="inline-flex items-center gap-2 text-white/50 transition-colors hover:text-cyan"
                       >
-                        {pillContent}
-                        <ExternalLink className="size-3.5 shrink-0 text-slate" strokeWidth={2} />
+                        <span className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink">
+                          {pillContent}
+                        </span>
+                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
                       </a>
                     ) : (
                       <span className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink">

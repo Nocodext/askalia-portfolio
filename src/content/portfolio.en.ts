@@ -862,7 +862,8 @@ export const sideProjects: SideProject[] = [
   {
     id: "nocodext",
     index: "01",
-    name: { before: "Nocodext for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
+    name: { before: "", logo: "/logos/nocodext.png", after: "", alt: "Nocodext" },
+    headerRight: { before: "for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
     pitch:
       "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally - entirely missing natively in Bubble.",
     url: "https://nocodext.studio/bubble",
@@ -886,7 +887,12 @@ export const sideProjects: SideProject[] = [
     id: "breedj",
     index: "02",
     name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj", large: true },
-    headerRight: { before: "for ", logo: "/logos/side/linkedin.svg", after: "", alt: "LinkedIn" },
+    headerRight: {
+      before: "for ",
+      logo: "/logos/side/linkedin-icon.svg",
+      after: "",
+      alt: "LinkedIn",
+    },
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
     url: "https://nocodext.studio/linkedin",

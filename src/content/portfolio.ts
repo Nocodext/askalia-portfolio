@@ -228,6 +228,7 @@ export const cases: CaseStudy[] = [
     title: "Courtier énergies : Homologation API réseau Enedis & indices de marché",
     need: "Collecter les consommations de compteurs électriques et scraper les indices de prix électricité, carbone et gaz pour estimer le meilleur moment d'émettre un devis.",
     ecosystem: [{ name: "HOHapp" }, { name: "MedesIE" }],
+    logos: ["/logos/enedis.svg"],
     photos: [
       { src: "/case-photos/energie/01.webp", alt: "Capture de la plateforme de courtage énergie" },
       { src: "/case-photos/energie/02.webp", alt: "Capture de la plateforme de courtage énergie" },

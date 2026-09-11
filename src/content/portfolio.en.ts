@@ -208,6 +208,7 @@ export const cases: CaseStudy[] = [
     title: "Energy broker: Enedis grid API certification & market indices",
     need: "Collect electricity meter consumption data and scrape electricity, carbon and gas price indices to estimate the best moment to issue a quote.",
     ecosystem: [{ name: "HOHapp" }, { name: "MedesIE" }],
+    logos: ["/logos/enedis.svg"],
     photos: [
       { src: "/case-photos/energie/01.webp", alt: "Screenshot of the energy brokerage platform" },
       { src: "/case-photos/energie/02.webp", alt: "Screenshot of the energy brokerage platform" },

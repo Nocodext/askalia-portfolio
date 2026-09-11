@@ -318,8 +318,16 @@ export function Process({ content, strings }: { content: PortfolioContent; strin
 // Airtable explorer's badges were the reference size everything else got
 // pulled to match. Breedj's own mark already reads fine on the dark card
 // background and doesn't get the white backing the others need.
-function ProductLogo({ src, alt }: { src: string; alt?: string | undefined }) {
-  const img = <img src={src} alt={alt ?? ""} className="h-7 w-auto" />;
+function ProductLogo({
+  src,
+  alt,
+  large,
+}: {
+  src: string;
+  alt?: string | undefined;
+  large?: boolean | undefined;
+}) {
+  const img = <img src={src} alt={alt ?? ""} className={large ? "h-10 w-auto" : "h-7 w-auto"} />;
   if (src.includes("breedj")) return img;
   return (
     <span className="inline-flex items-center rounded-md bg-white px-2 py-1 align-text-bottom">
@@ -367,7 +375,7 @@ export function SideBusiness({
               ) : (
                 <>
                   {p.name.before}
-                  <ProductLogo src={p.name.logo} alt={p.name.alt} />
+                  <ProductLogo src={p.name.logo} alt={p.name.alt} large={p.name.large} />
                   {p.name.after}
                 </>
               );
@@ -381,34 +389,64 @@ export function SideBusiness({
                   {p.index} {strings.sideBusiness.productSuffix}
                 </div>
                 <div className="mt-3 flex items-center justify-between gap-3">
-                  <h3 className="font-display text-xl font-semibold">
-                    {p.url ? (
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 transition-colors hover:text-cyan"
-                      >
-                        {nameContent}
-                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
-                      </a>
-                    ) : (
-                      nameContent
-                    )}
-                  </h3>
-                  {p.headerRight ? (
-                    <div className="flex shrink-0 items-center gap-1 font-mono text-xs text-white/60">
-                      {p.headerRight.before}
-                      <ProductLogo src={p.headerRight.logo} alt={p.headerRight.alt} />
-                      {p.headerRight.after}
-                    </div>
-                  ) : p.logos ? (
-                    <div className="flex shrink-0 items-center gap-2">
-                      {p.logos.map((src) => (
-                        <ProductLogo key={src} src={src} />
-                      ))}
-                    </div>
-                  ) : null}
+                  {p.headerRight && typeof p.name !== "string" ? (
+                    // Experimental: one merged white pill instead of a
+                    // logo-left / "for [logo]"-right split - the LinkedIn
+                    // mark shrinks to its compact icon-only form since it's
+                    // now sharing the pill rather than sitting alone.
+                    <h3 className="font-display text-xl font-semibold">
+                      {p.url ? (
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink transition-opacity hover:opacity-90"
+                        >
+                          <img src={p.name.logo} alt={p.name.alt ?? ""} className="h-10 w-auto" />
+                          <span className="font-mono text-xs text-slate">
+                            {p.headerRight.before.trim()}
+                          </span>
+                          <img
+                            src="/logos/side/linkedin-icon.svg"
+                            alt={p.headerRight.alt ?? ""}
+                            className="h-5 w-auto"
+                          />
+                          <ExternalLink className="size-3.5 shrink-0 text-slate" strokeWidth={2} />
+                        </a>
+                      ) : null}
+                    </h3>
+                  ) : (
+                    <>
+                      <h3 className="font-display text-xl font-semibold">
+                        {p.url ? (
+                          <a
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 transition-colors hover:text-cyan"
+                          >
+                            {nameContent}
+                            <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                          </a>
+                        ) : (
+                          nameContent
+                        )}
+                      </h3>
+                      {p.headerRight ? (
+                        <div className="flex shrink-0 items-center gap-1 font-mono text-xs text-white/60">
+                          {p.headerRight.before}
+                          <ProductLogo src={p.headerRight.logo} alt={p.headerRight.alt} />
+                          {p.headerRight.after}
+                        </div>
+                      ) : p.logos ? (
+                        <div className="flex shrink-0 items-center gap-2">
+                          {p.logos.map((src) => (
+                            <ProductLogo key={src} src={src} />
+                          ))}
+                        </div>
+                      ) : null}
+                    </>
+                  )}
                 </div>
                 <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
                 <ul className="mt-4 space-y-2">

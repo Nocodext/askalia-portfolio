@@ -821,7 +821,13 @@ export const cases: CaseStudy[] = [
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string; alt?: string };
+export type BulletWithLogo = {
+  before: string;
+  logo: string;
+  after: string;
+  alt?: string;
+  large?: boolean;
+};
 export type Bullet = string | BulletWithLogo;
 
 export type SideProject = {
@@ -880,7 +886,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "breedj",
     index: "02",
-    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj" },
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj", large: true },
     headerRight: { before: "for ", logo: "/logos/side/linkedin.svg", after: "", alt: "LinkedIn" },
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
@@ -897,7 +903,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "pinnpm",
     index: "03",
-    name: "pin'npm",
+    name: { before: "", logo: "/logos/side/pinnpm.png", after: "", alt: "pin'npm" },
     pitch:
       "NPMjs.com doesn't let you bookmark libraries, even when signed in. pin'npm catalogs and enriches packages directly in-page.",
     url: "https://nocodext.studio/pinnpm",
@@ -909,7 +915,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for the side panel and in-page integration.",
       "Dev agents, MCP and skills.",
     ],
-    logos: ["/logos/side/pinnpm.png"],
     business: "From idea to production.",
   },
   {

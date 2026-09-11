@@ -887,7 +887,16 @@ export const cases: CaseStudy[] = [
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string; alt?: string };
+export type BulletWithLogo = {
+  before: string;
+  logo: string;
+  after: string;
+  alt?: string;
+  // For a logo that stands in for the entire name (no surrounding text) -
+  // bumps it past the shared inline-logo size when the wordmark itself
+  // needs to carry more visual weight as the headline.
+  large?: boolean;
+};
 export type Bullet = string | BulletWithLogo;
 
 // Plain-text fallback for contexts (tooltips, aria labels, the SkillRing
@@ -955,7 +964,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "breedj",
     index: "02",
-    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj" },
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj", large: true },
     headerRight: { before: "for ", logo: "/logos/side/linkedin.svg", after: "", alt: "LinkedIn" },
     pitch:
       "Après un job post LinkedIn : récupérer en masse, trier et exporter les répondants vers fichier plat, outil bureautique cloud ou ATS.",
@@ -972,7 +981,7 @@ export const sideProjects: SideProject[] = [
   {
     id: "pinnpm",
     index: "03",
-    name: "pin'npm",
+    name: { before: "", logo: "/logos/side/pinnpm.png", after: "", alt: "pin'npm" },
     pitch:
       "NPMjs.com ne permet pas de bookmarker des librairies, même connecté. pin'npm répertorie et enrichit les packages directement in-page.",
     url: "https://nocodext.studio/pinnpm",
@@ -984,7 +993,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design du side panel et de l'intégration in-page.",
       "Agents de dev, MCP et skills.",
     ],
-    logos: ["/logos/side/pinnpm.png"],
     business: "De l'idée à la prod.",
   },
   {

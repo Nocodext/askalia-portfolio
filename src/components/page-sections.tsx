@@ -98,17 +98,6 @@ export function Nav({ content, strings }: { content: PortfolioContent; strings: 
               {strings.nav.method}
             </a>
             <a
-              href="#lab"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToCase("lab");
-              }}
-              onMouseEnter={focusGlow}
-              className="relative flex items-center transition-colors hover:text-ink"
-            >
-              {strings.nav.sideBusiness}
-            </a>
-            <a
               href="#recommendations"
               onClick={(e) => {
                 e.preventDefault();
@@ -118,6 +107,17 @@ export function Nav({ content, strings }: { content: PortfolioContent; strings: 
               className="relative flex items-center transition-colors hover:text-ink"
             >
               {strings.nav.recommendations}
+            </a>
+            <a
+              href="#lab"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToCase("lab");
+              }}
+              onMouseEnter={focusGlow}
+              className="relative flex items-center transition-colors hover:text-ink"
+            >
+              {strings.nav.sideBusiness}
             </a>
             <a
               href="#contact"

@@ -79,8 +79,8 @@ export function PortfolioPage({
       <Work content={content} strings={strings} />
       <Overview content={content} strings={strings} />
       <Process content={content} strings={strings} />
-      <SideBusiness content={content} strings={strings} />
       <Recommendations content={content} strings={strings} />
+      <SideBusiness content={content} strings={strings} />
       <Contact content={content} strings={strings} />
     </main>
   );

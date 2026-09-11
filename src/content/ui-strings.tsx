@@ -197,14 +197,14 @@ export const uiStringsFr: UIStrings = {
       "Ne pas confondre ce que l'on imagine avec ce qui fonctionne réellement : une solution ne se conçoit pas entièrement à distance, dans un bureau d'études - le terrain apporte sa propre vérité, et il faut savoir l'écouter.",
   },
   sideBusiness: {
-    sectionLabel: "[05] - Side-business",
+    sectionLabel: "[06] - Side-business",
     intro:
       "Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et outillage qui comblent les manques des plateformes que les équipes utilisent tous les jours.",
     productSuffix: "/ produit",
     llmsUsed: "LLMs utilisés",
   },
   recommendations: {
-    sectionLabel: "[06] - Recommandations",
+    sectionLabel: "[05] - Recommandations",
     heading: "Ce qu'en disent celles et ceux qui ont travaillé avec moi.",
     seeLinkedCase: "Voir le cas client",
     ctaText: "Soyez le prochain à avoir envie de me recommander",
@@ -318,14 +318,14 @@ export const uiStringsEn: UIStrings = {
       "Not confusing what we imagine with what actually works: a solution can't be fully designed at a distance, from a design office - the field carries its own truth, and you have to know how to listen to it.",
   },
   sideBusiness: {
-    sectionLabel: "[04] - Side Projects",
+    sectionLabel: "[05] - Side Projects",
     intro:
       "Four products built solo, from idea to production: browser extensions and tooling that fill the gaps in the platforms teams use every day.",
     productSuffix: "/ product",
     llmsUsed: "LLMs used",
   },
   recommendations: {
-    sectionLabel: "[05] - Recommendations",
+    sectionLabel: "[04] - Recommendations",
     heading: "What people who've worked with me have to say.",
     seeLinkedCase: "See the case study",
     ctaText: "Be the next person who feels like recommending me",

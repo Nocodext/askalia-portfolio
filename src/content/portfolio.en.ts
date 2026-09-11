@@ -838,7 +838,6 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: string[];
   headerRight?: BulletWithLogo;
   business: string;
 };

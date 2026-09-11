@@ -913,9 +913,7 @@ export type SideProject = {
   url?: string;
   bullets: Bullet[];
   llms?: string[];
-  logos?: string[];
-  // Text+logo combo shown at the right edge of the header row instead of
-  // `logos`, when a plain wordmark badge isn't enough (e.g. "for [LinkedIn
+  // Extra text+logo appended into the name pill (e.g. "... for [LinkedIn
   // logo]").
   headerRight?: BulletWithLogo;
   business: string;

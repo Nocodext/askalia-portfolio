@@ -853,12 +853,16 @@ export const sideProjectsStack: string[] = [
   "Tailwind",
   "Plasmo",
   "Brevo",
-  "GCP",
   "Sentry",
   "PostHog",
 ];
 
-export const sideProjectsLlms: string[] = ["Claude", "ChatGPT", "Perplexity", "Gemini"];
+export const sideProjectsLlms: { name: string; logo: string }[] = [
+  { name: "Claude", logo: "/logos/llm/claude.svg" },
+  { name: "ChatGPT", logo: "/logos/llm/openai.svg" },
+  { name: "Perplexity", logo: "/logos/llm/perplexity.svg" },
+  { name: "Gemini", logo: "/logos/llm/gemini.svg" },
+];
 
 export const sideProjects: SideProject[] = [
   {

@@ -933,12 +933,18 @@ export const sideProjectsStack: string[] = [
   "Tailwind",
   "Plasmo",
   "Brevo",
-  "GCP",
   "Sentry",
   "PostHog",
 ];
 
-export const sideProjectsLlms: string[] = ["Claude", "ChatGPT", "Perplexity", "Gemini"];
+export type LlmEntry = { name: string; logo: string };
+
+export const sideProjectsLlms: LlmEntry[] = [
+  { name: "Claude", logo: "/logos/llm/claude.svg" },
+  { name: "ChatGPT", logo: "/logos/llm/openai.svg" },
+  { name: "Perplexity", logo: "/logos/llm/perplexity.svg" },
+  { name: "Gemini", logo: "/logos/llm/gemini.svg" },
+];
 
 export const sideProjects: SideProject[] = [
   {
@@ -1082,7 +1088,7 @@ export type PortfolioContent = {
   cases: CaseStudy[];
   sideProjects: SideProject[];
   sideProjectsStack: string[];
-  sideProjectsLlms: string[];
+  sideProjectsLlms: LlmEntry[];
   capabilities: Capability[];
   overview: OverviewCategory[];
   recommendations: Recommendation[];

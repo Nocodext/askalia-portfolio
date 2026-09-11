@@ -369,10 +369,11 @@ export function SideBusiness({
           <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
             {content.sideProjectsLlms.map((l) => (
               <span
-                key={l}
-                className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
+                key={l.name}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 py-1.5 pr-3 pl-2 ring-1 ring-inset ring-white/15"
               >
-                {l}
+                <img src={l.logo} alt="" className="size-3.5 shrink-0" />
+                {l.name}
               </span>
             ))}
           </div>

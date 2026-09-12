@@ -5,6 +5,7 @@ import type { PortfolioContent, Recommendation } from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import { ContactEmail } from "@/components/contact-email";
 import { openCase } from "@/lib/case-navigation";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import { ArrowUpRight, BadgeCheck, Quote } from "lucide-react";
 
 export function scrollToRecommendation(id: string) {
@@ -98,7 +99,10 @@ function RecommendationCard({
       onClick={expanded ? onClose : onOpen}
       className={
         expanded
-          ? "relative w-full max-w-md rounded-[min(1vw,10px)] bg-[#FFF6D8] p-7 pt-9 shadow-2xl ring-1 ring-black/10"
+          ? // `w-full` inside this flex overlay's unconstrained item resolves
+            // against `max-w-md`'s own value rather than the viewport - an
+            // explicit `w-[min(...)]` sidesteps that sizing loop entirely.
+            "relative w-[min(90vw,28rem)] max-h-[85vh] overflow-y-auto rounded-[min(1vw,10px)] bg-[#FFF6D8] p-7 pt-9 shadow-2xl ring-1 ring-black/10"
           : "relative scroll-mt-24 cursor-pointer rounded-[min(1vw,10px)] bg-[#FFF6D8] p-6 pt-8 shadow-md ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-[0_18px_30px_-12px_rgba(58,33,15,0.45)]"
       }
     >
@@ -221,6 +225,41 @@ export function Recommendations({ content, strings }: { content: PortfolioConten
     ? (content.recommendations.find((r) => r.id === expandedId) ?? null)
     : null;
 
+  const isMobile = useIsMobile();
+
+  const renderCard = (rec: Recommendation) => (
+    <div
+      key={rec.linkedinUrl}
+      style={{ transform: `rotate(${tiltForId(rec.id)}deg)` }}
+      className="scroll-fade mb-7 inline-block w-full break-inside-avoid"
+    >
+      <div
+        style={{
+          opacity: expandedId === rec.id ? 0 : 1,
+          transition: "opacity 300ms ease",
+          pointerEvents: expandedId === rec.id ? "none" : undefined,
+        }}
+      >
+        <RecommendationCard rec={rec} strings={strings} onOpen={() => openCard(rec.id)} />
+      </div>
+    </div>
+  );
+
+  const ctaCard = (
+    <RecommendationCtaCard key="cta-card" strings={strings} profile={content.profile} />
+  );
+
+  // In the single-column mobile layout, document order is reading order -
+  // the CTA card has to be last there, not tucked wherever it lands in the
+  // desktop masonry. On wider layouts it still rides right after Denis's
+  // card so the column-balancing algorithm places it directly beneath it,
+  // rather than wherever the last column happens to bottom out.
+  const cards = isMobile
+    ? [...content.recommendations.map(renderCard), ctaCard]
+    : content.recommendations.flatMap((rec) =>
+        rec.id === "rec-denis-ovtchinnikov" ? [renderCard(rec), ctaCard] : [renderCard(rec)],
+      );
+
   return (
     <section id="recommendations" className="mx-auto max-w-6xl px-6 pb-16">
       <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-violet">
@@ -230,36 +269,7 @@ export function Recommendations({ content, strings }: { content: PortfolioConten
         {strings.recommendations.heading}
       </h2>
       <div className="cork-texture mt-8 rounded-[min(1vw,16px)] p-6 shadow-inner ring-1 ring-black/15 sm:p-8">
-        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
-          {content.recommendations.flatMap((rec) => {
-            const card = (
-              <div
-                key={rec.linkedinUrl}
-                style={{ transform: `rotate(${tiltForId(rec.id)}deg)` }}
-                className="scroll-fade mb-7 inline-block w-full break-inside-avoid"
-              >
-                <div
-                  style={{
-                    opacity: expandedId === rec.id ? 0 : 1,
-                    transition: "opacity 300ms ease",
-                    pointerEvents: expandedId === rec.id ? "none" : undefined,
-                  }}
-                >
-                  <RecommendationCard rec={rec} strings={strings} onOpen={() => openCard(rec.id)} />
-                </div>
-              </div>
-            );
-            // The CTA card rides right after Denis's in document order so
-            // the column-balancing algorithm lands it directly beneath it,
-            // rather than wherever the last column happens to bottom out.
-            return rec.id === "rec-denis-ovtchinnikov"
-              ? [
-                  card,
-                  <RecommendationCtaCard key="cta-card" strings={strings} profile={content.profile} />,
-                ]
-              : [card];
-          })}
-        </div>
+        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">{cards}</div>
       </div>
       {expandedRec ? (
         <div

@@ -1,8 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
-import type { CaseStudy, Highlight, PortfolioContent, Recommendation } from "@/content/portfolio";
+import {
+  caseSearchFields,
+  caseSearchText,
+  sideProjectNameText,
+  sideProjectSearchFields,
+  type CaseSearchCategory,
+  type CaseStudy,
+  type Highlight,
+  type LlmEntry,
+  type PortfolioContent,
+  type Recommendation,
+  type SideProject,
+  type SideProjectSearchCategory,
+} from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,7 +27,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { CASE_EXPAND_EVENT, openCase, scrollToCase } from "@/lib/case-navigation";
+import { CASE_EXPAND_EVENT, openCase, scrollAndFlash, scrollToCase } from "@/lib/case-navigation";
 import { scrollToRecommendation } from "@/components/recommendations";
 import {
   HeartPulse,
@@ -39,6 +52,8 @@ import {
   Quote,
   Radar,
   Play,
+  Search,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -62,7 +77,7 @@ const caseIcons: Record<string, CaseIconConfig> = {
   "discovery-hub": { icon: Radar, color: "amber" },
   "assistant-redaction": { icon: Languages, color: "cyan" },
   nocodext: { image: "/logos/side/bubble-icon.png" },
-  breejd: { image: "/logos/side/linkedin-icon.svg" },
+  breedj: { image: "/logos/side/linkedin-icon.svg" },
   pinnpm: { image: "/logos/side/npm-icon.svg" },
   airtable: { image: "/logos/side/airtable-icon.svg" },
 };
@@ -212,10 +227,12 @@ function CaseCard({
   item,
   strings,
   onOpenDetail,
+  hidden,
 }: {
   item: CaseStudy;
   strings: UIStrings;
   onOpenDetail: (id: string) => void;
+  hidden?: boolean;
 }) {
   const reducedMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
@@ -252,6 +269,7 @@ function CaseCard({
     <article
       ref={ref}
       id={item.id}
+      hidden={hidden}
       className="group relative overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
     >
       <div className="spectrum h-1 w-full opacity-80" />
@@ -350,7 +368,11 @@ function CaseCard({
                 className="flex items-center gap-1.5 rounded-full bg-ink/5 px-2.5 py-1 font-mono text-xs text-ink ring-1 ring-inset ring-ink/10"
               >
                 {e.logo ? (
-                  <img src={e.logo} alt="" className="size-3.5 shrink-0 rounded-sm object-contain" />
+                  <img
+                    src={e.logo}
+                    alt=""
+                    className="size-3.5 shrink-0 rounded-sm object-contain"
+                  />
                 ) : null}
                 {e.name}
               </span>
@@ -612,178 +634,186 @@ function CaseDetailBody({
           <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
         </div>
       ) : null}
-      {item.photos ? (
-        <Dialog
-          onOpenChange={(open) => {
-            hasTrackedPhotoNav.current = false;
-            // Skip straight to fullscreen when there's nothing to pick from.
-            setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
-            if (open) trackEvent("case_photos_opened", { case: item.id });
-          }}
-        >
-          <DialogTrigger asChild>
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+      {item.photos || item.liveDemo || linkedRecommendation ? (
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          {item.photos ? (
+            <Dialog
+              onOpenChange={(open) => {
+                hasTrackedPhotoNav.current = false;
+                // Skip straight to fullscreen when there's nothing to pick from.
+                setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
+                if (open) trackEvent("case_photos_opened", { case: item.id });
+              }}
             >
-              <Images className="size-3.5" strokeWidth={2} />
-              {strings.caseCard.viewPhotos}
-            </button>
-          </DialogTrigger>
-          <DialogContent
-            className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
-            onEscapeKeyDown={(e) => {
-              if (selectedPhoto !== null) {
-                e.preventDefault();
-                setSelectedPhoto(null);
-              }
-            }}
-          >
-            <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
-            {selectedPhoto === null ? (
-              <div
-                className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
-                style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
-              >
-                {item.photos.map((p, i) => {
-                  const isVideo = "youtubeId" in p;
-                  return (
-                    <button
-                      key={isVideo ? p.youtubeId : p.src}
-                      type="button"
-                      onClick={() => setSelectedPhoto(i)}
-                      className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
-                    >
-                      <img
-                        src={isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src}
-                        alt={isVideo ? p.title : p.alt}
-                        className="size-full object-cover"
-                      />
-                      {isVideo ? (
-                        <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
-                          <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
-                            <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
-                          </span>
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="relative mx-auto w-full max-w-6xl">
+              <DialogTrigger asChild>
                 <button
                   type="button"
-                  onClick={() => setSelectedPhoto(null)}
-                  className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
                 >
-                  <ArrowLeft className="size-3.5" strokeWidth={2} />
-                  {strings.caseCard.backToGallery}
+                  <Images className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewPhotos}
                 </button>
-                <Carousel
-                  ref={carouselRootRef}
-                  setApi={setPhotosApi}
-                  tabIndex={-1}
-                  className="w-full outline-none"
-                >
-                  <CarouselContent>
-                    {item.photos.map((p) => {
+              </DialogTrigger>
+              <DialogContent
+                className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
+                onEscapeKeyDown={(e) => {
+                  if (selectedPhoto !== null) {
+                    e.preventDefault();
+                    setSelectedPhoto(null);
+                  }
+                }}
+              >
+                <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
+                {selectedPhoto === null ? (
+                  <div
+                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
+                    style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
+                  >
+                    {item.photos.map((p, i) => {
                       const isVideo = "youtubeId" in p;
                       return (
-                        <CarouselItem
+                        <button
                           key={isVideo ? p.youtubeId : p.src}
-                          className="flex items-center justify-center"
+                          type="button"
+                          onClick={() => setSelectedPhoto(i)}
+                          className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
                         >
+                          <img
+                            src={
+                              isVideo
+                                ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg`
+                                : p.src
+                            }
+                            alt={isVideo ? p.title : p.alt}
+                            className="size-full object-cover"
+                          />
                           {isVideo ? (
-                            <iframe
-                              src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
-                              title={p.title}
-                              className="aspect-video w-full max-h-[85vh] rounded-lg"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                              loading="lazy"
-                            />
-                          ) : (
-                            <img
-                              src={p.src}
-                              alt={p.alt}
-                              className="max-h-[85vh] w-full rounded-lg object-contain"
-                            />
-                          )}
-                        </CarouselItem>
+                            <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
+                              <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
+                                <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
+                              </span>
+                            </span>
+                          ) : null}
+                        </button>
                       );
                     })}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-2" />
-                  <CarouselNext className="right-2" />
-                </Carousel>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-      ) : null}
-      {item.liveDemo ? (
-        <Dialog
-          onOpenChange={(open) => open && trackEvent("case_live_demo_opened", { case: item.id })}
-        >
-          <DialogTrigger asChild>
+                  </div>
+                ) : (
+                  <div className="relative mx-auto w-full max-w-6xl">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhoto(null)}
+                      className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                    >
+                      <ArrowLeft className="size-3.5" strokeWidth={2} />
+                      {strings.caseCard.backToGallery}
+                    </button>
+                    <Carousel
+                      ref={carouselRootRef}
+                      setApi={setPhotosApi}
+                      tabIndex={-1}
+                      className="w-full outline-none"
+                    >
+                      <CarouselContent>
+                        {item.photos.map((p) => {
+                          const isVideo = "youtubeId" in p;
+                          return (
+                            <CarouselItem
+                              key={isVideo ? p.youtubeId : p.src}
+                              className="flex items-center justify-center"
+                            >
+                              {isVideo ? (
+                                <iframe
+                                  src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
+                                  title={p.title}
+                                  className="aspect-video w-full max-h-[85vh] rounded-lg"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                  allowFullScreen
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <img
+                                  src={p.src}
+                                  alt={p.alt}
+                                  className="max-h-[85vh] w-full rounded-lg object-contain"
+                                />
+                              )}
+                            </CarouselItem>
+                          );
+                        })}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </Carousel>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {item.liveDemo ? (
+            <Dialog
+              onOpenChange={(open) => open && trackEvent("case_live_demo_opened", { case: item.id })}
+            >
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+                >
+                  <ExternalLink className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewLiveDemo}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
+                <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  src={item.liveDemo.previewVideo}
+                  className="block max-h-[80vh] w-full object-contain"
+                />
+                <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
+                  <a
+                    href={item.liveDemo.blogHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
+                  >
+                    {strings.caseCard.seeBlog}
+                  </a>
+                  <a
+                    href={item.liveDemo.demoHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
+                  >
+                    {strings.caseCard.seeDemo}
+                    <ArrowUpRight className="size-3.5" strokeWidth={2} />
+                  </a>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {linkedRecommendation ? (
             <button
               type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+                scrollToRecommendation(linkedRecommendation.id);
+              }}
+              className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
             >
-              <ExternalLink className="size-3.5" strokeWidth={2} />
-              {strings.caseCard.viewLiveDemo}
+              <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
+              {strings.caseCard.seeTestimonial}
             </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
-            <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              src={item.liveDemo.previewVideo}
-              className="block max-h-[80vh] w-full object-contain"
-            />
-            <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
-              <a
-                href={item.liveDemo.blogHref}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
-              >
-                {strings.caseCard.seeBlog}
-              </a>
-              <a
-                href={item.liveDemo.demoHref}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
-              >
-                {strings.caseCard.seeDemo}
-                <ArrowUpRight className="size-3.5" strokeWidth={2} />
-              </a>
-            </div>
-          </DialogContent>
-        </Dialog>
-      ) : null}
-      {linkedRecommendation ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-            scrollToRecommendation(linkedRecommendation.id);
-          }}
-          className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
-        >
-          <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
-          {strings.caseCard.seeTestimonial}
-        </button>
+          ) : null}
+        </div>
       ) : null}
       {item.challenges ? (
         <div className="mt-5">
@@ -832,7 +862,10 @@ function CaseDetailBody({
         </div>
         <div className="mt-2 flex flex-wrap gap-2 font-mono text-xs">
           {item.stackSoftware.map((s) => (
-            <span key={s} className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10">
+            <span
+              key={s}
+              className="rounded-full bg-ink/5 px-2.5 py-1 ring-1 ring-inset ring-ink/10"
+            >
               {s}
             </span>
           ))}
@@ -909,18 +942,26 @@ function CaseDetailDialog({
         if (!open) onOpenIdChange(null);
       }}
     >
-      <DialogContent className="w-[min(92vw,860px)] max-w-none overflow-visible border-none bg-transparent p-0 shadow-none">
+      <DialogContent className="top-[6vh] w-[min(92vw,860px)] max-w-none translate-y-0 overflow-visible border-none bg-transparent p-0 shadow-none">
         {/* Rendered even at the first/last case - invisible but still
             hit-testable (opacity, not `hidden`/`visibility`), so a click at
             that spot is swallowed by this no-op button instead of falling
-            through to the backdrop and closing the dialog. */}
+            through to the backdrop and closing the dialog. DialogContent
+            carries a permanent `translate-x-[-50%]` (for horizontal
+            centering), and any non-none `translate`/`transform` on an
+            ancestor makes IT the containing block for `fixed` descendants -
+            so `top-1/2` here would center on the dialog's own (variable)
+            height, not the viewport's, once the dialog stopped being
+            centered itself. `top-[44vh]` compensates for that: dialog top
+            is a fixed 6vh, so 6vh + 44vh always lands exactly on the
+            viewport's true vertical middle, regardless of dialog height. */}
         <button
           type="button"
           onClick={() => goToCase(prevId)}
           aria-label={strings.caseCard.prevCase}
           aria-hidden={!prevId}
           tabIndex={prevId ? 0 : -1}
-          className={`fixed top-1/2 left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
+          className={`fixed top-[44vh] left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
             prevId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >
@@ -932,7 +973,7 @@ function CaseDetailDialog({
           aria-label={strings.caseCard.nextCase}
           aria-hidden={!nextId}
           tabIndex={nextId ? 0 : -1}
-          className={`fixed top-1/2 right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
+          className={`fixed top-[44vh] right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
             nextId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >
@@ -1029,9 +1070,505 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   );
 }
 
+// Splits a field's text into lowercase words on any non-letter/non-digit
+// separator (spaces, punctuation, hyphens...). Matching happens against
+// whole words rather than raw substrings, so a query like "graph" doesn't
+// spuriously hit the middle of "photographie" - it still matches "graph"
+// as its own word (e.g. in "knowledge-graph") via startsWith, which also
+// keeps partial-word-while-typing queries like "strip" -> "Stripe" working.
+function wordsOf(text: string): string[] {
+  return text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+function queryTokens(query: string): string[] {
+  return query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+}
+
+// Requires every query token to prefix-match at least one whole word
+// somewhere in the words (order-independent) - lets "santé stripe" match
+// a case whose sector and stack both contain those words, even far apart
+// in the source data.
+function wordsMatchQuery(words: string[], tokens: string[]): boolean {
+  return tokens.every((t) => words.some((w) => w.startsWith(t)));
+}
+
+// Title/sector (cases) and name (products) are excluded: they're already
+// shown as plain text on the suggestion row, so a pill for them would
+// just repeat what's visible.
+type PillCategory =
+  | Exclude<CaseSearchCategory, "title" | "sector">
+  | Exclude<SideProjectSearchCategory, "name">;
+const CASE_PILL_CATEGORIES = new Set<PillCategory>([
+  "need",
+  "ecosystem",
+  "highlights",
+  "stack",
+  "tags",
+  "matrix",
+  "glossary",
+  "scope",
+  "challenges",
+]);
+const PRODUCT_PILL_CATEGORIES = new Set<PillCategory>(["pitch", "bullets", "stack", "llms", "business"]);
+
+const MAX_PILLS = 2;
+const MAX_MATCH_WORDS = 2;
+
+// Pulls out just the word(s) that satisfied the query - at most
+// MAX_MATCH_WORDS - rather than a snippet of surrounding context, so a
+// pill for a full highlight sentence still reads as a short tag ("Stack:
+// DocumentDB") instead of a truncated fragment of the sentence.
+function matchedWords(value: string, tokens: string[]): string {
+  const wordRe = /[\p{L}\p{N}]+/gu;
+  const words: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = wordRe.exec(value))) {
+    const word = match[0];
+    if (tokens.some((t) => word.toLowerCase().startsWith(t))) {
+      words.push(word);
+      if (words.length >= MAX_MATCH_WORDS) break;
+    }
+  }
+  return words.join(" ");
+}
+
+type MatchPill = { category: PillCategory; value: string };
+
+// Points back at exactly which value a query matched, not just which
+// category - e.g. a "Stack" / "DocumentDB" two-tone pill rather than a
+// bare "Stack" pill, so a hit stays traceable to the specific item it
+// came from. Generic over the field type so it works for both case fields
+// and product fields - each has its own, wider category union (includes
+// "title"/"name" etc, which never appear in `pillCategories` and so never
+// produce a pill).
+function matchedPills<F extends { category: string; value: string; words: string[] }>(
+  fields: F[],
+  tokens: string[],
+  pillCategories: Set<PillCategory>,
+): MatchPill[] {
+  const result: MatchPill[] = [];
+  for (const f of fields) {
+    if (
+      pillCategories.has(f.category as PillCategory) &&
+      tokens.some((t) => f.words.some((w) => w.startsWith(t)))
+    ) {
+      result.push({ category: f.category as PillCategory, value: matchedWords(f.value, tokens) });
+    }
+    if (result.length >= MAX_PILLS) break;
+  }
+  return result;
+}
+
+// A search hit is either a case study (has its own detail popup) or a
+// nocodext side-business product (no popup - a search pick just scrolls
+// to and flashes its card in the Side-business section instead).
+type SearchHit =
+  | { kind: "case"; id: string; title: string; sector: string; pills: MatchPill[] }
+  | { kind: "product"; id: string; title: string; pills: MatchPill[] };
+
+// Shared by the inline dropdown and the Ctrl/Cmd+F spotlight overlay -
+// both search the same unified, JSON-derived index of cases and nocodext
+// products (so e.g. "supabase", only ever shown once in the shared stack
+// block, still surfaces every product built on it).
+function useSearchSuggestions(
+  cases: CaseStudy[],
+  sideProjects: SideProject[],
+  sideProjectsStack: string[],
+  sideProjectsLlms: LlmEntry[],
+  query: string,
+): SearchHit[] {
+  const searchIndex = useMemo(() => {
+    const caseEntries = cases.map((item) => {
+      const fields = caseSearchFields(item).map((f) => ({ ...f, words: wordsOf(f.value) }));
+      return { kind: "case" as const, item, fields, words: fields.flatMap((f) => f.words) };
+    });
+    const productEntries = sideProjects.map((item) => {
+      const fields = sideProjectSearchFields(item, sideProjectsStack, sideProjectsLlms).map((f) => ({
+        ...f,
+        words: wordsOf(f.value),
+      }));
+      return { kind: "product" as const, item, fields, words: fields.flatMap((f) => f.words) };
+    });
+    return [...caseEntries, ...productEntries];
+  }, [cases, sideProjects, sideProjectsStack, sideProjectsLlms]);
+
+  return useMemo(() => {
+    const tokens = queryTokens(query);
+    if (tokens.length === 0) return [];
+    return searchIndex
+      .filter((e) => wordsMatchQuery(e.words, tokens))
+      .map((e): SearchHit =>
+        e.kind === "case"
+          ? {
+              kind: "case",
+              id: e.item.id,
+              title: e.item.title,
+              sector: e.item.sector,
+              pills: matchedPills(e.fields, tokens, CASE_PILL_CATEGORIES),
+            }
+          : {
+              kind: "product",
+              id: e.item.id,
+              title: sideProjectNameText(e.item.name),
+              pills: matchedPills(e.fields, tokens, PRODUCT_PILL_CATEGORIES),
+            },
+      )
+      .slice(0, 6);
+  }, [searchIndex, query]);
+}
+
+function CaseSuggestionList({
+  suggestions,
+  activeIndex,
+  onHover,
+  onPick,
+  strings,
+  large = false,
+}: {
+  suggestions: SearchHit[];
+  activeIndex: number;
+  onHover: (i: number) => void;
+  onPick: (hit: SearchHit) => void;
+  strings: UIStrings;
+  large?: boolean;
+}) {
+  if (suggestions.length === 0) {
+    return <p className="px-4 py-2.5 text-sm text-slate">{strings.work.searchNoResults}</p>;
+  }
+  return (
+    <ul className={`divide-y divide-ink/8 ${large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}`}>
+      {suggestions.map((hit, i) => (
+        <li key={hit.id}>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => onPick(hit)}
+            onMouseEnter={() => onHover(i)}
+            className={`flex w-full items-start gap-3 px-4 py-2.5 text-left transition-colors ${
+              large ? "text-base" : "text-sm"
+            } ${i === activeIndex ? "bg-ink/5" : ""}`}
+          >
+            <CaseIcon id={hit.id} size="sm" />
+            <span className="min-w-0 flex-1 truncate">{hit.title}</span>
+            {hit.pills.length > 0 ? (
+              <span className="flex shrink-0 flex-wrap justify-end gap-1">
+                {hit.pills.map((p, pi) => (
+                  <span
+                    key={`${p.category}-${pi}`}
+                    className="inline-flex overflow-hidden rounded-full font-mono text-[10px] whitespace-nowrap ring-1 ring-inset ring-cyan/30"
+                  >
+                    <span className="bg-cyan px-2 py-0.5 text-ink">
+                      {strings.work.searchMatchLabels[p.category]}
+                    </span>
+                    <span className="bg-cyan/12 px-2 py-0.5 font-bold text-cyan">{p.value}</span>
+                  </span>
+                ))}
+              </span>
+            ) : (
+              <span className="shrink-0 font-mono text-[10px] text-slate">
+                {hit.kind === "case" ? hit.sector : strings.work.sideProjectLabel}
+              </span>
+            )}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CaseSearch({
+  cases,
+  sideProjects,
+  sideProjectsStack,
+  sideProjectsLlms,
+  strings,
+  query,
+  onQueryChange,
+  onPick,
+}: {
+  cases: CaseStudy[];
+  sideProjects: SideProject[];
+  sideProjectsStack: string[];
+  sideProjectsLlms: LlmEntry[];
+  strings: UIStrings;
+  query: string;
+  onQueryChange: (q: string) => void;
+  onPick: (hit: SearchHit) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const visibleSuggestions = useSearchSuggestions(
+    cases,
+    sideProjects,
+    sideProjectsStack,
+    sideProjectsLlms,
+    query,
+  );
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  const pickSuggestion = (hit: SearchHit) => {
+    onPick(hit);
+    setSuggestOpen(false);
+    onQueryChange("");
+  };
+
+  return (
+    <div className="relative mb-8 sm:max-w-md">
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate"
+          strokeWidth={2}
+        />
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => {
+            onQueryChange(e.target.value);
+            setSuggestOpen(true);
+          }}
+          onFocus={() => setSuggestOpen(true)}
+          onBlur={() => window.setTimeout(() => setSuggestOpen(false), 120)}
+          onKeyDown={(e) => {
+            if (!suggestOpen || visibleSuggestions.length === 0) return;
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setActiveIndex((i) => (i + 1) % visibleSuggestions.length);
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setActiveIndex((i) => (i - 1 + visibleSuggestions.length) % visibleSuggestions.length);
+            } else if (e.key === "Enter") {
+              e.preventDefault();
+              const target = visibleSuggestions[activeIndex];
+              if (target) pickSuggestion(target);
+            } else if (e.key === "Escape") {
+              setSuggestOpen(false);
+              inputRef.current?.blur();
+            }
+          }}
+          placeholder={strings.work.searchPlaceholder}
+          aria-label={strings.work.searchAria}
+          className="w-full rounded-full bg-white py-2.5 pr-10 pl-10 text-sm ring-1 ring-ink/15 transition-shadow focus:ring-2 focus:ring-cyan focus:outline-none"
+        />
+        {query ? (
+          <button
+            type="button"
+            aria-label={strings.work.searchClearAria}
+            onClick={() => {
+              onQueryChange("");
+              inputRef.current?.focus();
+            }}
+            className="absolute top-1/2 right-3 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-slate transition-colors hover:text-ink"
+          >
+            <X className="size-4" strokeWidth={2} />
+          </button>
+        ) : null}
+      </div>
+      {suggestOpen && query.trim() ? (
+        <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-[min(1vw,14px)] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(16,19,26,0.35)] ring-1 ring-ink/10">
+          <CaseSuggestionList
+            suggestions={visibleSuggestions}
+            activeIndex={activeIndex}
+            onHover={setActiveIndex}
+            onPick={pickSuggestion}
+            strings={strings}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// Ctrl/Cmd+F opens this centered overlay instead of the browser's native
+// find, regardless of where the inline CaseSearch box currently sits on
+// screen - most of a case's content only exists in the popup, not the
+// collapsed card, so a plain text-in-page search would miss it entirely,
+// and scrolling to the inline box first was disorienting from far down
+// the page.
+function CaseSearchSpotlight({
+  cases,
+  sideProjects,
+  sideProjectsStack,
+  sideProjectsLlms,
+  strings,
+  query,
+  onQueryChange,
+  onPick,
+  hasOpenCaseDetail,
+  onCloseCaseDetail,
+}: {
+  cases: CaseStudy[];
+  sideProjects: SideProject[];
+  sideProjectsStack: string[];
+  sideProjectsLlms: LlmEntry[];
+  strings: UIStrings;
+  query: string;
+  onQueryChange: (q: string) => void;
+  onPick: (hit: SearchHit) => void;
+  hasOpenCaseDetail: boolean;
+  onCloseCaseDetail: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestions = useSearchSuggestions(cases, sideProjects, sideProjectsStack, sideProjectsLlms, query);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        // A case detail modal sitting on top would otherwise trap focus and
+        // visually stack under/over the spotlight - close it first.
+        if (hasOpenCaseDetail) onCloseCaseDetail();
+        // Always opens blank, regardless of whatever the inline searchbox
+        // (which shares this same query state) currently holds.
+        onQueryChange("");
+        setOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [hasOpenCaseDetail, onCloseCaseDetail, onQueryChange]);
+
+  useEffect(() => {
+    if (!open) return;
+    inputRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const pick = (hit: SearchHit) => {
+    onPick(hit);
+    setOpen(false);
+    onQueryChange("");
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center px-4 pt-[14vh]" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
+      <div className="relative h-fit w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(16,19,26,0.55)]">
+        <div className="relative border-b border-ink/10">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate"
+            strokeWidth={2}
+          />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.preventDefault();
+                setOpen(false);
+                return;
+              }
+              if (suggestions.length === 0) return;
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActiveIndex((i) => (i + 1) % suggestions.length);
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveIndex((i) => (i - 1 + suggestions.length) % suggestions.length);
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                const target = suggestions[activeIndex];
+                if (target) pick(target);
+              }
+            }}
+            placeholder={strings.work.searchPlaceholder}
+            aria-label={strings.work.searchAria}
+            className="w-full bg-transparent py-4 pr-4 pl-12 text-base text-ink placeholder:text-slate focus:outline-none"
+          />
+        </div>
+        {query.trim() ? (
+          <CaseSuggestionList
+            suggestions={suggestions}
+            activeIndex={activeIndex}
+            onHover={setActiveIndex}
+            onPick={pick}
+            strings={strings}
+            large
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function Work({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
-  const { cases } = content;
+  const { cases, sideProjects, sideProjectsStack, sideProjectsLlms } = content;
   const [openCaseId, setOpenCaseId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  // Bypasses openCase's DOM dispatch (dispatchEvent on the target card):
+  // a case filtered out of the visible grid is still mounted (`hidden`,
+  // not removed), so this isn't strictly required for search results, but
+  // Work already owns the dialog's open state directly - no reason to
+  // round-trip through a DOM event to reach it.
+  const openFromSearch = (id: string) => {
+    setOpenCaseId(id);
+    navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
+  };
+
+  // A search hit is either a case (has its own detail popup) or a
+  // nocodext product (no popup - just scroll to and flash its card in
+  // the Side-business section instead).
+  const onSearchPick = (hit: SearchHit) => {
+    trackEvent("case_search_pick", { query: query.trim(), result: hit.id, result_kind: hit.kind });
+    if (hit.kind === "case") {
+      openFromSearch(hit.id);
+    } else {
+      // Deferred: this runs synchronously from the spotlight's pick
+      // handler, before its own `setOpen(false)` has committed and
+      // released the body-scroll lock it holds while open - scrolling
+      // immediately would race that cleanup and get silently swallowed.
+      setTimeout(() => scrollAndFlash(hit.id), 0);
+    }
+  };
+
+  const searchIndex = useMemo(
+    () => cases.map((item) => ({ item, words: wordsOf(caseSearchText(item)) })),
+    [cases],
+  );
+  const matchingIds = useMemo(() => {
+    const tokens = queryTokens(query);
+    if (tokens.length === 0) return null;
+    return new Set(
+      searchIndex.filter(({ words }) => wordsMatchQuery(words, tokens)).map(({ item }) => item.id),
+    );
+  }, [searchIndex, query]);
+  const visibleCount = matchingIds ? matchingIds.size : cases.length;
+  const tocContent = matchingIds
+    ? { ...content, cases: cases.filter((c) => matchingIds.has(c.id)) }
+    : content;
+
+  // Debounced so typing "supabase" doesn't fire 8 events - only the
+  // settled query gets sent, giving a usable "what people search for"
+  // signal in PostHog instead of noise per keystroke.
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    const timeout = window.setTimeout(() => {
+      trackEvent("case_search", { query: trimmed, results: visibleCount });
+    }, 600);
+    return () => window.clearTimeout(timeout);
+  }, [query, visibleCount]);
+
   return (
     <section id="work" className="border-y border-ink/10 bg-white/40">
       <div className="mx-auto max-w-6xl px-6 py-16">
@@ -1047,16 +1584,47 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
             )}
           </div>
           <span className="font-mono text-xs text-slate">
-            {cases.length} {strings.work.missionsSuffix}
+            {visibleCount} {strings.work.missionsSuffix}
           </span>
         </div>
+        <CaseSearch
+          cases={cases}
+          sideProjects={sideProjects}
+          sideProjectsStack={sideProjectsStack}
+          sideProjectsLlms={sideProjectsLlms}
+          strings={strings}
+          query={query}
+          onQueryChange={setQuery}
+          onPick={onSearchPick}
+        />
+        <CaseSearchSpotlight
+          cases={cases}
+          sideProjects={sideProjects}
+          sideProjectsStack={sideProjectsStack}
+          sideProjectsLlms={sideProjectsLlms}
+          strings={strings}
+          query={query}
+          onQueryChange={setQuery}
+          onPick={onSearchPick}
+          hasOpenCaseDetail={openCaseId !== null}
+          onCloseCaseDetail={() => setOpenCaseId(null)}
+        />
         <div className="lg:flex lg:items-start lg:gap-8">
           <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">
             {cases.map((item) => (
-              <CaseCard key={item.id} item={item} strings={strings} onOpenDetail={setOpenCaseId} />
+              <CaseCard
+                key={item.id}
+                item={item}
+                strings={strings}
+                onOpenDetail={setOpenCaseId}
+                hidden={matchingIds !== null && !matchingIds.has(item.id)}
+              />
             ))}
+            {matchingIds && matchingIds.size === 0 ? (
+              <p className="text-sm text-slate">{strings.work.searchNoResults}</p>
+            ) : null}
           </div>
-          <CaseToc content={content} strings={strings} />
+          <CaseToc content={tocContent} strings={strings} />
         </div>
       </div>
       <CaseDetailDialog

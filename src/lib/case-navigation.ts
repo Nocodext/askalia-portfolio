@@ -34,3 +34,20 @@ export function openCase(id: string, navigate: ReturnType<typeof useNavigate>) {
   document.getElementById(id)?.dispatchEvent(new Event(CASE_EXPAND_EVENT));
   navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
 }
+
+// For search hits that have no detail popup of their own (side-business
+// product cards) - scrolls the element into view with the same header
+// clearance as scrollToCase, then flashes a ring around it so the visitor
+// can tell which card the search actually meant.
+export function scrollAndFlash(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const offset = window.innerWidth < 768 ? 128 : 168;
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: "instant" });
+  el.classList.remove("search-flash");
+  // Force reflow so re-adding the class restarts the animation if this
+  // card was already mid-flash from a previous jump.
+  void el.offsetWidth;
+  el.classList.add("search-flash");
+}

@@ -85,7 +85,7 @@ export const cases: CaseStudy[] = [
       technical: [
         "Migrated a legacy PHP/CMS app to a hospital-grade NestJS architecture: hexagonal, event-driven, IHE / PAM / HL7 synchronization.",
         "Migrated legacy MySQL to PostgreSQL: triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, schema segregation.",
-        "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
+        "Hospital information system interoperability with a university hospital, its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
         "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
         "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters - the industry's two standard data-exchange protocols.",
         "Resilient node-based architecture, Docker Compose LAN design",
@@ -325,7 +325,6 @@ export const cases: CaseStudy[] = [
       "Business process: implementation + flowchart documentation.",
       "Arbitrated monolithic NestJS vs. stateless serverless architecture (Vercel Edge Functions).",
       "Asynchronous jobs on a Redis MQ, retries, multi-client OAuth token rotation, Redis resilience and recovery.",
-      "Supervised freelancers, client check-ins and management, production rollout.",
     ],
     stackSoftware: [
       "NestJS",
@@ -578,7 +577,12 @@ export const cases: CaseStudy[] = [
     sector: "HR Tech · Job Ad Multi-posting",
     title: "France Travail integration for a job-ad multi-posting hub",
     need: "Job-ad multi-posting startup connecting its clients to the sector's staple platforms (Hellowork, Indeed, APEC, France Travail...): add the France Travail broadcasting service to the integrations catalog.",
-    ecosystem: [{ name: "Indeed" }, { name: "HelloWork" }, { name: "HireSweet" }, { name: "Gojob" }],
+    ecosystem: [
+      { name: "Indeed" },
+      { name: "HelloWork" },
+      { name: "HireSweet" },
+      { name: "Gojob" },
+    ],
     photos: [
       {
         src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
@@ -669,6 +673,7 @@ export const cases: CaseStudy[] = [
       "OAuth2",
       "React",
       "Webhooks",
+      "graphQL",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [
@@ -756,10 +761,12 @@ export const cases: CaseStudy[] = [
       {
         constraint:
           "Guaranteeing that a client's text never left their machine, when very few solutions capable of running entirely on-device existed at the time.",
-        response: "An assistant that runs entirely on-device, with no text ever sent to an external server.",
+        response:
+          "An assistant that runs entirely on-device, with no text ever sent to an external server.",
       },
       {
-        constraint: "Offering real-time correction without ever slowing down or weighing on daily browser use.",
+        constraint:
+          "Offering real-time correction without ever slowing down or weighing on daily browser use.",
         response:
           "Heavy computation offloaded to a web worker so the interface never blocks: an extension that stays smooth no matter the volume of text analyzed.",
       },
@@ -769,7 +776,8 @@ export const cases: CaseStudy[] = [
         response: "A pixel-perfect highlight on the term in question, whatever the writing tool.",
       },
       {
-        constraint: "Offering suggestions that are both relevant and subtle, across a meaningful range of professions and sectors.",
+        constraint:
+          "Offering suggestions that are both relevant and subtle, across a meaningful range of professions and sectors.",
         response:
           "Iterative glossary enrichment, vertical by vertical, driven by field feedback and prioritized by usage.",
       },
@@ -780,12 +788,19 @@ export const cases: CaseStudy[] = [
           "Worked around via Google Workspace's proprietary cloud API, the only available path to interact with this kind of editor.",
       },
       {
-        constraint: "Some targeted applications are purely desktop-based, with no DOM or web page to observe at all.",
+        constraint:
+          "Some targeted applications are purely desktop-based, with no DOM or web page to observe at all.",
         response:
           "Explored porting the engine to run via RPA - a first approach tested with Microsoft's Power Automate for desktop.",
       },
     ],
-    stackSoftware: ["Chrome extension", "Edge AI", "Embedded NLP", "Self-hosted API", "Business glossaries"],
+    stackSoftware: [
+      "Chrome extension",
+      "Edge AI",
+      "Embedded NLP",
+      "Self-hosted API",
+      "Business glossaries",
+    ],
     hashtags: ["edge-ai", "data-sovereignty", "GDPR", "NLP", "browser extension", "translation"],
     matrix: {
       roles: ["Architect", "Product developer"],
@@ -795,33 +810,66 @@ export const cases: CaseStudy[] = [
         "Multi-vertical business coverage",
       ],
       sectors: ["Translation", "Writing / Press", "Legal"],
-      technical: ["Embedded Edge AI", "On-device NLP", "Browser extension", "Pixel-perfect HTML overlay"],
+      technical: [
+        "Embedded Edge AI",
+        "On-device NLP",
+        "Browser extension",
+        "Pixel-perfect HTML overlay",
+      ],
       ethical: ["GDPR", "Data sovereignty", "Zero server-side text transmission"],
     },
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string };
+export type BulletWithLogo = {
+  before: string;
+  logo: string;
+  after: string;
+  alt?: string;
+  large?: boolean;
+  offsetY?: string;
+};
 export type Bullet = string | BulletWithLogo;
 
 export type SideProject = {
   id: string;
-  name: string;
+  name: string | BulletWithLogo;
   index: string;
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  stack: string[];
-  llms?: string[];
-  logos?: string[];
+  headerRight?: BulletWithLogo;
   business: string;
 };
+
+// Shared across all four nocode products (Airtable explorer is migrating
+// onto it too) - shown once under the section headline instead of
+// repeated on every card.
+export const sideProjectsStack: string[] = [
+  "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
+  "Stripe",
+  "React",
+  "shadcn/ui",
+  "Tailwind",
+  "Plasmo",
+  "Brevo",
+  "Sentry",
+  "PostHog",
+];
+
+export const sideProjectsLlms: { name: string; logo: string }[] = [
+  { name: "Claude", logo: "/logos/llm/claude.svg" },
+  { name: "ChatGPT", logo: "/logos/llm/openai.svg" },
+  { name: "Perplexity", logo: "/logos/llm/perplexity.svg" },
+  { name: "Gemini", logo: "/logos/llm/gemini.svg" },
+];
 
 export const sideProjects: SideProject[] = [
   {
     id: "nocodext",
     index: "01",
-    name: "Nocodext for Bubble",
+    name: { before: "", logo: "/logos/nocodext.png", after: "", alt: "Nocodext" },
+    headerRight: { before: "for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
     pitch:
       "Chrome-extension tooling for Bubble no-code agencies: discoverability of a handed-over app and continuous QA to ship professionally - entirely missing natively in Bubble.",
     url: "https://nocodext.studio/bubble",
@@ -838,26 +886,18 @@ export const sideProjects: SideProject[] = [
       "Advanced work in UX, UI, Interaction Design.",
       "Dev agents, MCP and skills.",
     ],
-    stack: [
-      "Supabase (OTP, edge functions, triggers, RBAC)",
-      "Stripe",
-      "React",
-      "shadcn/ui",
-      "Tailwind",
-      "Plasmo",
-      "Brevo",
-      "GCP",
-      "Sentry",
-      "PostHog",
-    ],
-    llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: ["/logos/side/bubble.svg"],
     business: "2 leads ready to beta-test. B2B market retargeting: web agencies.",
   },
   {
-    id: "breejd",
+    id: "breedj",
     index: "02",
-    name: "Breejd",
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj", large: true },
+    headerRight: {
+      before: "for ",
+      logo: "/logos/side/linkedin-icon.svg",
+      after: "",
+      alt: "LinkedIn",
+    },
     pitch:
       "After a LinkedIn job post: bulk-collect, sort and export respondents to a flat file, cloud office tool, or ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -868,14 +908,12 @@ export const sideProjects: SideProject[] = [
       "Built end to end, from idea to production.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["Same stack as Nocodext for Bubble"],
-    logos: ["/logos/side/linkedin.svg"],
     business: "2 HR leads ready to beta-test.",
   },
   {
     id: "pinnpm",
     index: "03",
-    name: "pin'npm",
+    name: { before: "", logo: "/logos/side/pinnpm.png", after: "", alt: "pin'npm" },
     pitch:
       "NPMjs.com doesn't let you bookmark libraries, even when signed in. pin'npm catalogs and enriches packages directly in-page.",
     url: "https://nocodext.studio/pinnpm",
@@ -887,14 +925,18 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for the side panel and in-page integration.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["Same stack as Nocodext for Bubble"],
-    logos: ["/logos/side/pinnpm.png"],
     business: "From idea to production.",
   },
   {
     id: "airtable",
     index: "04",
-    name: "Airtable explorer",
+    name: {
+      before: "",
+      logo: "/logos/side/airtable.svg",
+      after: " explorer",
+      alt: "Airtable",
+      offsetY: "-5px",
+    },
     pitch:
       "Airtable's dashboard colors disappeared after an internal decision. The extension brings them back - and makes the dashboard genuinely navigable.",
     url: "https://nocodext.studio/airtable",
@@ -907,8 +949,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI and interaction design for navigation and coloring in Airtable's native interface.",
       "Dev agents, MCP and skills.",
     ],
-    stack: ["JS vanilla legacy"],
-    logos: ["/logos/side/airtable.svg"],
     business: "1 lead ready to beta-test.",
   },
 ];
@@ -1003,10 +1043,10 @@ export const overview: OverviewCategory[] = [
     color: "violet",
     description: "Types of product value delivered, client missions and side ventures included.",
     buckets: [
-      { label: "Product strategy & positioning", caseIds: ["nocodext", "breejd"] },
+      { label: "Product strategy & positioning", caseIds: ["nocodext", "breedj"] },
       {
         label: "Product Design (UX/UI/Interaction)",
-        caseIds: ["nocodext", "patrimoine", "breejd", "pinnpm", "airtable", "ats-youtubers"],
+        caseIds: ["nocodext", "patrimoine", "breedj", "pinnpm", "airtable", "ats-youtubers"],
       },
       {
         label: "Business automation & integration",

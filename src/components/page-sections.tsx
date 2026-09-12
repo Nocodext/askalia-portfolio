@@ -284,7 +284,6 @@ export function Hero({ content, strings }: { content: PortfolioContent; strings:
   );
 }
 
-
 export function Process({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { capabilities } = content;
   return (
@@ -314,7 +313,26 @@ export function Process({ content, strings }: { content: PortfolioContent; strin
   );
 }
 
-export function SideBusiness({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
+// Rendered as real text (Comfortaa) rather than the source raster PNG -
+// at the small sizes this mark is displayed at, downscaling the image
+// left it looking muddy/soft even though the source itself is sharp when
+// viewed at full size. Text stays crisp at any size.
+function NocodextWordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={`font-["Comfortaa"] font-bold ${className}`}>
+      <span className="text-black">nocod</span>
+      <span className="text-[#FF0000]">ext</span>
+    </span>
+  );
+}
+
+export function SideBusiness({
+  content,
+  strings,
+}: {
+  content: PortfolioContent;
+  strings: UIStrings;
+}) {
   const { sideProjects } = content;
   return (
     <section id="lab" className="mx-auto max-w-6xl px-6 pb-16">
@@ -324,24 +342,136 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
           <span className="size-1.5 rounded-full bg-cyan" /> {strings.sideBusiness.sectionLabel}
         </div>
         <div className="mt-5 inline-flex rounded-md bg-white px-4 py-2.5">
-          <img src="/logos/nocodext.png" alt="nocodext.studio" className="h-7 w-auto sm:h-8" />
+          <NocodextWordmark className="text-2xl sm:text-3xl" />
         </div>
         <p className="mt-3 max-w-[58ch] text-sm text-pretty text-white/70">
           {strings.sideBusiness.intro}
         </p>
+        <div className="mt-5">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
+            {strings.sideBusiness.stackLabel}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-sm text-cyan/80">
+            {content.sideProjectsStack.map((s, i) => (
+              <span key={s} className="inline-flex items-center gap-2.5">
+                {i > 0 ? <span className="text-white/20">·</span> : null}
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
+            {strings.sideBusiness.llmsUsed}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
+            {content.sideProjectsLlms.map((l) => (
+              <span
+                key={l.name}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 py-1.5 pr-3 pl-2 ring-1 ring-inset ring-white/15"
+              >
+                <img src={l.logo} alt="" className="size-5 shrink-0" />
+                {l.name}
+              </span>
+            ))}
+          </div>
+        </div>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {sideProjects.map((p) => (
-            <div
-              key={p.id}
-              id={p.id}
-              className="rounded-[min(1vw,14px)] bg-white/5 p-6 ring-1 ring-white/10"
-            >
-              <div className="font-mono text-[11px] text-white/50">
-                {p.index} {strings.sideBusiness.productSuffix}
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <h3 className="font-display text-xl font-semibold">
-                  {p.url ? (
+          {sideProjects.map((p) => {
+            // A structured name reads as one merged white pill - logo(s)
+            // and surrounding text as a single brand mark - rather than a
+            // logo with a badge tacked on elsewhere in the header row.
+            const pillContent =
+              typeof p.name === "string" ? null : (
+                <>
+                  {p.name.before}
+                  {p.name.logo === "/logos/nocodext.png" ? (
+                    <NocodextWordmark className="text-2xl" />
+                  ) : (
+                    <img
+                      src={p.name.logo}
+                      alt={p.name.alt ?? ""}
+                      style={p.name.offsetY ? { marginTop: p.name.offsetY } : undefined}
+                      className={p.name.large ? "h-10 w-auto" : "h-7 w-auto"}
+                    />
+                  )}
+                  {p.name.after}
+                  {p.headerRight ? (
+                    <>
+                      <span className="font-mono text-xs text-slate">
+                        {p.headerRight.before.trim()}
+                      </span>
+                      <img
+                        src={p.headerRight.logo}
+                        alt={p.headerRight.alt ?? ""}
+                        className="h-5 w-auto"
+                      />
+                    </>
+                  ) : null}
+                </>
+              );
+            return (
+              <div
+                key={p.id}
+                id={p.id}
+                className="rounded-[min(1vw,14px)] bg-white/5 p-6 ring-1 ring-white/10"
+              >
+                <div className="font-mono text-[11px] text-white/50">
+                  {p.index} {strings.sideBusiness.productSuffix}
+                </div>
+                <h3 className="mt-3 font-display text-xl font-semibold">
+                  {typeof p.name !== "string" ? (
+                    p.id === "breedj" && p.headerRight && p.url ? (
+                      // Experimental two-tone pill: Breedj's own mark reads
+                      // fine directly on a dark fill (no white backing
+                      // needed, unlike every other logo here), so splitting
+                      // the pill lets that show instead of flattening
+                      // everything to the same white background.
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-white/50 transition-colors hover:text-cyan"
+                      >
+                        <span className="inline-flex items-stretch overflow-hidden rounded-md">
+                          <span className="flex items-center bg-ink px-3 py-1.5 ring-1 ring-inset ring-white/10">
+                            <img
+                              src={p.name.logo}
+                              alt={p.name.alt ?? ""}
+                              className="h-10 w-auto"
+                            />
+                          </span>
+                          <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 text-ink">
+                            <span className="font-mono text-xs text-slate">
+                              {p.headerRight.before.trim()}
+                            </span>
+                            <img
+                              src={p.headerRight.logo}
+                              alt={p.headerRight.alt ?? ""}
+                              className="h-5 w-auto"
+                            />
+                          </span>
+                        </span>
+                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                      </a>
+                    ) : p.url ? (
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-white/50 transition-colors hover:text-cyan"
+                      >
+                        <span className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink">
+                          {pillContent}
+                        </span>
+                        <ExternalLink className="size-3.5 shrink-0" strokeWidth={2} />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-1.5 text-ink">
+                        {pillContent}
+                      </span>
+                    )
+                  ) : p.url ? (
                     <a
                       href={p.url}
                       target="_blank"
@@ -355,77 +485,38 @@ export function SideBusiness({ content, strings }: { content: PortfolioContent; 
                     p.name
                   )}
                 </h3>
-                {p.logos ? (
-                  <div className="flex shrink-0 items-center gap-2">
-                    {p.logos.map((src) => (
-                      <span
-                        key={src}
-                        className="inline-flex items-center rounded-md bg-white px-2 py-1"
-                      >
-                        <img src={src} alt="" className="h-4 w-auto" />
+                <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
+                <ul className="mt-4 space-y-2">
+                  {p.bullets.map((b, i) => (
+                    <li
+                      key={typeof b === "string" ? b : i}
+                      className="flex gap-2.5 text-sm text-white/80"
+                    >
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
+                      <span className="text-pretty">
+                        {typeof b === "string" ? (
+                          b
+                        ) : (
+                          <>
+                            {b.before}
+                            <img
+                              src={b.logo}
+                              alt=""
+                              className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
+                            />
+                            {b.after}
+                          </>
+                        )}
                       </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-              <p className="mt-2 text-sm text-pretty text-white/70">{p.pitch}</p>
-              <ul className="mt-4 space-y-2">
-                {p.bullets.map((b, i) => (
-                  <li
-                    key={typeof b === "string" ? b : i}
-                    className="flex gap-2.5 text-sm text-white/80"
-                  >
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-cyan" />
-                    <span className="text-pretty">
-                      {typeof b === "string" ? (
-                        b
-                      ) : (
-                        <>
-                          {b.before}
-                          <img
-                            src={b.logo}
-                            alt=""
-                            className="inline h-4 w-auto rounded-sm bg-white px-1 align-text-bottom"
-                          />
-                          {b.after}
-                        </>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] text-white/60">
-                {p.stack.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-full bg-white/10 px-2.5 py-1 ring-1 ring-inset ring-white/15"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-              {p.llms ? (
-                <div className="mt-4">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-white/50">
-                    {strings.sideBusiness.llmsUsed}
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-2 font-mono text-[11px] text-amber">
-                    {p.llms.map((l) => (
-                      <span
-                        key={l}
-                        className="rounded-full bg-amber/10 px-2.5 py-1 ring-1 ring-inset ring-amber/25"
-                      >
-                        {l}
-                      </span>
-                    ))}
-                  </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-cyan">
+                  {p.business}
                 </div>
-              ) : null}
-              <div className="mt-4 border-t border-white/10 pt-3 font-mono text-[11px] text-cyan">
-                {p.business}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

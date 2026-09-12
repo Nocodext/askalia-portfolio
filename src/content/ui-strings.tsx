@@ -61,6 +61,27 @@ export type UIStrings = {
     disabledHeading: string;
     missionsSuffix: string;
     sideProjectSuffix: string;
+    searchPlaceholder: string;
+    searchAria: string;
+    searchClearAria: string;
+    searchNoResults: string;
+    sideProjectLabel: string;
+    searchMatchLabels: Record<
+      | "need"
+      | "ecosystem"
+      | "highlights"
+      | "stack"
+      | "tags"
+      | "matrix"
+      | "glossary"
+      | "scope"
+      | "challenges"
+      | "pitch"
+      | "bullets"
+      | "business"
+      | "llms",
+      string
+    >;
   };
   overview: {
     sectionLabel: string;
@@ -76,6 +97,7 @@ export type UIStrings = {
     sectionLabel: string;
     intro: string;
     productSuffix: string;
+    stackLabel: string;
     llmsUsed: string;
   };
   recommendations: {
@@ -183,6 +205,26 @@ export const uiStringsFr: UIStrings = {
     disabledHeading: "Des défis qu'on disait impossibles, livrés en production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side-business)",
+    searchPlaceholder: "Rechercher dans les cas clients (secteur, stack, rôle...)",
+    searchAria: "Rechercher parmi les cas clients",
+    searchClearAria: "Effacer la recherche",
+    searchNoResults: "Aucun cas client ne correspond à cette recherche.",
+    sideProjectLabel: "Side-business",
+    searchMatchLabels: {
+      need: "Besoin",
+      ecosystem: "Écosystème",
+      highlights: "Points clés",
+      stack: "Stack",
+      tags: "Tags",
+      matrix: "Matrice",
+      glossary: "Glossaire",
+      scope: "Périmètre",
+      challenges: "Défis",
+      pitch: "Pitch",
+      bullets: "Détails",
+      business: "Traction",
+      llms: "LLM",
+    },
   },
   overview: {
     sectionLabel: "[03] - Cartographie",
@@ -199,8 +241,9 @@ export const uiStringsFr: UIStrings = {
   sideBusiness: {
     sectionLabel: "[06] - Side-business",
     intro:
-      "Quatre produits menés en solopreneur, de l'idée à la production : extensions navigateur et outillage qui comblent les manques des plateformes que les équipes utilisent tous les jours.",
+      "Quatre produits menés en solopreneur, de l'idée à la production : des extensions navigateur qui apportent aux power users les fonctionnalités d'interface qu'aucune de ces plateformes ne propose nativement.",
     productSuffix: "/ produit",
+    stackLabel: "Stack",
     llmsUsed: "LLMs utilisés",
   },
   recommendations: {
@@ -304,6 +347,26 @@ export const uiStringsEn: UIStrings = {
     disabledHeading: "Challenges everyone said were impossible, shipped to production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side project)",
+    searchPlaceholder: "Search within case studies (sector, stack, role...)",
+    searchAria: "Search case studies",
+    searchClearAria: "Clear search",
+    searchNoResults: "No case study matches this search.",
+    sideProjectLabel: "Side project",
+    searchMatchLabels: {
+      need: "Need",
+      ecosystem: "Ecosystem",
+      highlights: "Highlights",
+      stack: "Stack",
+      tags: "Tags",
+      matrix: "Matrix",
+      glossary: "Glossary",
+      scope: "Scope",
+      challenges: "Challenges",
+      pitch: "Pitch",
+      bullets: "Details",
+      business: "Traction",
+      llms: "LLM",
+    },
   },
   overview: {
     sectionLabel: "[02] - Overview",
@@ -320,8 +383,9 @@ export const uiStringsEn: UIStrings = {
   sideBusiness: {
     sectionLabel: "[05] - Side Projects",
     intro:
-      "Four products built solo, from idea to production: browser extensions and tooling that fill the gaps in the platforms teams use every day.",
+      "Four products built solo, from idea to production: browser extensions that give power users the interface features none of these platforms ever shipped natively.",
     productSuffix: "/ product",
+    stackLabel: "Stack",
     llmsUsed: "LLMs used",
   },
   recommendations: {

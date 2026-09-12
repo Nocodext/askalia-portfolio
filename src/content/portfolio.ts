@@ -55,6 +55,75 @@ export type CaseStudy = {
   liveDemo?: { previewVideo: string; demoHref: string; blogHref: string };
 };
 
+function highlightText(h: Highlight): string {
+  return typeof h === "string" ? h : [h.text, h.objective, ...(h.detail ?? [])].join(" ");
+}
+
+export type CaseSearchCategory =
+  | "title"
+  | "sector"
+  | "need"
+  | "ecosystem"
+  | "highlights"
+  | "stack"
+  | "tags"
+  | "matrix"
+  | "glossary"
+  | "scope"
+  | "challenges";
+
+// One entry per raw source string (not merged into a per-category blob),
+// so the UI can point back at exactly which value a query matched - e.g.
+// showing "Stack: DocumentDB" rather than just "Stack" when the hit came
+// from that one stackSoftware entry among several.
+export type CaseSearchField = { category: CaseSearchCategory; value: string };
+
+// The case search box matches against this instead of the rendered DOM -
+// a lot of a case's content (glossary, matrix, challenges, the full
+// highlight groups) never renders in the collapsed card, only inside the
+// popup, so a DOM/text search would silently miss it.
+export function caseSearchFields(item: CaseStudy): CaseSearchField[] {
+  const fields: CaseSearchField[] = [];
+  const push = (category: CaseSearchCategory, ...values: (string | undefined)[]) => {
+    for (const value of values) {
+      if (value) fields.push({ category, value });
+    }
+  };
+
+  push("title", item.title);
+  push("sector", item.sector);
+  push("need", item.need, item.needObjective, item.duration);
+  push("ecosystem", ...(item.ecosystem?.map((e) => e.name) ?? []));
+  push(
+    "highlights",
+    ...item.highlights.map(highlightText),
+    ...(item.highlightGroups?.functional.map(highlightText) ?? []),
+    ...(item.highlightGroups?.technical.map(highlightText) ?? []),
+  );
+  push("stack", ...item.stackSoftware, ...(item.stackHardware ?? []));
+  push("tags", ...item.hashtags);
+  push(
+    "matrix",
+    ...item.matrix.roles,
+    ...item.matrix.functional,
+    ...item.matrix.sectors,
+    ...item.matrix.technical,
+    ...item.matrix.ethical,
+  );
+  push("glossary", ...(item.glossary?.flatMap((g) => [g.term, g.def]) ?? []));
+  push("scope", item.scope?.label, item.scope?.body);
+  push("challenges", ...(item.challenges?.flatMap((c) => [c.constraint, c.response]) ?? []));
+
+  return fields;
+}
+
+export function caseSearchText(item: CaseStudy): string {
+  return caseSearchFields(item)
+    .map((f) => f.value)
+    .join(" \n ")
+    .toLowerCase();
+}
+
 export const profile = {
   firstName: "Joris",
   lastName: "GROUILLET",
@@ -72,9 +141,9 @@ export const cases: CaseStudy[] = [
   {
     id: "reanimation",
     index: "00",
-    sector: "Santé · Hôpital / Réanimation",
+    sector: "Santé · Hôpital / Soins critiques",
     title:
-      "Plateforme hospitalière : continuité informationnelle Soignant · Familles · Patient en Réanimation DAR-B",
+      "Plateforme hospitalière : continuité informationnelle Soignant · Familles · Patients en soins critiques",
     need: `Cette plateforme web et mobile connecte les familles de patients hospitalisés à l'équipe soignante : synchronisation automatique
   avec les systèmes hospitaliers dès l'admission, transmissions et alertes en temps réel vers les
   proches, sans ressaisie côté soignant. Complétion infos médicales par les proches.`,
@@ -85,7 +154,7 @@ export const cases: CaseStudy[] = [
       functional: [
         "Premier profil technique de la structure : responsabilité pleine et entière des choix d'architecture, en autonomie totale.",
         "Démarche UX/UI conduite en co-création avec les agents hospitaliers.",
-        "Modélisation des flux hospitaliers de réanimation : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
+        "Modélisation des flux hospitaliers de soins critiques : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
         "Transmission d'informations médicales et paramédicales, alerting familles / soignants et follow-up d'actions.",
         "Import d'un pool de soignants paramédicaux via Excel pour aligner le logiciel avec la réalité du staffing en vigueur.",
         "Portail Famille & Soignant : e-CPS, OTP, 2FA, Citrix & RPA.",
@@ -99,7 +168,7 @@ export const cases: CaseStudy[] = [
       technical: [
         "Migration d'une app legacy PHP/CMS vers une architecture NestJS hospitalière : hexagonale, event-driven, synchronisation IHE / PAM / HL7.",
         "Migration MySQL legacy vers PostgreSQL : triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, ségrégation de schémas.",
-        "Interopérabilité SI-H CHU Montpellier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
+        "Interopérabilité SI-H d'un centre hospitalier, DSI santé, DPI ; interopérabilité esante.gouv.fr / ANS et le DMP.",
         "Implémentation des exigences HDS niveaux 4 à 6.",
         "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI, via adaptateurs SFTP et MLLP/MLLPS - les 2 protocoles standards d'échange de données de l'industrie.",
         "Architecture résiliente par nœuds, Docker Compose LAN design.",
@@ -142,7 +211,7 @@ export const cases: CaseStudy[] = [
         "Alerting familles / soignants",
         "Portail famille & soignant",
       ],
-      sectors: ["Hôpital / Réanimation", "CHU", "Santé publique"],
+      sectors: ["Hôpital / Soins critiques", "CHU", "Santé publique"],
       technical: [
         "Event-driven",
         "Architecture hexagonale",
@@ -354,7 +423,6 @@ export const cases: CaseStudy[] = [
       "Business process : implémentation + documentation en flowcharts.",
       "Arbitrage architecture monolithe NestJS vs serverless stateless (Edge Functions Vercel).",
       "Jobs asynchrones en MQ Redis, retries, rotation de tokens OAuth multiclients, résilience et reprise Redis.",
-      "Supervision de freelances, points et gestion client, mise en production.",
     ],
     stackSoftware: [
       "NestJS",
@@ -625,7 +693,7 @@ export const cases: CaseStudy[] = [
       technical: ["Mobile natif C++", "Full-stack réactif temps réel", "PaaS hébergement"],
       ethical: ["Fiabilité en contexte d'urgence médicale"],
     },
-    duration: "3 mois",
+    duration: "4 mois",
   },
   {
     id: "multidiffusion-france-travail",
@@ -633,7 +701,12 @@ export const cases: CaseStudy[] = [
     sector: "RH Tech · Multidiffusion d'offres d'emploi",
     title: "Intégration France Travail au hub de multidiffusion d'offres d'emploi",
     need: "Startup de multidiffusion d'annonces d'emploi connectant ses clients aux plateformes incontournables du secteur (Hellowork, Indeed, APEC, France Travail...) : ajouter le service de diffusion auprès de France Travail au catalogue d'intégrations.",
-    ecosystem: [{ name: "Indeed" }, { name: "HelloWork" }, { name: "HireSweet" }, { name: "Gojob" }],
+    ecosystem: [
+      { name: "Indeed" },
+      { name: "HelloWork" },
+      { name: "HireSweet" },
+      { name: "Gojob" },
+    ],
     photos: [
       {
         src: "/case-photos/multidiffusion-france-travail/schema-1-contrat-flux.png",
@@ -733,6 +806,7 @@ export const cases: CaseStudy[] = [
       "OAuth2",
       "React",
       "Webhooks",
+      "graphQL",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [
@@ -848,7 +922,8 @@ export const cases: CaseStudy[] = [
           "Contournement via l'API cloud propriétaire de Google Workspace, seule voie disponible pour interagir avec ce type d'éditeur.",
       },
       {
-        constraint: "Certaines applications ciblées sont purement desktop, sans DOM ni page web à observer.",
+        constraint:
+          "Certaines applications ciblées sont purement desktop, sans DOM ni page web à observer.",
         response:
           "Étude d'un portage du moteur piloté par RPA - une première approche testée avec Power Automate for desktop, de Microsoft.",
       },
@@ -881,32 +956,105 @@ export const cases: CaseStudy[] = [
   },
 ];
 
-export type BulletWithLogo = { before: string; logo: string; after: string };
+export type BulletWithLogo = {
+  before: string;
+  logo: string;
+  after: string;
+  alt?: string;
+  // For a logo that stands in for the entire name (no surrounding text) -
+  // bumps it past the shared inline-logo size when the wordmark itself
+  // needs to carry more visual weight as the headline.
+  large?: boolean;
+  // Per-logo vertical nudge (CSS margin-top) for marks whose glyph sits
+  // off-center within their own image box, throwing off items-center
+  // alignment against the text next to them.
+  offsetY?: string;
+};
 export type Bullet = string | BulletWithLogo;
+
+// Plain-text fallback for contexts (tooltips, aria labels, the SkillRing
+// hub) that can't render an inline logo image.
+export function sideProjectNameText(name: string | BulletWithLogo): string {
+  return typeof name === "string" ? name : `${name.before}${name.alt ?? ""}${name.after}`;
+}
 
 export type SideProject = {
   id: string;
-  name: string;
+  name: string | BulletWithLogo;
   index: string;
   pitch: string;
   url?: string;
   bullets: Bullet[];
-  stack: string[];
-  llms?: string[];
-  logos?: string[];
+  // Extra text+logo appended into the name pill (e.g. "... for [LinkedIn
+  // logo]").
+  headerRight?: BulletWithLogo;
   business: string;
 };
+
+// Shared across all four nocode products (Airtable explorer is migrating
+// onto it too) - shown once under the section headline instead of
+// repeated on every card.
+export const sideProjectsStack: string[] = [
+  "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
+  "Stripe",
+  "React",
+  "shadcn/ui",
+  "Tailwind",
+  "Plasmo",
+  "Brevo",
+  "Sentry",
+  "PostHog",
+];
+
+export type LlmEntry = { name: string; logo: string };
+
+export const sideProjectsLlms: LlmEntry[] = [
+  { name: "Claude", logo: "/logos/llm/claude.svg" },
+  { name: "ChatGPT", logo: "/logos/llm/openai.svg" },
+  { name: "Perplexity", logo: "/logos/llm/perplexity.svg" },
+  { name: "Gemini", logo: "/logos/llm/gemini.svg" },
+];
+
+export type SideProjectSearchCategory =
+  "name" | "pitch" | "bullets" | "stack" | "llms" | "business";
+export type SideProjectSearchField = { category: SideProjectSearchCategory; value: string };
+
+// Mirrors caseSearchFields: the case search box also matches nocodext
+// side-business products, so a query like "supabase" (only ever shown
+// once, in the shared stack block) still surfaces every product built on
+// it - `stack`/`llms` are passed in because they're rendered once for the
+// whole section rather than stored per product.
+export function sideProjectSearchFields(
+  p: SideProject,
+  stack: string[],
+  llms: LlmEntry[],
+): SideProjectSearchField[] {
+  const fields: SideProjectSearchField[] = [];
+  const push = (category: SideProjectSearchCategory, ...values: (string | undefined)[]) => {
+    for (const value of values) if (value) fields.push({ category, value });
+  };
+
+  push("name", sideProjectNameText(p.name));
+  push("pitch", p.pitch);
+  push("bullets", ...p.bullets.map(sideProjectNameText));
+  push("business", p.business);
+  push("stack", ...stack);
+  push("llms", ...llms.map((l) => l.name));
+
+  return fields;
+}
 
 export const sideProjects: SideProject[] = [
   {
     id: "nocodext",
     index: "01",
-    name: "Nocodext for Bubble",
+    name: { before: "", logo: "/logos/nocodext.png", after: "", alt: "Nocodext" },
+    headerRight: { before: "for ", logo: "/logos/side/bubble.svg", after: "", alt: "Bubble" },
     pitch:
       "Outillage en extensions Chrome pour les agences NoCode Bubble : découvrabilité d'une app reprise et QA continue pour livrer du professionnel - totalement absent en natif dans Bubble.",
     url: "https://nocodext.studio/bubble",
     bullets: [
-      "Solopreneur : maquettages, dev frontend / backend / extensions Chrome.",
+      "Maquettages, dev frontend / backend / edge backend runtime",
       "Pivot du ciblage vers le B2B (agences web) : hypothèses de valeur, itérations de pricing et repositionnement produit.",
       {
         before: "Intégration ",
@@ -918,26 +1066,18 @@ export const sideProjects: SideProject[] = [
       "Travaux avancés en UX, UI, Interaction Design.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: [
-      "Supabase (OTP, edge functions, triggers, RBAC)",
-      "Stripe",
-      "React",
-      "shadcn/ui",
-      "Tailwind",
-      "Plasmo",
-      "Brevo",
-      "GCP",
-      "Sentry",
-      "PostHog",
-    ],
-    llms: ["Claude", "ChatGPT", "Perplexity", "Gemini"],
-    logos: ["/logos/side/bubble.svg"],
     business: "2 leads prêts à bêta-tester. Reciblage marché B2B : agences web.",
   },
   {
-    id: "breejd",
+    id: "breedj",
     index: "02",
-    name: "Breejd",
+    name: { before: "", logo: "/logos/side/breedj.png", after: "", alt: "Breedj", large: true },
+    headerRight: {
+      before: "for ",
+      logo: "/logos/side/linkedin-icon.svg",
+      after: "",
+      alt: "LinkedIn",
+    },
     pitch:
       "Après un job post LinkedIn : récupérer en masse, trier et exporter les répondants vers fichier plat, outil bureautique cloud ou ATS.",
     url: "https://nocodext.studio/linkedin",
@@ -948,14 +1088,12 @@ export const sideProjects: SideProject[] = [
       "Réalisation intégrale, de l'idée à la production.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["Même stack que Nocodext for Bubble"],
-    logos: ["/logos/side/linkedin.svg"],
     business: "2 leads RH prêts à bêta-tester.",
   },
   {
     id: "pinnpm",
     index: "03",
-    name: "pin'npm",
+    name: { before: "", logo: "/logos/side/pinnpm.png", after: "", alt: "pin'npm" },
     pitch:
       "NPMjs.com ne permet pas de bookmarker des librairies, même connecté. pin'npm répertorie et enrichit les packages directement in-page.",
     url: "https://nocodext.studio/pinnpm",
@@ -967,14 +1105,18 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design du side panel et de l'intégration in-page.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["Même stack que Nocodext for Bubble"],
-    logos: ["/logos/side/pinnpm.png"],
     business: "De l'idée à la prod.",
   },
   {
     id: "airtable",
     index: "04",
-    name: "Airtable explorer",
+    name: {
+      before: "",
+      logo: "/logos/side/airtable.svg",
+      after: " explorer",
+      alt: "Airtable",
+      offsetY: "-5px",
+    },
     pitch:
       "Les couleurs du dashboard Airtable ont disparu sur décision interne. L'extension signe leur retour - et rend le dashboard réellement navigable.",
     url: "https://nocodext.studio/airtable",
@@ -987,8 +1129,6 @@ export const sideProjects: SideProject[] = [
       "UX/UI et interaction design de la navigation et de la coloration de l'interface native Airtable.",
       "Agents de dev, MCP et skills.",
     ],
-    stack: ["JS vanilla legacy"],
-    logos: ["/logos/side/airtable.svg"],
     business: "1 lead prêt à bêta-tester.",
   },
 ];
@@ -1045,6 +1185,8 @@ export type PortfolioContent = {
   profile: typeof profile;
   cases: CaseStudy[];
   sideProjects: SideProject[];
+  sideProjectsStack: string[];
+  sideProjectsLlms: LlmEntry[];
   capabilities: Capability[];
   overview: OverviewCategory[];
   recommendations: Recommendation[];
@@ -1189,10 +1331,10 @@ export const overview: OverviewCategory[] = [
     color: "violet",
     description: "Types de valeur produit livrée, missions clients et side-business inclus.",
     buckets: [
-      { label: "Stratégie produit & positionnement", caseIds: ["nocodext", "breejd"] },
+      { label: "Stratégie produit & positionnement", caseIds: ["nocodext", "breedj"] },
       {
         label: "Product Design (UX/UI/Interaction)",
-        caseIds: ["nocodext", "patrimoine", "breejd", "pinnpm", "airtable", "ats-youtubers"],
+        caseIds: ["nocodext", "patrimoine", "breedj", "pinnpm", "airtable", "ats-youtubers"],
       },
       {
         label: "Automatisation & intégration métier",

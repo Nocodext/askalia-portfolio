@@ -72,23 +72,22 @@ export type CaseSearchCategory =
   | "scope"
   | "challenges";
 
-export type CaseSearchField = { category: CaseSearchCategory; text: string };
+// One entry per raw source string (not merged into a per-category blob),
+// so the UI can point back at exactly which value a query matched - e.g.
+// showing "Stack: DocumentDB" rather than just "Stack" when the hit came
+// from that one stackSoftware entry among several.
+export type CaseSearchField = { category: CaseSearchCategory; value: string };
 
 // The case search box matches against this instead of the rendered DOM -
 // a lot of a case's content (glossary, matrix, challenges, the full
 // highlight groups) never renders in the collapsed card, only inside the
-// popup, so a DOM/text search would silently miss it. Kept as separate
-// fields (rather than one flat blob) so the UI can show which categories a
-// query actually matched in, e.g. surfacing a "Stack" pill when the hit
-// came from stackSoftware rather than the visible title/sector.
+// popup, so a DOM/text search would silently miss it.
 export function caseSearchFields(item: CaseStudy): CaseSearchField[] {
   const fields: CaseSearchField[] = [];
   const push = (category: CaseSearchCategory, ...values: (string | undefined)[]) => {
-    const text = values
-      .filter((v): v is string => Boolean(v))
-      .join(" \n ")
-      .toLowerCase();
-    if (text) fields.push({ category, text });
+    for (const value of values) {
+      if (value) fields.push({ category, value });
+    }
   };
 
   push("title", item.title);
@@ -120,8 +119,9 @@ export function caseSearchFields(item: CaseStudy): CaseSearchField[] {
 
 export function caseSearchText(item: CaseStudy): string {
   return caseSearchFields(item)
-    .map((f) => f.text)
-    .join(" \n ");
+    .map((f) => f.value)
+    .join(" \n ")
+    .toLowerCase();
 }
 
 export const profile = {

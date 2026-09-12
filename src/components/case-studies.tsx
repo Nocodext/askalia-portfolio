@@ -1088,26 +1088,36 @@ const PILL_CATEGORIES = new Set<PillCategory>([
   "challenges",
 ]);
 
-// Which fields a query actually matched in, so the suggestion list can
-// show e.g. a "Stack" pill when the hit came from stackSoftware rather
-// than the case's visible title/sector.
-function matchedCategories(
-  fields: { category: CaseSearchCategory; words: string[] }[],
+const MAX_PILLS = 4;
+const PILL_VALUE_MAX_LENGTH = 34;
+
+function truncate(value: string, max: number): string {
+  return value.length > max ? `${value.slice(0, max - 1).trimEnd()}…` : value;
+}
+
+type MatchPill = { category: PillCategory; value: string };
+
+// Points back at exactly which value a query matched, not just which
+// category - e.g. "Stack: DocumentDB" rather than a bare "Stack" pill,
+// so a hit stays traceable to the specific item it came from.
+function matchedPills(
+  fields: { category: CaseSearchCategory; value: string; words: string[] }[],
   tokens: string[],
-): PillCategory[] {
-  const result: PillCategory[] = [];
+): MatchPill[] {
+  const result: MatchPill[] = [];
   for (const f of fields) {
     if (
       PILL_CATEGORIES.has(f.category as PillCategory) &&
       tokens.some((t) => f.words.some((w) => w.startsWith(t)))
     ) {
-      result.push(f.category as PillCategory);
+      result.push({ category: f.category as PillCategory, value: truncate(f.value, PILL_VALUE_MAX_LENGTH) });
     }
+    if (result.length >= MAX_PILLS) break;
   }
   return result;
 }
 
-type CaseSuggestion = { item: CaseStudy; categories: PillCategory[] };
+type CaseSuggestion = { item: CaseStudy; pills: MatchPill[] };
 
 // Shared by the inline dropdown and the Ctrl/Cmd+F spotlight overlay -
 // both list the same matches against the same JSON-derived index.
@@ -1115,7 +1125,7 @@ function useCaseSuggestions(cases: CaseStudy[], query: string): CaseSuggestion[]
   const searchIndex = useMemo(
     () =>
       cases.map((item) => {
-        const fields = caseSearchFields(item).map((f) => ({ category: f.category, words: wordsOf(f.text) }));
+        const fields = caseSearchFields(item).map((f) => ({ ...f, words: wordsOf(f.value) }));
         return { item, fields, words: fields.flatMap((f) => f.words) };
       }),
     [cases],
@@ -1126,7 +1136,7 @@ function useCaseSuggestions(cases: CaseStudy[], query: string): CaseSuggestion[]
     if (tokens.length === 0) return [];
     return searchIndex
       .filter(({ words }) => wordsMatchQuery(words, tokens))
-      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, tokens) }))
+      .map((m) => ({ item: m.item, pills: matchedPills(m.fields, tokens) }))
       .slice(0, 6);
   }, [searchIndex, query]);
 }
@@ -1151,7 +1161,7 @@ function CaseSuggestionList({
   }
   return (
     <ul className={large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}>
-      {suggestions.map(({ item, categories }, i) => (
+      {suggestions.map(({ item, pills }, i) => (
         <li key={item.id}>
           <button
             type="button"
@@ -1167,14 +1177,16 @@ function CaseSuggestionList({
               <span className="min-w-0 flex-1 truncate">{item.title}</span>
               <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
             </span>
-            {categories.length > 0 ? (
+            {pills.length > 0 ? (
               <span className="flex flex-wrap justify-end gap-1">
-                {categories.map((c) => (
+                {pills.map((p, pi) => (
                   <span
-                    key={c}
+                    key={`${p.category}-${pi}`}
                     className="rounded-full bg-cyan/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-cyan"
                   >
-                    {strings.work.searchMatchLabels[c]}
+                    {strings.work.searchMatchLabels[p.category]}
+                    <span className="text-cyan/50">: </span>
+                    {p.value}
                   </span>
                 ))}
               </span>

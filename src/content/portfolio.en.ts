@@ -96,6 +96,7 @@ export const cases: CaseStudy[] = [
       ],
     },
     stackSoftware: [
+      "API REST",
       "NestJS",
       "PostgreSQL",
       "Redis",
@@ -181,6 +182,7 @@ export const cases: CaseStudy[] = [
       "Denormalized the data for import into the Business Intelligence tool.",
     ],
     stackSoftware: [
+      "API REST",
       "Web scraping",
       "Bright Data",
       "Anti-bot evasion",
@@ -228,7 +230,7 @@ export const cases: CaseStudy[] = [
           "Diplomacy, patience and persistence in the follow-up to keep the project moving at its own pace.",
       },
     ],
-    stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
+    stackSoftware: ["API REST", "SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
     hashtags: ["IT department dialogue", "real-time", "cybersecurity", "scalability"],
     matrix: {
       roles: ["Integration Architect", "Enedis Support Liaison"],
@@ -276,7 +278,7 @@ export const cases: CaseStudy[] = [
         "Self-hosted N8N on an o2switch VPS, headless Playwright RPA via CDP to drive the desktop LIMS software.",
       ],
     },
-    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "GDPR"],
+    stackSoftware: ["API REST", "OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "GDPR"],
     hashtags: ["GDPR", "anonymization"],
     matrix: {
       roles: ["Architect", "Transition Project Lead"],
@@ -327,6 +329,7 @@ export const cases: CaseStudy[] = [
       "Asynchronous jobs on a Redis MQ, retries, multi-client OAuth token rotation, Redis resilience and recovery.",
     ],
     stackSoftware: [
+      "API REST",
       "NestJS",
       "Bubble",
       "Redis MQ",
@@ -367,7 +370,7 @@ export const cases: CaseStudy[] = [
       "Migrated business workflows to Pipedream.",
       "Feedback loops and team training.",
     ],
-    stackSoftware: ["Bubble", "Pipedream", "kSuite Drive", "GDPR", "RBAC"],
+    stackSoftware: ["API REST", "Bubble", "Pipedream", "kSuite Drive", "GDPR", "RBAC"],
     hashtags: ["data-sovereignty", "GDPR"],
     matrix: {
       roles: ["Product Builder", "GDPR Advisory"],
@@ -404,6 +407,7 @@ export const cases: CaseStudy[] = [
       "Built a WebGL 2D/3D web studio with web workers and scalable updating of edited working files.",
     ],
     stackSoftware: [
+      "API REST",
       "AWS (Lambda, EC2, S3, SQS, SNS, Cognito, Glacier)",
       "DocumentDB",
       "WebGL",
@@ -439,7 +443,7 @@ export const cases: CaseStudy[] = [
       "Spoke at AI conferences.",
       "Full study, proposals, estimates, specifications, PoC and prototypes via agentic coding.",
     ],
-    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
+    stackSoftware: ["API REST", "Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
     stackHardware: ["iPad", "NPU"],
     hashtags: ["healthcare", "data-sovereignty", "AI Act", "Cloud Act"],
     matrix: {
@@ -486,7 +490,7 @@ export const cases: CaseStudy[] = [
       "Built a WhatsApp bot for candidate pre-qualification.",
       "Managed data volume and scaling load on Bubble.",
     ],
-    stackSoftware: ["Bubble", "WhatsApp Business", "Brevo"],
+    stackSoftware: ["API REST", "Bubble", "WhatsApp Business", "Brevo"],
     hashtags: ["NoCode", "workflows"],
     matrix: {
       roles: ["Product Builder"],
@@ -520,6 +524,7 @@ export const cases: CaseStudy[] = [
       "Sourced a cloud host that accepts FTP - a constraint imposed by the professional camera's firmware.",
     ],
     stackSoftware: [
+      "API REST",
       "Unix",
       "inotify-tools",
       "vsftpd",
@@ -560,7 +565,7 @@ export const cases: CaseStudy[] = [
       "Request handoff between paramedics.",
       "Real-time backend and part of the QML / JS-signals frontend.",
     ],
-    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
+    stackSoftware: ["API REST", "Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
     hashtags: ["healthcare", "real-time", "resilience"],
     matrix: {
       roles: ["Backend Lead", "QML Frontend Developer"],
@@ -618,7 +623,7 @@ export const cases: CaseStudy[] = [
         response: "Persistence and rigor through to full validation.",
       },
     ],
-    stackSoftware: ["Bubble", "NestJS", "HR-XML", "SOAP", "ArgoCD", "Kubernetes", "Docker", "TLS"],
+    stackSoftware: ["API REST", "Bubble", "NestJS", "HR-XML", "SOAP", "ArgoCD", "Kubernetes", "Docker", "TLS"],
     hashtags: ["IT department dialogue", "API integration", "CI/CD", "resilience"],
     matrix: {
       roles: ["Integration Architect", "Backend Developer"],
@@ -667,13 +672,14 @@ export const cases: CaseStudy[] = [
       ],
     },
     stackSoftware: [
+      "API REST",
       "NestJS",
       "RxJS",
       "Prisma",
       "OAuth2",
       "React",
       "Webhooks",
-      "AWS (Step Functions, AppSync GraphQL, S3, EC2 via Beanstalk, RDS MariaDB, Cognito, IAM, Lambda, CloudFront)",
+      "AWS (Step Functions, AppSync GraphQL, S3, Beanstalk, RDS MariaDB, Cognito, IAM, Lambda, CloudFront)",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [
@@ -795,6 +801,7 @@ export const cases: CaseStudy[] = [
       },
     ],
     stackSoftware: [
+      "API REST",
       "Chrome extension",
       "Edge AI",
       "Embedded NLP",
@@ -847,6 +854,7 @@ export type SideProject = {
 // repeated on every card.
 export const sideProjectsStack: string[] = [
   "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
+  "RPC API",
   "Stripe",
   "React",
   "shadcn/ui",

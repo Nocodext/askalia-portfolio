@@ -179,6 +179,7 @@ export const cases: CaseStudy[] = [
       ],
     },
     stackSoftware: [
+      "API REST",
       "NestJS",
       "PostgreSQL",
       "Redis",
@@ -270,6 +271,7 @@ export const cases: CaseStudy[] = [
       "Dénormalisation de la donnée pour import dans l'outil de Business Intelligence.",
     ],
     stackSoftware: [
+      "API REST",
       "Web scraping",
       "Bright Data",
       "Contournement anti-bot",
@@ -317,7 +319,7 @@ export const cases: CaseStudy[] = [
           "Diplomatie, patience et persévérance dans le suivi pour faire avancer le dossier au bon rythme.",
       },
     ],
-    stackSoftware: ["SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
+    stackSoftware: ["API REST", "SOAP / XML", "TLS", "Make.com", "N8N", "Weweb"],
     hashtags: [
       "dialogue DSI",
       "temps réel",
@@ -371,7 +373,7 @@ export const cases: CaseStudy[] = [
         "N8N self-hosted sur VPS o2switch, RPA Playwright headless via CDP pour piloter le logiciel desktop SIL.",
       ],
     },
-    stackSoftware: ["OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "RGPD"],
+    stackSoftware: ["API REST", "OCR Cloud", "N8N", "Playwright · CDP", "Citrix", "Pipedrive", "RGPD"],
     hashtags: ["RGPD", "anonymisation", "cloud", "souveraineté", "PME", "Labo"],
     matrix: {
       roles: ["Architecte", "Chef de projet transition"],
@@ -425,6 +427,7 @@ export const cases: CaseStudy[] = [
       "Jobs asynchrones en MQ Redis, retries, rotation de tokens OAuth multiclients, résilience et reprise Redis.",
     ],
     stackSoftware: [
+      "API REST",
       "NestJS",
       "Bubble",
       "Redis MQ",
@@ -465,7 +468,7 @@ export const cases: CaseStudy[] = [
       "Déplacement des business workflows vers Pipedream.",
       "Boucle de feedbacks et formation des équipes.",
     ],
-    stackSoftware: ["Bubble", "Pipedream", "kSuite Drive", "RGPD", "RBAC"],
+    stackSoftware: ["API REST", "Bubble", "Pipedream", "kSuite Drive", "RGPD", "RBAC"],
     hashtags: ["souveraineté", "RGPD", "Documents confidentialité", "Secret professionnel"],
     matrix: {
       roles: ["Product Builder", "Conseil RGPD"],
@@ -508,6 +511,7 @@ export const cases: CaseStudy[] = [
       "Montage d'un web studio WebGL 2D/3D avec web workers et mise à jour scalable des fichiers de travail édités.",
     ],
     stackSoftware: [
+      "API REST",
       "AWS (Lambda, EC2, S3, SQS, SNS, Cognito, Glacier)",
       "DocumentDB",
       "WebGL",
@@ -548,7 +552,7 @@ export const cases: CaseStudy[] = [
       "Participation à des conférences IA.",
       "Étude complète, propositions, estimations, spécifications, PoC et prototypes via agentic coding.",
     ],
-    stackSoftware: ["Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
+    stackSoftware: ["API REST", "Whisper", "Kyutai", "Apple M-series CoreML", "iPadOS", "HDS", "DUI API"],
     stackHardware: ["iPad", "NPU"],
     hashtags: ["hospitalier", "souveraineté", "AI Act", "Cloud Act"],
     matrix: {
@@ -608,7 +612,7 @@ export const cases: CaseStudy[] = [
       "Création d'un bot WhatsApp de préqualification des candidats.",
       "Gestion de la volumétrie et de la montée en charge sur Bubble.",
     ],
-    stackSoftware: ["Bubble", "WhatsApp Business", "Brevo"],
+    stackSoftware: ["API REST", "Bubble", "WhatsApp Business", "Brevo"],
     hashtags: ["NoCode", "workflows"],
     matrix: {
       roles: ["Product Builder"],
@@ -644,6 +648,7 @@ export const cases: CaseStudy[] = [
       "Sourcing d'un hébergeur Cloud acceptant le FTP - contrainte imposée par le firmware de l'appareil photo professionnel.",
     ],
     stackSoftware: [
+      "API REST",
       "Unix",
       "inotify-tools",
       "vsftpd",
@@ -684,7 +689,7 @@ export const cases: CaseStudy[] = [
       "Transfert de demande entre ambulanciers.",
       "Backend temps réel et une partie du frontend QML / JS signals.",
     ],
-    stackSoftware: ["Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
+    stackSoftware: ["API REST", "Qt for Mobile", "QtQuick / QML", "MeteorJS", "Scalingo"],
     hashtags: ["hospitalier", "temps réel", "résilience"],
     matrix: {
       roles: ["Lead backend", "Développeur frontend QML"],
@@ -743,6 +748,7 @@ export const cases: CaseStudy[] = [
       },
     ],
     stackSoftware: [
+      "API REST",
       "Bubble",
       "NestJS",
       "HR-XML",
@@ -800,13 +806,14 @@ export const cases: CaseStudy[] = [
       ],
     },
     stackSoftware: [
+      "API REST",
       "NestJS",
       "RxJS",
       "Prisma",
       "OAuth2",
       "React",
       "Webhooks",
-      "AWS (Step Functions, AppSync GraphQL, S3, EC2 via Beanstalk, RDS MariaDB, Cognito, IAM, Lambda, CloudFront)",
+      "AWS (Step Functions, AppSync GraphQL, S3, Beanstalk, RDS MariaDB, Cognito, IAM, Lambda, CloudFront)",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [
@@ -929,6 +936,7 @@ export const cases: CaseStudy[] = [
       },
     ],
     stackSoftware: [
+      "API REST",
       "Extension Chrome, Brave, Firefox, Edge",
       "Edge AI",
       "NLP embarqué",
@@ -996,6 +1004,7 @@ export type SideProject = {
 // repeated on every card.
 export const sideProjectsStack: string[] = [
   "Supabase (OTP, magic-link, MCP, edge functions, triggers, RBAC, ...)",
+  "API RPC",
   "Stripe",
   "React",
   "shadcn/ui",

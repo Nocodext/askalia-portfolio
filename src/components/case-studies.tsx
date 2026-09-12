@@ -940,16 +940,22 @@ function CaseDetailDialog({
         {/* Rendered even at the first/last case - invisible but still
             hit-testable (opacity, not `hidden`/`visibility`), so a click at
             that spot is swallowed by this no-op button instead of falling
-            through to the backdrop and closing the dialog. Fixed at
-            viewport-middle: every case is tall enough (close to the 85vh
-            cap) that this never floats in empty space below short content. */}
+            through to the backdrop and closing the dialog. DialogContent
+            carries a permanent `translate-x-[-50%]` (for horizontal
+            centering), and any non-none `translate`/`transform` on an
+            ancestor makes IT the containing block for `fixed` descendants -
+            so `top-1/2` here would center on the dialog's own (variable)
+            height, not the viewport's, once the dialog stopped being
+            centered itself. `top-[44vh]` compensates for that: dialog top
+            is a fixed 6vh, so 6vh + 44vh always lands exactly on the
+            viewport's true vertical middle, regardless of dialog height. */}
         <button
           type="button"
           onClick={() => goToCase(prevId)}
           aria-label={strings.caseCard.prevCase}
           aria-hidden={!prevId}
           tabIndex={prevId ? 0 : -1}
-          className={`fixed top-1/2 left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
+          className={`fixed top-[44vh] left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
             prevId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >
@@ -961,7 +967,7 @@ function CaseDetailDialog({
           aria-label={strings.caseCard.nextCase}
           aria-hidden={!nextId}
           tabIndex={nextId ? 0 : -1}
-          className={`fixed top-1/2 right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
+          className={`fixed top-[44vh] right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
             nextId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >

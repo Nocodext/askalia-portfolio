@@ -673,7 +673,7 @@ export const cases: CaseStudy[] = [
       "OAuth2",
       "React",
       "Webhooks",
-      "graphQL",
+      "AWS (Step Functions, AppSync GraphQL, S3, EC2 via Beanstalk, RDS MariaDB, Cognito, IAM, Lambda, CloudFront)",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [

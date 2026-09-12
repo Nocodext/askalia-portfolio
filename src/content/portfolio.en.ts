@@ -325,7 +325,6 @@ export const cases: CaseStudy[] = [
       "Business process: implementation + flowchart documentation.",
       "Arbitrated monolithic NestJS vs. stateless serverless architecture (Vercel Edge Functions).",
       "Asynchronous jobs on a Redis MQ, retries, multi-client OAuth token rotation, Redis resilience and recovery.",
-      "Supervised freelancers, client check-ins and management, production rollout.",
     ],
     stackSoftware: [
       "NestJS",

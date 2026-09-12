@@ -693,7 +693,7 @@ export const cases: CaseStudy[] = [
       technical: ["Mobile natif C++", "Full-stack réactif temps réel", "PaaS hébergement"],
       ethical: ["Fiabilité en contexte d'urgence médicale"],
     },
-    duration: "3 mois",
+    duration: "4 mois",
   },
   {
     id: "multidiffusion-france-travail",

@@ -1098,63 +1098,35 @@ const CASE_PILL_CATEGORIES = new Set<PillCategory>([
 const PRODUCT_PILL_CATEGORIES = new Set<PillCategory>(["pitch", "bullets", "stack", "llms", "business"]);
 
 const MAX_PILLS = 4;
-const PILL_VALUE_MAX_LENGTH = 34;
+const MAX_MATCH_WORDS = 2;
 
-type ValueSegment = { text: string; matched: boolean };
-
-// Splits `value` into a run of matched/unmatched segments on word
-// boundaries, so the rendered pill can bold exactly the word(s) that
-// satisfied the query instead of the whole value.
-function segmentValue(value: string, tokens: string[]): ValueSegment[] {
-  const segments: ValueSegment[] = [];
+// Pulls out just the word(s) that satisfied the query - at most
+// MAX_MATCH_WORDS - rather than a snippet of surrounding context, so a
+// pill for a full highlight sentence still reads as a short tag ("Stack:
+// DocumentDB") instead of a truncated fragment of the sentence.
+function matchedWords(value: string, tokens: string[]): string {
   const wordRe = /[\p{L}\p{N}]+/gu;
-  let lastIndex = 0;
+  const words: string[] = [];
   let match: RegExpExecArray | null;
   while ((match = wordRe.exec(value))) {
-    if (match.index > lastIndex) segments.push({ text: value.slice(lastIndex, match.index), matched: false });
     const word = match[0];
-    segments.push({ text: word, matched: tokens.some((t) => word.toLowerCase().startsWith(t)) });
-    lastIndex = match.index + word.length;
-  }
-  if (lastIndex < value.length) segments.push({ text: value.slice(lastIndex), matched: false });
-  return segments;
-}
-
-// Truncates long values (a full highlight sentence, a glossary def...) to
-// a window centered on the first matched word, so the bolded match stays
-// visible instead of being cut away by a naive from-the-start truncation.
-function windowAroundMatch(value: string, tokens: string[], max: number): string {
-  if (value.length <= max) return value;
-  const wordRe = /[\p{L}\p{N}]+/gu;
-  let match: RegExpExecArray | null;
-  let matchIndex = -1;
-  let matchLen = 0;
-  while ((match = wordRe.exec(value))) {
-    if (tokens.some((t) => match![0].toLowerCase().startsWith(t))) {
-      matchIndex = match.index;
-      matchLen = match[0].length;
-      break;
+    if (tokens.some((t) => word.toLowerCase().startsWith(t))) {
+      words.push(word);
+      if (words.length >= MAX_MATCH_WORDS) break;
     }
   }
-  if (matchIndex === -1) return `${value.slice(0, max - 1).trimEnd()}…`;
-  const half = Math.floor((max - matchLen) / 2);
-  let start = Math.max(0, matchIndex - half);
-  const end = Math.min(value.length, start + max);
-  start = Math.max(0, end - max);
-  const prefix = start > 0 ? "…" : "";
-  const suffix = end < value.length ? "…" : "";
-  return `${prefix}${value.slice(start, end).trim()}${suffix}`;
+  return words.join(" ");
 }
 
-type MatchPill = { category: PillCategory; segments: ValueSegment[] };
+type MatchPill = { category: PillCategory; value: string };
 
 // Points back at exactly which value a query matched, not just which
 // category - e.g. a "Stack" / "DocumentDB" two-tone pill rather than a
 // bare "Stack" pill, so a hit stays traceable to the specific item it
-// came from, with the matched word itself bolded. Generic over the field
-// type so it works for both case fields and product fields - each has its
-// own, wider category union (includes "title"/"name" etc, which never
-// appear in `pillCategories` and so never produce a pill).
+// came from. Generic over the field type so it works for both case fields
+// and product fields - each has its own, wider category union (includes
+// "title"/"name" etc, which never appear in `pillCategories` and so never
+// produce a pill).
 function matchedPills<F extends { category: string; value: string; words: string[] }>(
   fields: F[],
   tokens: string[],
@@ -1166,8 +1138,7 @@ function matchedPills<F extends { category: string; value: string; words: string
       pillCategories.has(f.category as PillCategory) &&
       tokens.some((t) => f.words.some((w) => w.startsWith(t)))
     ) {
-      const windowed = windowAroundMatch(f.value, tokens, PILL_VALUE_MAX_LENGTH);
-      result.push({ category: f.category as PillCategory, segments: segmentValue(windowed, tokens) });
+      result.push({ category: f.category as PillCategory, value: matchedWords(f.value, tokens) });
     }
     if (result.length >= MAX_PILLS) break;
   }
@@ -1275,17 +1246,7 @@ function CaseSuggestionList({
                     <span className="bg-cyan px-2 py-0.5 text-ink">
                       {strings.work.searchMatchLabels[p.category]}
                     </span>
-                    <span className="bg-cyan/12 px-2 py-0.5 text-cyan">
-                      {p.segments.map((s, si) =>
-                        s.matched ? (
-                          <strong key={si} className="font-bold">
-                            {s.text}
-                          </strong>
-                        ) : (
-                          <span key={si}>{s.text}</span>
-                        ),
-                      )}
-                    </span>
+                    <span className="bg-cyan/12 px-2 py-0.5 font-bold text-cyan">{p.value}</span>
                   </span>
                 ))}
               </span>

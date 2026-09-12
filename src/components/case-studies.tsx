@@ -1051,13 +1051,26 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   );
 }
 
-// Splits the query into lowercase tokens and requires every token to
-// appear somewhere in the case's search text (order-independent) - lets
-// "santé stripe" match a case whose sector and stack both contain those
-// words, even far apart in the source data.
-function caseMatchesQuery(searchText: string, query: string): boolean {
-  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return tokens.every((t) => searchText.includes(t));
+// Splits a field's text into lowercase words on any non-letter/non-digit
+// separator (spaces, punctuation, hyphens...). Matching happens against
+// whole words rather than raw substrings, so a query like "graph" doesn't
+// spuriously hit the middle of "photographie" - it still matches "graph"
+// as its own word (e.g. in "knowledge-graph") via startsWith, which also
+// keeps partial-word-while-typing queries like "strip" -> "Stripe" working.
+function wordsOf(text: string): string[] {
+  return text.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
+function queryTokens(query: string): string[] {
+  return query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+}
+
+// Requires every query token to prefix-match at least one whole word
+// somewhere in the words (order-independent) - lets "santé stripe" match
+// a case whose sector and stack both contain those words, even far apart
+// in the source data.
+function wordsMatchQuery(words: string[], tokens: string[]): boolean {
+  return tokens.every((t) => words.some((w) => w.startsWith(t)));
 }
 
 // Title and sector are excluded: they're already shown as plain text on
@@ -1079,13 +1092,15 @@ const PILL_CATEGORIES = new Set<PillCategory>([
 // show e.g. a "Stack" pill when the hit came from stackSoftware rather
 // than the case's visible title/sector.
 function matchedCategories(
-  fields: { category: CaseSearchCategory; text: string }[],
-  query: string,
+  fields: { category: CaseSearchCategory; words: string[] }[],
+  tokens: string[],
 ): PillCategory[] {
-  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const result: PillCategory[] = [];
   for (const f of fields) {
-    if (PILL_CATEGORIES.has(f.category as PillCategory) && tokens.some((t) => f.text.includes(t))) {
+    if (
+      PILL_CATEGORIES.has(f.category as PillCategory) &&
+      tokens.some((t) => f.words.some((w) => w.startsWith(t)))
+    ) {
       result.push(f.category as PillCategory);
     }
   }
@@ -1100,17 +1115,18 @@ function useCaseSuggestions(cases: CaseStudy[], query: string): CaseSuggestion[]
   const searchIndex = useMemo(
     () =>
       cases.map((item) => {
-        const fields = caseSearchFields(item);
-        return { item, fields, text: fields.map((f) => f.text).join(" \n ") };
+        const fields = caseSearchFields(item).map((f) => ({ category: f.category, words: wordsOf(f.text) }));
+        return { item, fields, words: fields.flatMap((f) => f.words) };
       }),
     [cases],
   );
 
   return useMemo(() => {
-    if (!query.trim()) return [];
+    const tokens = queryTokens(query);
+    if (tokens.length === 0) return [];
     return searchIndex
-      .filter(({ text }) => caseMatchesQuery(text, query))
-      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, query) }))
+      .filter(({ words }) => wordsMatchQuery(words, tokens))
+      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, tokens) }))
       .slice(0, 6);
   }, [searchIndex, query]);
 }
@@ -1392,13 +1408,14 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
   };
 
   const searchIndex = useMemo(
-    () => cases.map((item) => ({ item, text: caseSearchText(item) })),
+    () => cases.map((item) => ({ item, words: wordsOf(caseSearchText(item)) })),
     [cases],
   );
   const matchingIds = useMemo(() => {
-    if (!query.trim()) return null;
+    const tokens = queryTokens(query);
+    if (tokens.length === 0) return null;
     return new Set(
-      searchIndex.filter(({ text }) => caseMatchesQuery(text, query)).map(({ item }) => item.id),
+      searchIndex.filter(({ words }) => wordsMatchQuery(words, tokens)).map(({ item }) => item.id),
     );
   }, [searchIndex, query]);
   const visibleCount = matchingIds ? matchingIds.size : cases.length;

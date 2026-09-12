@@ -1092,6 +1092,84 @@ function matchedCategories(
   return result;
 }
 
+type CaseSuggestion = { item: CaseStudy; categories: PillCategory[] };
+
+// Shared by the inline dropdown and the Ctrl/Cmd+F spotlight overlay -
+// both list the same matches against the same JSON-derived index.
+function useCaseSuggestions(cases: CaseStudy[], query: string): CaseSuggestion[] {
+  const searchIndex = useMemo(
+    () =>
+      cases.map((item) => {
+        const fields = caseSearchFields(item);
+        return { item, fields, text: fields.map((f) => f.text).join(" \n ") };
+      }),
+    [cases],
+  );
+
+  return useMemo(() => {
+    if (!query.trim()) return [];
+    return searchIndex
+      .filter(({ text }) => caseMatchesQuery(text, query))
+      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, query) }))
+      .slice(0, 6);
+  }, [searchIndex, query]);
+}
+
+function CaseSuggestionList({
+  suggestions,
+  activeIndex,
+  onHover,
+  onPick,
+  strings,
+  large = false,
+}: {
+  suggestions: CaseSuggestion[];
+  activeIndex: number;
+  onHover: (i: number) => void;
+  onPick: (id: string) => void;
+  strings: UIStrings;
+  large?: boolean;
+}) {
+  if (suggestions.length === 0) {
+    return <p className="px-4 py-2.5 text-sm text-slate">{strings.work.searchNoResults}</p>;
+  }
+  return (
+    <ul className={large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}>
+      {suggestions.map(({ item, categories }, i) => (
+        <li key={item.id}>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => onPick(item.id)}
+            onMouseEnter={() => onHover(i)}
+            className={`flex w-full flex-col gap-1.5 px-4 py-2 text-left transition-colors ${
+              large ? "text-base" : "text-sm"
+            } ${i === activeIndex ? "bg-ink/5" : ""}`}
+          >
+            <span className="flex w-full items-center gap-3">
+              <CaseIcon id={item.id} size="sm" />
+              <span className="min-w-0 flex-1 truncate">{item.title}</span>
+              <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
+            </span>
+            {categories.length > 0 ? (
+              <span className="flex flex-wrap justify-end gap-1">
+                {categories.map((c) => (
+                  <span
+                    key={c}
+                    className="rounded-full bg-cyan/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-cyan"
+                  >
+                    {strings.work.searchMatchLabels[c]}
+                  </span>
+                ))}
+              </span>
+            ) : null}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function CaseSearch({
   cases,
   strings,
@@ -1108,44 +1186,11 @@ function CaseSearch({
   const inputRef = useRef<HTMLInputElement>(null);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  // Computed once per case, not per keystroke - the source data doesn't
-  // change at runtime.
-  const searchIndex = useMemo(
-    () =>
-      cases.map((item) => {
-        const fields = caseSearchFields(item);
-        return { item, fields, text: fields.map((f) => f.text).join(" \n ") };
-      }),
-    [cases],
-  );
-
-  const suggestions = useMemo(() => {
-    if (!query.trim()) return [];
-    return searchIndex
-      .filter(({ text }) => caseMatchesQuery(text, query))
-      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, query) }));
-  }, [searchIndex, query]);
-  const visibleSuggestions = suggestions.slice(0, 6);
+  const visibleSuggestions = useCaseSuggestions(cases, query);
 
   useEffect(() => {
     setActiveIndex(0);
   }, [query]);
-
-  // Ctrl/Cmd+F is redirected here instead of the browser's native find:
-  // most of a case's content only exists in the popup, not the collapsed
-  // card, so a plain text-in-page search would miss it entirely.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
-        e.preventDefault();
-        inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-        inputRef.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   const pickSuggestion = (id: string) => {
     onOpenDetail(id);
@@ -1206,44 +1251,126 @@ function CaseSearch({
         ) : null}
       </div>
       {suggestOpen && query.trim() ? (
-        <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-[min(1vw,14px)] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(16,19,26,0.35)] ring-1 ring-ink/10">
-          {visibleSuggestions.length > 0 ? (
-            visibleSuggestions.map(({ item, categories }, i) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => pickSuggestion(item.id)}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  className={`flex w-full flex-col gap-1.5 px-4 py-2 text-left text-sm transition-colors ${
-                    i === activeIndex ? "bg-ink/5" : ""
-                  }`}
-                >
-                  <span className="flex w-full items-center gap-3">
-                    <CaseIcon id={item.id} size="sm" />
-                    <span className="min-w-0 flex-1 truncate">{item.title}</span>
-                    <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
-                  </span>
-                  {categories.length > 0 ? (
-                    <span className="flex flex-wrap justify-end gap-1">
-                      {categories.map((c) => (
-                        <span
-                          key={c}
-                          className="rounded-full bg-cyan/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-cyan"
-                        >
-                          {strings.work.searchMatchLabels[c]}
-                        </span>
-                      ))}
-                    </span>
-                  ) : null}
-                </button>
-              </li>
-            ))
-          ) : (
-            <li className="px-4 py-2.5 text-sm text-slate">{strings.work.searchNoResults}</li>
-          )}
-        </ul>
+        <div className="absolute z-20 mt-2 w-full overflow-hidden rounded-[min(1vw,14px)] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(16,19,26,0.35)] ring-1 ring-ink/10">
+          <CaseSuggestionList
+            suggestions={visibleSuggestions}
+            activeIndex={activeIndex}
+            onHover={setActiveIndex}
+            onPick={pickSuggestion}
+            strings={strings}
+          />
+        </div>
       ) : null}
+    </div>
+  );
+}
+
+// Ctrl/Cmd+F opens this centered overlay instead of the browser's native
+// find, regardless of where the inline CaseSearch box currently sits on
+// screen - most of a case's content only exists in the popup, not the
+// collapsed card, so a plain text-in-page search would miss it entirely,
+// and scrolling to the inline box first was disorienting from far down
+// the page.
+function CaseSearchSpotlight({
+  cases,
+  strings,
+  query,
+  onQueryChange,
+  onOpenDetail,
+}: {
+  cases: CaseStudy[];
+  strings: UIStrings;
+  query: string;
+  onQueryChange: (q: string) => void;
+  onOpenDetail: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const suggestions = useCaseSuggestions(cases, query);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        setOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    inputRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  const pick = (id: string) => {
+    onOpenDetail(id);
+    setOpen(false);
+    onQueryChange("");
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center px-4 pt-[14vh]" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
+      <div className="relative h-fit w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(16,19,26,0.55)]">
+        <div className="relative border-b border-ink/10">
+          <Search
+            className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-slate"
+            strokeWidth={2}
+          />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => onQueryChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.preventDefault();
+                setOpen(false);
+                return;
+              }
+              if (suggestions.length === 0) return;
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActiveIndex((i) => (i + 1) % suggestions.length);
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveIndex((i) => (i - 1 + suggestions.length) % suggestions.length);
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                const target = suggestions[activeIndex];
+                if (target) pick(target.item.id);
+              }
+            }}
+            placeholder={strings.work.searchPlaceholder}
+            aria-label={strings.work.searchAria}
+            className="w-full bg-transparent py-4 pr-4 pl-12 text-base text-ink placeholder:text-slate focus:outline-none"
+          />
+        </div>
+        {query.trim() ? (
+          <CaseSuggestionList
+            suggestions={suggestions}
+            activeIndex={activeIndex}
+            onHover={setActiveIndex}
+            onPick={pick}
+            strings={strings}
+            large
+          />
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -1298,6 +1425,13 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
           </span>
         </div>
         <CaseSearch
+          cases={cases}
+          strings={strings}
+          query={query}
+          onQueryChange={setQuery}
+          onOpenDetail={openFromSearch}
+        />
+        <CaseSearchSpotlight
           cases={cases}
           strings={strings}
           query={query}

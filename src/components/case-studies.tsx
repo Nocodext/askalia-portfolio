@@ -1259,19 +1259,14 @@ function CaseSuggestionList({
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onPick(hit)}
             onMouseEnter={() => onHover(i)}
-            className={`flex w-full flex-col gap-1.5 px-4 py-2.5 text-left transition-colors ${
+            className={`flex w-full items-start gap-3 px-4 py-2.5 text-left transition-colors ${
               large ? "text-base" : "text-sm"
             } ${i === activeIndex ? "bg-ink/5" : ""}`}
           >
-            <span className="flex w-full items-center gap-3">
-              <CaseIcon id={hit.id} size="sm" />
-              <span className="min-w-0 flex-1 truncate">{hit.title}</span>
-              <span className="shrink-0 font-mono text-[10px] text-slate">
-                {hit.kind === "case" ? hit.sector : strings.work.sideProjectLabel}
-              </span>
-            </span>
+            <CaseIcon id={hit.id} size="sm" />
+            <span className="min-w-0 flex-1 truncate">{hit.title}</span>
             {hit.pills.length > 0 ? (
-              <span className="flex flex-wrap justify-end gap-1">
+              <span className="flex shrink-0 flex-wrap justify-end gap-1">
                 {hit.pills.map((p, pi) => (
                   <span
                     key={`${p.category}-${pi}`}
@@ -1294,7 +1289,11 @@ function CaseSuggestionList({
                   </span>
                 ))}
               </span>
-            ) : null}
+            ) : (
+              <span className="shrink-0 font-mono text-[10px] text-slate">
+                {hit.kind === "case" ? hit.sector : strings.work.sideProjectLabel}
+              </span>
+            )}
           </button>
         </li>
       ))}
@@ -1454,12 +1453,15 @@ function CaseSearchSpotlight({
         // A case detail modal sitting on top would otherwise trap focus and
         // visually stack under/over the spotlight - close it first.
         if (hasOpenCaseDetail) onCloseCaseDetail();
+        // Always opens blank, regardless of whatever the inline searchbox
+        // (which shares this same query state) currently holds.
+        onQueryChange("");
         setOpen(true);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [hasOpenCaseDetail, onCloseCaseDetail]);
+  }, [hasOpenCaseDetail, onCloseCaseDetail, onQueryChange]);
 
   useEffect(() => {
     if (!open) return;

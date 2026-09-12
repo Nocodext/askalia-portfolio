@@ -1515,6 +1515,7 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
   // nocodext product (no popup - just scroll to and flash its card in
   // the Side-business section instead).
   const onSearchPick = (hit: SearchHit) => {
+    trackEvent("case_search_pick", { query: query.trim(), result: hit.id, result_kind: hit.kind });
     if (hit.kind === "case") {
       openFromSearch(hit.id);
     } else {
@@ -1541,6 +1542,18 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
   const tocContent = matchingIds
     ? { ...content, cases: cases.filter((c) => matchingIds.has(c.id)) }
     : content;
+
+  // Debounced so typing "supabase" doesn't fire 8 events - only the
+  // settled query gets sent, giving a usable "what people search for"
+  // signal in PostHog instead of noise per keystroke.
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    const timeout = window.setTimeout(() => {
+      trackEvent("case_search", { query: trimmed, results: visibleCount });
+    }, 600);
+    return () => window.clearTimeout(timeout);
+  }, [query, visibleCount]);
 
   return (
     <section id="work" className="border-y border-ink/10 bg-white/40">

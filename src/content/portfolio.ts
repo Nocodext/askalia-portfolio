@@ -168,7 +168,7 @@ export const cases: CaseStudy[] = [
       technical: [
         "Migration d'une app legacy PHP/CMS vers une architecture NestJS hospitalière : hexagonale, event-driven, synchronisation IHE / PAM / HL7.",
         "Migration MySQL legacy vers PostgreSQL : triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, ségrégation de schémas.",
-        "Interopérabilité SI-H d'un centre hospitalier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
+        "Interopérabilité SI-H d'un centre hospitalier, DSI santé, DPI ; interopérabilité esante.gouv.fr / ANS et le DMP.",
         "Implémentation des exigences HDS niveaux 4 à 6.",
         "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI, via adaptateurs SFTP et MLLP/MLLPS - les 2 protocoles standards d'échange de données de l'industrie.",
         "Architecture résiliente par nœuds, Docker Compose LAN design.",
@@ -423,7 +423,6 @@ export const cases: CaseStudy[] = [
       "Business process : implémentation + documentation en flowcharts.",
       "Arbitrage architecture monolithe NestJS vs serverless stateless (Edge Functions Vercel).",
       "Jobs asynchrones en MQ Redis, retries, rotation de tokens OAuth multiclients, résilience et reprise Redis.",
-      "Supervision de freelances, points et gestion client, mise en production.",
     ],
     stackSoftware: [
       "NestJS",
@@ -1016,7 +1015,8 @@ export const sideProjectsLlms: LlmEntry[] = [
   { name: "Gemini", logo: "/logos/llm/gemini.svg" },
 ];
 
-export type SideProjectSearchCategory = "name" | "pitch" | "bullets" | "stack" | "llms" | "business";
+export type SideProjectSearchCategory =
+  "name" | "pitch" | "bullets" | "stack" | "llms" | "business";
 export type SideProjectSearchField = { category: SideProjectSearchCategory; value: string };
 
 // Mirrors caseSearchFields: the case search box also matches nocodext

@@ -1091,15 +1091,58 @@ const PILL_CATEGORIES = new Set<PillCategory>([
 const MAX_PILLS = 4;
 const PILL_VALUE_MAX_LENGTH = 34;
 
-function truncate(value: string, max: number): string {
-  return value.length > max ? `${value.slice(0, max - 1).trimEnd()}…` : value;
+type ValueSegment = { text: string; matched: boolean };
+
+// Splits `value` into a run of matched/unmatched segments on word
+// boundaries, so the rendered pill can bold exactly the word(s) that
+// satisfied the query instead of the whole value.
+function segmentValue(value: string, tokens: string[]): ValueSegment[] {
+  const segments: ValueSegment[] = [];
+  const wordRe = /[\p{L}\p{N}]+/gu;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = wordRe.exec(value))) {
+    if (match.index > lastIndex) segments.push({ text: value.slice(lastIndex, match.index), matched: false });
+    const word = match[0];
+    segments.push({ text: word, matched: tokens.some((t) => word.toLowerCase().startsWith(t)) });
+    lastIndex = match.index + word.length;
+  }
+  if (lastIndex < value.length) segments.push({ text: value.slice(lastIndex), matched: false });
+  return segments;
 }
 
-type MatchPill = { category: PillCategory; value: string };
+// Truncates long values (a full highlight sentence, a glossary def...) to
+// a window centered on the first matched word, so the bolded match stays
+// visible instead of being cut away by a naive from-the-start truncation.
+function windowAroundMatch(value: string, tokens: string[], max: number): string {
+  if (value.length <= max) return value;
+  const wordRe = /[\p{L}\p{N}]+/gu;
+  let match: RegExpExecArray | null;
+  let matchIndex = -1;
+  let matchLen = 0;
+  while ((match = wordRe.exec(value))) {
+    if (tokens.some((t) => match![0].toLowerCase().startsWith(t))) {
+      matchIndex = match.index;
+      matchLen = match[0].length;
+      break;
+    }
+  }
+  if (matchIndex === -1) return `${value.slice(0, max - 1).trimEnd()}…`;
+  const half = Math.floor((max - matchLen) / 2);
+  let start = Math.max(0, matchIndex - half);
+  const end = Math.min(value.length, start + max);
+  start = Math.max(0, end - max);
+  const prefix = start > 0 ? "…" : "";
+  const suffix = end < value.length ? "…" : "";
+  return `${prefix}${value.slice(start, end).trim()}${suffix}`;
+}
+
+type MatchPill = { category: PillCategory; segments: ValueSegment[] };
 
 // Points back at exactly which value a query matched, not just which
-// category - e.g. "Stack: DocumentDB" rather than a bare "Stack" pill,
-// so a hit stays traceable to the specific item it came from.
+// category - e.g. a "Stack" / "DocumentDB" two-tone pill rather than a
+// bare "Stack" pill, so a hit stays traceable to the specific item it
+// came from, with the matched word itself bolded.
 function matchedPills(
   fields: { category: CaseSearchCategory; value: string; words: string[] }[],
   tokens: string[],
@@ -1110,7 +1153,8 @@ function matchedPills(
       PILL_CATEGORIES.has(f.category as PillCategory) &&
       tokens.some((t) => f.words.some((w) => w.startsWith(t)))
     ) {
-      result.push({ category: f.category as PillCategory, value: truncate(f.value, PILL_VALUE_MAX_LENGTH) });
+      const windowed = windowAroundMatch(f.value, tokens, PILL_VALUE_MAX_LENGTH);
+      result.push({ category: f.category as PillCategory, segments: segmentValue(windowed, tokens) });
     }
     if (result.length >= MAX_PILLS) break;
   }
@@ -1160,7 +1204,7 @@ function CaseSuggestionList({
     return <p className="px-4 py-2.5 text-sm text-slate">{strings.work.searchNoResults}</p>;
   }
   return (
-    <ul className={large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}>
+    <ul className={`divide-y divide-ink/8 ${large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}`}>
       {suggestions.map(({ item, pills }, i) => (
         <li key={item.id}>
           <button
@@ -1168,7 +1212,7 @@ function CaseSuggestionList({
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onPick(item.id)}
             onMouseEnter={() => onHover(i)}
-            className={`flex w-full flex-col gap-1.5 px-4 py-2 text-left transition-colors ${
+            className={`flex w-full flex-col gap-1.5 px-4 py-2.5 text-left transition-colors ${
               large ? "text-base" : "text-sm"
             } ${i === activeIndex ? "bg-ink/5" : ""}`}
           >
@@ -1182,11 +1226,22 @@ function CaseSuggestionList({
                 {pills.map((p, pi) => (
                   <span
                     key={`${p.category}-${pi}`}
-                    className="rounded-full bg-cyan/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-cyan"
+                    className="inline-flex overflow-hidden rounded-full font-mono text-[10px] whitespace-nowrap"
                   >
-                    {strings.work.searchMatchLabels[p.category]}
-                    <span className="text-cyan/50">: </span>
-                    {p.value}
+                    <span className="bg-cyan px-2 py-0.5 text-ink">
+                      {strings.work.searchMatchLabels[p.category]}
+                    </span>
+                    <span className="bg-cyan/12 px-2 py-0.5 text-cyan">
+                      {p.segments.map((s, si) =>
+                        s.matched ? (
+                          <strong key={si} className="font-bold">
+                            {s.text}
+                          </strong>
+                        ) : (
+                          <span key={si}>{s.text}</span>
+                        ),
+                      )}
+                    </span>
                   </span>
                 ))}
               </span>
@@ -1305,12 +1360,16 @@ function CaseSearchSpotlight({
   query,
   onQueryChange,
   onOpenDetail,
+  hasOpenCaseDetail,
+  onCloseCaseDetail,
 }: {
   cases: CaseStudy[];
   strings: UIStrings;
   query: string;
   onQueryChange: (q: string) => void;
   onOpenDetail: (id: string) => void;
+  hasOpenCaseDetail: boolean;
+  onCloseCaseDetail: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -1325,12 +1384,15 @@ function CaseSearchSpotlight({
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
         e.preventDefault();
+        // A case detail modal sitting on top would otherwise trap focus and
+        // visually stack under/over the spotlight - close it first.
+        if (hasOpenCaseDetail) onCloseCaseDetail();
         setOpen(true);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [hasOpenCaseDetail, onCloseCaseDetail]);
 
   useEffect(() => {
     if (!open) return;
@@ -1466,6 +1528,8 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
           query={query}
           onQueryChange={setQuery}
           onOpenDetail={openFromSearch}
+          hasOpenCaseDetail={openCaseId !== null}
+          onCloseCaseDetail={() => setOpenCaseId(null)}
         />
         <div className="lg:flex lg:items-start lg:gap-8">
           <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">

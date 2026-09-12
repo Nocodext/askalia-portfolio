@@ -3,7 +3,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import {
+  caseSearchFields,
   caseSearchText,
+  type CaseSearchCategory,
   type CaseStudy,
   type Highlight,
   type PortfolioContent,
@@ -1058,6 +1060,38 @@ function caseMatchesQuery(searchText: string, query: string): boolean {
   return tokens.every((t) => searchText.includes(t));
 }
 
+// Title and sector are excluded: they're already shown as plain text on
+// the suggestion row, so a pill for them would just repeat what's visible.
+type PillCategory = Exclude<CaseSearchCategory, "title" | "sector">;
+const PILL_CATEGORIES = new Set<PillCategory>([
+  "need",
+  "ecosystem",
+  "highlights",
+  "stack",
+  "tags",
+  "matrix",
+  "glossary",
+  "scope",
+  "challenges",
+]);
+
+// Which fields a query actually matched in, so the suggestion list can
+// show e.g. a "Stack" pill when the hit came from stackSoftware rather
+// than the case's visible title/sector.
+function matchedCategories(
+  fields: { category: CaseSearchCategory; text: string }[],
+  query: string,
+): PillCategory[] {
+  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const result: PillCategory[] = [];
+  for (const f of fields) {
+    if (PILL_CATEGORIES.has(f.category as PillCategory) && tokens.some((t) => f.text.includes(t))) {
+      result.push(f.category as PillCategory);
+    }
+  }
+  return result;
+}
+
 function CaseSearch({
   cases,
   strings,
@@ -1078,13 +1112,19 @@ function CaseSearch({
   // Computed once per case, not per keystroke - the source data doesn't
   // change at runtime.
   const searchIndex = useMemo(
-    () => cases.map((item) => ({ item, text: caseSearchText(item) })),
+    () =>
+      cases.map((item) => {
+        const fields = caseSearchFields(item);
+        return { item, fields, text: fields.map((f) => f.text).join(" \n ") };
+      }),
     [cases],
   );
 
   const suggestions = useMemo(() => {
     if (!query.trim()) return [];
-    return searchIndex.filter(({ text }) => caseMatchesQuery(text, query)).map((m) => m.item);
+    return searchIndex
+      .filter(({ text }) => caseMatchesQuery(text, query))
+      .map((m) => ({ item: m.item, categories: matchedCategories(m.fields, query) }));
   }, [searchIndex, query]);
   const visibleSuggestions = suggestions.slice(0, 6);
 
@@ -1141,7 +1181,7 @@ function CaseSearch({
             } else if (e.key === "Enter") {
               e.preventDefault();
               const target = visibleSuggestions[activeIndex];
-              if (target) pickSuggestion(target.id);
+              if (target) pickSuggestion(target.item.id);
             } else if (e.key === "Escape") {
               setSuggestOpen(false);
               inputRef.current?.blur();
@@ -1168,20 +1208,34 @@ function CaseSearch({
       {suggestOpen && query.trim() ? (
         <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-[min(1vw,14px)] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(16,19,26,0.35)] ring-1 ring-ink/10">
           {visibleSuggestions.length > 0 ? (
-            visibleSuggestions.map((item, i) => (
+            visibleSuggestions.map(({ item, categories }, i) => (
               <li key={item.id}>
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => pickSuggestion(item.id)}
                   onMouseEnter={() => setActiveIndex(i)}
-                  className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm transition-colors ${
+                  className={`flex w-full flex-col gap-1.5 px-4 py-2 text-left text-sm transition-colors ${
                     i === activeIndex ? "bg-ink/5" : ""
                   }`}
                 >
-                  <CaseIcon id={item.id} size="sm" />
-                  <span className="min-w-0 flex-1 truncate">{item.title}</span>
-                  <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
+                  <span className="flex w-full items-center gap-3">
+                    <CaseIcon id={item.id} size="sm" />
+                    <span className="min-w-0 flex-1 truncate">{item.title}</span>
+                    <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
+                  </span>
+                  {categories.length > 0 ? (
+                    <span className="flex flex-wrap justify-end gap-1">
+                      {categories.map((c) => (
+                        <span
+                          key={c}
+                          className="rounded-full bg-cyan/10 px-2 py-0.5 font-mono text-[10px] whitespace-nowrap text-cyan"
+                        >
+                          {strings.work.searchMatchLabels[c]}
+                        </span>
+                      ))}
+                    </span>
+                  ) : null}
                 </button>
               </li>
             ))

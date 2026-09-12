@@ -65,6 +65,10 @@ export type UIStrings = {
     searchAria: string;
     searchClearAria: string;
     searchNoResults: string;
+    searchMatchLabels: Record<
+      "need" | "ecosystem" | "highlights" | "stack" | "tags" | "matrix" | "glossary" | "scope" | "challenges",
+      string
+    >;
   };
   overview: {
     sectionLabel: string;
@@ -192,6 +196,17 @@ export const uiStringsFr: UIStrings = {
     searchAria: "Rechercher parmi les cas clients",
     searchClearAria: "Effacer la recherche",
     searchNoResults: "Aucun cas client ne correspond à cette recherche.",
+    searchMatchLabels: {
+      need: "Besoin",
+      ecosystem: "Écosystème",
+      highlights: "Points clés",
+      stack: "Stack",
+      tags: "Tags",
+      matrix: "Matrice",
+      glossary: "Glossaire",
+      scope: "Périmètre",
+      challenges: "Défis",
+    },
   },
   overview: {
     sectionLabel: "[03] - Cartographie",
@@ -318,6 +333,17 @@ export const uiStringsEn: UIStrings = {
     searchAria: "Search case studies",
     searchClearAria: "Clear search",
     searchNoResults: "No case study matches this search.",
+    searchMatchLabels: {
+      need: "Need",
+      ecosystem: "Ecosystem",
+      highlights: "Highlights",
+      stack: "Stack",
+      tags: "Tags",
+      matrix: "Matrix",
+      glossary: "Glossary",
+      scope: "Scope",
+      challenges: "Challenges",
+    },
   },
   overview: {
     sectionLabel: "[02] - Overview",

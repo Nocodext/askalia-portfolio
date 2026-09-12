@@ -59,39 +59,69 @@ function highlightText(h: Highlight): string {
   return typeof h === "string" ? h : [h.text, h.objective, ...(h.detail ?? [])].join(" ");
 }
 
+export type CaseSearchCategory =
+  | "title"
+  | "sector"
+  | "need"
+  | "ecosystem"
+  | "highlights"
+  | "stack"
+  | "tags"
+  | "matrix"
+  | "glossary"
+  | "scope"
+  | "challenges";
+
+export type CaseSearchField = { category: CaseSearchCategory; text: string };
+
 // The case search box matches against this instead of the rendered DOM -
 // a lot of a case's content (glossary, matrix, challenges, the full
 // highlight groups) never renders in the collapsed card, only inside the
-// popup, so a DOM/text search would silently miss it. This walks the raw
-// data instead, so a query matches whether or not that field happens to
-// be visible right now.
-export function caseSearchText(item: CaseStudy): string {
-  return [
-    item.title,
-    item.sector,
-    item.need,
-    item.needObjective,
-    item.duration,
-    ...(item.ecosystem?.map((e) => e.name) ?? []),
+// popup, so a DOM/text search would silently miss it. Kept as separate
+// fields (rather than one flat blob) so the UI can show which categories a
+// query actually matched in, e.g. surfacing a "Stack" pill when the hit
+// came from stackSoftware rather than the visible title/sector.
+export function caseSearchFields(item: CaseStudy): CaseSearchField[] {
+  const fields: CaseSearchField[] = [];
+  const push = (category: CaseSearchCategory, ...values: (string | undefined)[]) => {
+    const text = values
+      .filter((v): v is string => Boolean(v))
+      .join(" \n ")
+      .toLowerCase();
+    if (text) fields.push({ category, text });
+  };
+
+  push("title", item.title);
+  push("sector", item.sector);
+  push("need", item.need, item.needObjective, item.duration);
+  push("ecosystem", ...(item.ecosystem?.map((e) => e.name) ?? []));
+  push(
+    "highlights",
     ...item.highlights.map(highlightText),
     ...(item.highlightGroups?.functional.map(highlightText) ?? []),
     ...(item.highlightGroups?.technical.map(highlightText) ?? []),
-    ...item.stackSoftware,
-    ...(item.stackHardware ?? []),
-    ...item.hashtags,
+  );
+  push("stack", ...item.stackSoftware, ...(item.stackHardware ?? []));
+  push("tags", ...item.hashtags);
+  push(
+    "matrix",
     ...item.matrix.roles,
     ...item.matrix.functional,
     ...item.matrix.sectors,
     ...item.matrix.technical,
     ...item.matrix.ethical,
-    ...(item.glossary?.flatMap((g) => [g.term, g.def]) ?? []),
-    item.scope?.label,
-    item.scope?.body,
-    ...(item.challenges?.flatMap((c) => [c.constraint, c.response]) ?? []),
-  ]
-    .filter((v): v is string => Boolean(v))
-    .join(" \n ")
-    .toLowerCase();
+  );
+  push("glossary", ...(item.glossary?.flatMap((g) => [g.term, g.def]) ?? []));
+  push("scope", item.scope?.label, item.scope?.body);
+  push("challenges", ...(item.challenges?.flatMap((c) => [c.constraint, c.response]) ?? []));
+
+  return fields;
+}
+
+export function caseSearchText(item: CaseStudy): string {
+  return caseSearchFields(item)
+    .map((f) => f.text)
+    .join(" \n ");
 }
 
 export const profile = {

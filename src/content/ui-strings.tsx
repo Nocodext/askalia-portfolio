@@ -61,6 +61,10 @@ export type UIStrings = {
     disabledHeading: string;
     missionsSuffix: string;
     sideProjectSuffix: string;
+    searchPlaceholder: string;
+    searchAria: string;
+    searchClearAria: string;
+    searchNoResults: string;
   };
   overview: {
     sectionLabel: string;
@@ -184,6 +188,10 @@ export const uiStringsFr: UIStrings = {
     disabledHeading: "Des défis qu'on disait impossibles, livrés en production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side-business)",
+    searchPlaceholder: "Rechercher un cas client (secteur, stack, rôle...)",
+    searchAria: "Rechercher parmi les cas clients",
+    searchClearAria: "Effacer la recherche",
+    searchNoResults: "Aucun cas client ne correspond à cette recherche.",
   },
   overview: {
     sectionLabel: "[03] - Cartographie",
@@ -306,6 +314,10 @@ export const uiStringsEn: UIStrings = {
     disabledHeading: "Challenges everyone said were impossible, shipped to production.",
     missionsSuffix: "missions",
     sideProjectSuffix: "(side project)",
+    searchPlaceholder: "Search case studies (sector, stack, role...)",
+    searchAria: "Search case studies",
+    searchClearAria: "Clear search",
+    searchNoResults: "No case study matches this search.",
   },
   overview: {
     sectionLabel: "[02] - Overview",

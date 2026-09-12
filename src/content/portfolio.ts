@@ -55,6 +55,45 @@ export type CaseStudy = {
   liveDemo?: { previewVideo: string; demoHref: string; blogHref: string };
 };
 
+function highlightText(h: Highlight): string {
+  return typeof h === "string" ? h : [h.text, h.objective, ...(h.detail ?? [])].join(" ");
+}
+
+// The case search box matches against this instead of the rendered DOM -
+// a lot of a case's content (glossary, matrix, challenges, the full
+// highlight groups) never renders in the collapsed card, only inside the
+// popup, so a DOM/text search would silently miss it. This walks the raw
+// data instead, so a query matches whether or not that field happens to
+// be visible right now.
+export function caseSearchText(item: CaseStudy): string {
+  return [
+    item.title,
+    item.sector,
+    item.need,
+    item.needObjective,
+    item.duration,
+    ...(item.ecosystem?.map((e) => e.name) ?? []),
+    ...item.highlights.map(highlightText),
+    ...(item.highlightGroups?.functional.map(highlightText) ?? []),
+    ...(item.highlightGroups?.technical.map(highlightText) ?? []),
+    ...item.stackSoftware,
+    ...(item.stackHardware ?? []),
+    ...item.hashtags,
+    ...item.matrix.roles,
+    ...item.matrix.functional,
+    ...item.matrix.sectors,
+    ...item.matrix.technical,
+    ...item.matrix.ethical,
+    ...(item.glossary?.flatMap((g) => [g.term, g.def]) ?? []),
+    item.scope?.label,
+    item.scope?.body,
+    ...(item.challenges?.flatMap((c) => [c.constraint, c.response]) ?? []),
+  ]
+    .filter((v): v is string => Boolean(v))
+    .join(" \n ")
+    .toLowerCase();
+}
+
 export const profile = {
   firstName: "Joris",
   lastName: "GROUILLET",
@@ -956,7 +995,7 @@ export const sideProjects: SideProject[] = [
       "Outillage en extensions Chrome pour les agences NoCode Bubble : découvrabilité d'une app reprise et QA continue pour livrer du professionnel - totalement absent en natif dans Bubble.",
     url: "https://nocodext.studio/bubble",
     bullets: [
-      "Solopreneur : maquettages, dev frontend / backend / extensions Chrome.",
+      "Maquettages, dev frontend / backend / edge backend runtime",
       "Pivot du ciblage vers le B2B (agences web) : hypothèses de valeur, itérations de pricing et repositionnement produit.",
       {
         before: "Intégration ",

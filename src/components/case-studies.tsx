@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { trackEvent } from "@/lib/analytics";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
-import type { CaseStudy, Highlight, PortfolioContent, Recommendation } from "@/content/portfolio";
+import {
+  caseSearchText,
+  type CaseStudy,
+  type Highlight,
+  type PortfolioContent,
+  type Recommendation,
+} from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -39,6 +45,8 @@ import {
   Quote,
   Radar,
   Play,
+  Search,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -212,10 +220,12 @@ function CaseCard({
   item,
   strings,
   onOpenDetail,
+  hidden,
 }: {
   item: CaseStudy;
   strings: UIStrings;
   onOpenDetail: (id: string) => void;
+  hidden?: boolean;
 }) {
   const reducedMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
@@ -252,6 +262,7 @@ function CaseCard({
     <article
       ref={ref}
       id={item.id}
+      hidden={hidden}
       className="group relative overflow-hidden rounded-[min(1vw,14px)] bg-gradient-to-b from-white/85 to-white/55 ring-1 ring-ink/15 backdrop-blur-xl prism-edge transition-transform hover:-translate-y-1"
     >
       <div className="spectrum h-1 w-full opacity-80" />
@@ -1038,9 +1049,182 @@ function CaseToc({ content, strings }: { content: PortfolioContent; strings: UIS
   );
 }
 
+// Splits the query into lowercase tokens and requires every token to
+// appear somewhere in the case's search text (order-independent) - lets
+// "santé stripe" match a case whose sector and stack both contain those
+// words, even far apart in the source data.
+function caseMatchesQuery(searchText: string, query: string): boolean {
+  const tokens = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  return tokens.every((t) => searchText.includes(t));
+}
+
+function CaseSearch({
+  cases,
+  strings,
+  query,
+  onQueryChange,
+  onOpenDetail,
+}: {
+  cases: CaseStudy[];
+  strings: UIStrings;
+  query: string;
+  onQueryChange: (q: string) => void;
+  onOpenDetail: (id: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [suggestOpen, setSuggestOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Computed once per case, not per keystroke - the source data doesn't
+  // change at runtime.
+  const searchIndex = useMemo(
+    () => cases.map((item) => ({ item, text: caseSearchText(item) })),
+    [cases],
+  );
+
+  const suggestions = useMemo(() => {
+    if (!query.trim()) return [];
+    return searchIndex.filter(({ text }) => caseMatchesQuery(text, query)).map((m) => m.item);
+  }, [searchIndex, query]);
+  const visibleSuggestions = suggestions.slice(0, 6);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [query]);
+
+  // Ctrl/Cmd+F is redirected here instead of the browser's native find:
+  // most of a case's content only exists in the popup, not the collapsed
+  // card, so a plain text-in-page search would miss it entirely.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const pickSuggestion = (id: string) => {
+    onOpenDetail(id);
+    setSuggestOpen(false);
+    onQueryChange("");
+  };
+
+  return (
+    <div className="relative mb-8 sm:max-w-md">
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate"
+          strokeWidth={2}
+        />
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => {
+            onQueryChange(e.target.value);
+            setSuggestOpen(true);
+          }}
+          onFocus={() => setSuggestOpen(true)}
+          onBlur={() => window.setTimeout(() => setSuggestOpen(false), 120)}
+          onKeyDown={(e) => {
+            if (!suggestOpen || visibleSuggestions.length === 0) return;
+            if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setActiveIndex((i) => (i + 1) % visibleSuggestions.length);
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setActiveIndex((i) => (i - 1 + visibleSuggestions.length) % visibleSuggestions.length);
+            } else if (e.key === "Enter") {
+              e.preventDefault();
+              const target = visibleSuggestions[activeIndex];
+              if (target) pickSuggestion(target.id);
+            } else if (e.key === "Escape") {
+              setSuggestOpen(false);
+              inputRef.current?.blur();
+            }
+          }}
+          placeholder={strings.work.searchPlaceholder}
+          aria-label={strings.work.searchAria}
+          className="w-full rounded-full bg-white py-2.5 pr-10 pl-10 text-sm ring-1 ring-ink/15 transition-shadow focus:ring-2 focus:ring-cyan focus:outline-none"
+        />
+        {query ? (
+          <button
+            type="button"
+            aria-label={strings.work.searchClearAria}
+            onClick={() => {
+              onQueryChange("");
+              inputRef.current?.focus();
+            }}
+            className="absolute top-1/2 right-3 flex size-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-slate transition-colors hover:text-ink"
+          >
+            <X className="size-4" strokeWidth={2} />
+          </button>
+        ) : null}
+      </div>
+      {suggestOpen && query.trim() ? (
+        <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-[min(1vw,14px)] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgba(16,19,26,0.35)] ring-1 ring-ink/10">
+          {visibleSuggestions.length > 0 ? (
+            visibleSuggestions.map((item, i) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => pickSuggestion(item.id)}
+                  onMouseEnter={() => setActiveIndex(i)}
+                  className={`flex w-full items-center gap-3 px-4 py-2 text-left text-sm transition-colors ${
+                    i === activeIndex ? "bg-ink/5" : ""
+                  }`}
+                >
+                  <CaseIcon id={item.id} size="sm" />
+                  <span className="min-w-0 flex-1 truncate">{item.title}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
+                </button>
+              </li>
+            ))
+          ) : (
+            <li className="px-4 py-2.5 text-sm text-slate">{strings.work.searchNoResults}</li>
+          )}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 export function Work({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
   const { cases } = content;
   const [openCaseId, setOpenCaseId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  // Bypasses openCase's DOM dispatch (dispatchEvent on the target card):
+  // a case filtered out of the visible grid is still mounted (`hidden`,
+  // not removed), so this isn't strictly required for search results, but
+  // Work already owns the dialog's open state directly - no reason to
+  // round-trip through a DOM event to reach it.
+  const openFromSearch = (id: string) => {
+    setOpenCaseId(id);
+    navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
+  };
+
+  const searchIndex = useMemo(
+    () => cases.map((item) => ({ item, text: caseSearchText(item) })),
+    [cases],
+  );
+  const matchingIds = useMemo(() => {
+    if (!query.trim()) return null;
+    return new Set(
+      searchIndex.filter(({ text }) => caseMatchesQuery(text, query)).map(({ item }) => item.id),
+    );
+  }, [searchIndex, query]);
+  const visibleCount = matchingIds ? matchingIds.size : cases.length;
+  const tocContent = matchingIds
+    ? { ...content, cases: cases.filter((c) => matchingIds.has(c.id)) }
+    : content;
+
   return (
     <section id="work" className="border-y border-ink/10 bg-white/40">
       <div className="mx-auto max-w-6xl px-6 py-16">
@@ -1056,16 +1240,32 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
             )}
           </div>
           <span className="font-mono text-xs text-slate">
-            {cases.length} {strings.work.missionsSuffix}
+            {visibleCount} {strings.work.missionsSuffix}
           </span>
         </div>
+        <CaseSearch
+          cases={cases}
+          strings={strings}
+          query={query}
+          onQueryChange={setQuery}
+          onOpenDetail={openFromSearch}
+        />
         <div className="lg:flex lg:items-start lg:gap-8">
           <div className="grid grid-cols-1 gap-8 lg:min-w-0 lg:flex-1">
             {cases.map((item) => (
-              <CaseCard key={item.id} item={item} strings={strings} onOpenDetail={setOpenCaseId} />
+              <CaseCard
+                key={item.id}
+                item={item}
+                strings={strings}
+                onOpenDetail={setOpenCaseId}
+                hidden={matchingIds !== null && !matchingIds.has(item.id)}
+              />
             ))}
+            {matchingIds && matchingIds.size === 0 ? (
+              <p className="text-sm text-slate">{strings.work.searchNoResults}</p>
+            ) : null}
           </div>
-          <CaseToc content={content} strings={strings} />
+          <CaseToc content={tocContent} strings={strings} />
         </div>
       </div>
       <CaseDetailDialog

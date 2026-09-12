@@ -634,180 +634,186 @@ function CaseDetailBody({
           <p className="mt-1 text-sm text-pretty text-slate">{item.scope.body}</p>
         </div>
       ) : null}
-      {item.photos ? (
-        <Dialog
-          onOpenChange={(open) => {
-            hasTrackedPhotoNav.current = false;
-            // Skip straight to fullscreen when there's nothing to pick from.
-            setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
-            if (open) trackEvent("case_photos_opened", { case: item.id });
-          }}
-        >
-          <DialogTrigger asChild>
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="mt-5 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+      {item.photos || item.liveDemo || linkedRecommendation ? (
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          {item.photos ? (
+            <Dialog
+              onOpenChange={(open) => {
+                hasTrackedPhotoNav.current = false;
+                // Skip straight to fullscreen when there's nothing to pick from.
+                setSelectedPhoto(item.photos!.length === 1 ? 0 : null);
+                if (open) trackEvent("case_photos_opened", { case: item.id });
+              }}
             >
-              <Images className="size-3.5" strokeWidth={2} />
-              {strings.caseCard.viewPhotos}
-            </button>
-          </DialogTrigger>
-          <DialogContent
-            className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
-            onEscapeKeyDown={(e) => {
-              if (selectedPhoto !== null) {
-                e.preventDefault();
-                setSelectedPhoto(null);
-              }
-            }}
-          >
-            <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
-            {selectedPhoto === null ? (
-              <div
-                className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
-                style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
-              >
-                {item.photos.map((p, i) => {
-                  const isVideo = "youtubeId" in p;
-                  return (
-                    <button
-                      key={isVideo ? p.youtubeId : p.src}
-                      type="button"
-                      onClick={() => setSelectedPhoto(i)}
-                      className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
-                    >
-                      <img
-                        src={
-                          isVideo ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg` : p.src
-                        }
-                        alt={isVideo ? p.title : p.alt}
-                        className="size-full object-cover"
-                      />
-                      {isVideo ? (
-                        <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
-                          <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
-                            <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
-                          </span>
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="relative mx-auto w-full max-w-6xl">
+              <DialogTrigger asChild>
                 <button
                   type="button"
-                  onClick={() => setSelectedPhoto(null)}
-                  className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
                 >
-                  <ArrowLeft className="size-3.5" strokeWidth={2} />
-                  {strings.caseCard.backToGallery}
+                  <Images className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewPhotos}
                 </button>
-                <Carousel
-                  ref={carouselRootRef}
-                  setApi={setPhotosApi}
-                  tabIndex={-1}
-                  className="w-full outline-none"
-                >
-                  <CarouselContent>
-                    {item.photos.map((p) => {
+              </DialogTrigger>
+              <DialogContent
+                className="w-fit max-w-[92vw] overflow-hidden border-none bg-transparent p-0 shadow-none sm:max-w-[92vw]"
+                onEscapeKeyDown={(e) => {
+                  if (selectedPhoto !== null) {
+                    e.preventDefault();
+                    setSelectedPhoto(null);
+                  }
+                }}
+              >
+                <DialogTitle className="sr-only">{strings.caseCard.viewPhotos}</DialogTitle>
+                {selectedPhoto === null ? (
+                  <div
+                    className="mx-auto grid max-h-[85vh] w-fit max-w-[92vw] justify-center gap-3 overflow-y-auto rounded-lg bg-white p-4"
+                    style={{ gridTemplateColumns: "repeat(auto-fit, 160px)" }}
+                  >
+                    {item.photos.map((p, i) => {
                       const isVideo = "youtubeId" in p;
                       return (
-                        <CarouselItem
+                        <button
                           key={isVideo ? p.youtubeId : p.src}
-                          className="flex items-center justify-center"
+                          type="button"
+                          onClick={() => setSelectedPhoto(i)}
+                          className="relative size-40 cursor-pointer overflow-hidden rounded-md bg-ink/5 ring-2 ring-ink/15 transition-all duration-300 ease-out hover:z-10 hover:scale-110 hover:ring-violet"
                         >
+                          <img
+                            src={
+                              isVideo
+                                ? `https://i.ytimg.com/vi/${p.youtubeId}/hqdefault.jpg`
+                                : p.src
+                            }
+                            alt={isVideo ? p.title : p.alt}
+                            className="size-full object-cover"
+                          />
                           {isVideo ? (
-                            <iframe
-                              src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
-                              title={p.title}
-                              className="aspect-video w-full max-h-[85vh] rounded-lg"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                              allowFullScreen
-                              loading="lazy"
-                            />
-                          ) : (
-                            <img
-                              src={p.src}
-                              alt={p.alt}
-                              className="max-h-[85vh] w-full rounded-lg object-contain"
-                            />
-                          )}
-                        </CarouselItem>
+                            <span className="absolute inset-0 flex items-center justify-center bg-ink/25">
+                              <span className="flex size-10 items-center justify-center rounded-full bg-white/90 shadow-md">
+                                <Play className="ml-0.5 size-4 fill-ink text-ink" strokeWidth={0} />
+                              </span>
+                            </span>
+                          ) : null}
+                        </button>
                       );
                     })}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-2" />
-                  <CarouselNext className="right-2" />
-                </Carousel>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-      ) : null}
-      {item.liveDemo ? (
-        <Dialog
-          onOpenChange={(open) => open && trackEvent("case_live_demo_opened", { case: item.id })}
-        >
-          <DialogTrigger asChild>
+                  </div>
+                ) : (
+                  <div className="relative mx-auto w-full max-w-6xl">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhoto(null)}
+                      className="absolute top-2 left-2 z-10 flex cursor-pointer items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 font-mono text-[11px] font-medium text-ink shadow-md transition-colors hover:bg-white"
+                    >
+                      <ArrowLeft className="size-3.5" strokeWidth={2} />
+                      {strings.caseCard.backToGallery}
+                    </button>
+                    <Carousel
+                      ref={carouselRootRef}
+                      setApi={setPhotosApi}
+                      tabIndex={-1}
+                      className="w-full outline-none"
+                    >
+                      <CarouselContent>
+                        {item.photos.map((p) => {
+                          const isVideo = "youtubeId" in p;
+                          return (
+                            <CarouselItem
+                              key={isVideo ? p.youtubeId : p.src}
+                              className="flex items-center justify-center"
+                            >
+                              {isVideo ? (
+                                <iframe
+                                  src={`https://www.youtube-nocookie.com/embed/${p.youtubeId}`}
+                                  title={p.title}
+                                  className="aspect-video w-full max-h-[85vh] rounded-lg"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                  allowFullScreen
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <img
+                                  src={p.src}
+                                  alt={p.alt}
+                                  className="max-h-[85vh] w-full rounded-lg object-contain"
+                                />
+                              )}
+                            </CarouselItem>
+                          );
+                        })}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
+                    </Carousel>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {item.liveDemo ? (
+            <Dialog
+              onOpenChange={(open) => open && trackEvent("case_live_demo_opened", { case: item.id })}
+            >
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+                >
+                  <ExternalLink className="size-3.5" strokeWidth={2} />
+                  {strings.caseCard.viewLiveDemo}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
+                <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  src={item.liveDemo.previewVideo}
+                  className="block max-h-[80vh] w-full object-contain"
+                />
+                <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
+                  <a
+                    href={item.liveDemo.blogHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
+                  >
+                    {strings.caseCard.seeBlog}
+                  </a>
+                  <a
+                    href={item.liveDemo.demoHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
+                  >
+                    {strings.caseCard.seeDemo}
+                    <ArrowUpRight className="size-3.5" strokeWidth={2} />
+                  </a>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ) : null}
+          {linkedRecommendation ? (
             <button
               type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+                scrollToRecommendation(linkedRecommendation.id);
+              }}
+              className="flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
             >
-              <ExternalLink className="size-3.5" strokeWidth={2} />
-              {strings.caseCard.viewLiveDemo}
+              <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
+              {strings.caseCard.seeTestimonial}
             </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[92vw] overflow-hidden rounded-lg border-none bg-white p-0 shadow-2xl sm:max-w-[92vw] lg:max-w-5xl">
-            <DialogTitle className="sr-only">{strings.caseCard.viewLiveDemo}</DialogTitle>
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              src={item.liveDemo.previewVideo}
-              className="block max-h-[80vh] w-full object-contain"
-            />
-            <div className="flex items-center justify-end gap-2 border-t border-ink/10 p-3">
-              <a
-                href={item.liveDemo.blogHref}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/5"
-              >
-                {strings.caseCard.seeBlog}
-              </a>
-              <a
-                href={item.liveDemo.demoHref}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 font-mono text-[11px] font-medium text-white transition-colors hover:bg-ink/90"
-              >
-                {strings.caseCard.seeDemo}
-                <ArrowUpRight className="size-3.5" strokeWidth={2} />
-              </a>
-            </div>
-          </DialogContent>
-        </Dialog>
-      ) : null}
-      {linkedRecommendation ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-            scrollToRecommendation(linkedRecommendation.id);
-          }}
-          className="mt-5 ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-ink/5 px-3 py-1.5 font-mono text-[11px] font-medium text-ink ring-1 ring-inset ring-ink/10 transition-colors hover:bg-ink/10"
-        >
-          <Quote className="size-3.5" strokeWidth={2} fill="currentColor" />
-          {strings.caseCard.seeTestimonial}
-        </button>
+          ) : null}
+        </div>
       ) : null}
       {item.challenges ? (
         <div className="mt-5">

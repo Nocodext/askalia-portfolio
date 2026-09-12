@@ -141,9 +141,9 @@ export const cases: CaseStudy[] = [
   {
     id: "reanimation",
     index: "00",
-    sector: "Santé · Hôpital / Réanimation",
+    sector: "Santé · Hôpital / Soins critiques",
     title:
-      "Plateforme hospitalière : continuité informationnelle Soignant · Familles · Patient en Réanimation DAR-B",
+      "Plateforme hospitalière : continuité informationnelle Soignant · Familles · Patients en soins critiques",
     need: `Cette plateforme web et mobile connecte les familles de patients hospitalisés à l'équipe soignante : synchronisation automatique
   avec les systèmes hospitaliers dès l'admission, transmissions et alertes en temps réel vers les
   proches, sans ressaisie côté soignant. Complétion infos médicales par les proches.`,
@@ -154,7 +154,7 @@ export const cases: CaseStudy[] = [
       functional: [
         "Premier profil technique de la structure : responsabilité pleine et entière des choix d'architecture, en autonomie totale.",
         "Démarche UX/UI conduite en co-création avec les agents hospitaliers.",
-        "Modélisation des flux hospitaliers de réanimation : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
+        "Modélisation des flux hospitaliers de soins critiques : admissions, suivis, sorties, transferts, règles métier, déclenchements et automatisations.",
         "Transmission d'informations médicales et paramédicales, alerting familles / soignants et follow-up d'actions.",
         "Import d'un pool de soignants paramédicaux via Excel pour aligner le logiciel avec la réalité du staffing en vigueur.",
         "Portail Famille & Soignant : e-CPS, OTP, 2FA, Citrix & RPA.",
@@ -168,7 +168,7 @@ export const cases: CaseStudy[] = [
       technical: [
         "Migration d'une app legacy PHP/CMS vers une architecture NestJS hospitalière : hexagonale, event-driven, synchronisation IHE / PAM / HL7.",
         "Migration MySQL legacy vers PostgreSQL : triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, ségrégation de schémas.",
-        "Interopérabilité SI-H CHU Montpellier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
+        "Interopérabilité SI-H d'un centre hospitalier, Direction du Numérique en Santé, DPI ; interop d'État avec l'Agence du Numérique en Santé et le DMP.",
         "Implémentation des exigences HDS niveaux 4 à 6.",
         "Ingestion des flux d'évènements Patient HL7/FHIR à partir de la source Logiciel de gestion-patient (PAM) fourni par la DSI, via adaptateurs SFTP et MLLP/MLLPS - les 2 protocoles standards d'échange de données de l'industrie.",
         "Architecture résiliente par nœuds, Docker Compose LAN design.",
@@ -211,7 +211,7 @@ export const cases: CaseStudy[] = [
         "Alerting familles / soignants",
         "Portail famille & soignant",
       ],
-      sectors: ["Hôpital / Réanimation", "CHU", "Santé publique"],
+      sectors: ["Hôpital / Soins critiques", "CHU", "Santé publique"],
       technical: [
         "Event-driven",
         "Architecture hexagonale",
@@ -807,6 +807,7 @@ export const cases: CaseStudy[] = [
       "OAuth2",
       "React",
       "Webhooks",
+      "graphQL",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [
@@ -1014,6 +1015,34 @@ export const sideProjectsLlms: LlmEntry[] = [
   { name: "Perplexity", logo: "/logos/llm/perplexity.svg" },
   { name: "Gemini", logo: "/logos/llm/gemini.svg" },
 ];
+
+export type SideProjectSearchCategory = "name" | "pitch" | "bullets" | "stack" | "llms" | "business";
+export type SideProjectSearchField = { category: SideProjectSearchCategory; value: string };
+
+// Mirrors caseSearchFields: the case search box also matches nocodext
+// side-business products, so a query like "supabase" (only ever shown
+// once, in the shared stack block) still surfaces every product built on
+// it - `stack`/`llms` are passed in because they're rendered once for the
+// whole section rather than stored per product.
+export function sideProjectSearchFields(
+  p: SideProject,
+  stack: string[],
+  llms: LlmEntry[],
+): SideProjectSearchField[] {
+  const fields: SideProjectSearchField[] = [];
+  const push = (category: SideProjectSearchCategory, ...values: (string | undefined)[]) => {
+    for (const value of values) if (value) fields.push({ category, value });
+  };
+
+  push("name", sideProjectNameText(p.name));
+  push("pitch", p.pitch);
+  push("bullets", ...p.bullets.map(sideProjectNameText));
+  push("business", p.business);
+  push("stack", ...stack);
+  push("llms", ...llms.map((l) => l.name));
+
+  return fields;
+}
 
 export const sideProjects: SideProject[] = [
   {

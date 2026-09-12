@@ -85,7 +85,7 @@ export const cases: CaseStudy[] = [
       technical: [
         "Migrated a legacy PHP/CMS app to a hospital-grade NestJS architecture: hexagonal, event-driven, IHE / PAM / HL7 synchronization.",
         "Migrated legacy MySQL to PostgreSQL: triggers, pg_cron, PostgREST, pg_net, partitioning, pooling, schema segregation.",
-        "Hospital information system interoperability with CHU Montpellier (university hospital), its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
+        "Hospital information system interoperability with a university hospital, its Digital Health Directorate and electronic health record (DPI); state-level interop with France's national digital health agency (ANS) and the shared medical record (DMP).",
         "Implemented HDS (France's certified health-data hosting standard) requirements, levels 4-6.",
         "Ingested HL7/FHIR patient event streams from the patient administration (PAM) system provided by the hospital's IT department, via SFTP and MLLP/MLLPS adapters - the industry's two standard data-exchange protocols.",
         "Resilient node-based architecture, Docker Compose LAN design",
@@ -674,6 +674,7 @@ export const cases: CaseStudy[] = [
       "OAuth2",
       "React",
       "Webhooks",
+      "graphQL",
       "Intercom · HubSpot · GitHub/GitLab · Trello · JIRA · Figma",
     ],
     hashtags: [

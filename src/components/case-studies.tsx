@@ -1097,7 +1097,7 @@ const CASE_PILL_CATEGORIES = new Set<PillCategory>([
 ]);
 const PRODUCT_PILL_CATEGORIES = new Set<PillCategory>(["pitch", "bullets", "stack", "llms", "business"]);
 
-const MAX_PILLS = 4;
+const MAX_PILLS = 2;
 const MAX_MATCH_WORDS = 2;
 
 // Pulls out just the word(s) that satisfied the query - at most

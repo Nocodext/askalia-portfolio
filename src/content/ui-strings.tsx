@@ -65,8 +65,21 @@ export type UIStrings = {
     searchAria: string;
     searchClearAria: string;
     searchNoResults: string;
+    sideProjectLabel: string;
     searchMatchLabels: Record<
-      "need" | "ecosystem" | "highlights" | "stack" | "tags" | "matrix" | "glossary" | "scope" | "challenges",
+      | "need"
+      | "ecosystem"
+      | "highlights"
+      | "stack"
+      | "tags"
+      | "matrix"
+      | "glossary"
+      | "scope"
+      | "challenges"
+      | "pitch"
+      | "bullets"
+      | "business"
+      | "llms",
       string
     >;
   };
@@ -196,6 +209,7 @@ export const uiStringsFr: UIStrings = {
     searchAria: "Rechercher parmi les cas clients",
     searchClearAria: "Effacer la recherche",
     searchNoResults: "Aucun cas client ne correspond à cette recherche.",
+    sideProjectLabel: "Side-business",
     searchMatchLabels: {
       need: "Besoin",
       ecosystem: "Écosystème",
@@ -206,6 +220,10 @@ export const uiStringsFr: UIStrings = {
       glossary: "Glossaire",
       scope: "Périmètre",
       challenges: "Défis",
+      pitch: "Pitch",
+      bullets: "Détails",
+      business: "Traction",
+      llms: "LLM",
     },
   },
   overview: {
@@ -333,6 +351,7 @@ export const uiStringsEn: UIStrings = {
     searchAria: "Search case studies",
     searchClearAria: "Clear search",
     searchNoResults: "No case study matches this search.",
+    sideProjectLabel: "Side project",
     searchMatchLabels: {
       need: "Need",
       ecosystem: "Ecosystem",
@@ -343,6 +362,10 @@ export const uiStringsEn: UIStrings = {
       glossary: "Glossary",
       scope: "Scope",
       challenges: "Challenges",
+      pitch: "Pitch",
+      bullets: "Details",
+      business: "Traction",
+      llms: "LLM",
     },
   },
   overview: {

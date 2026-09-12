@@ -5,11 +5,16 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
 import {
   caseSearchFields,
   caseSearchText,
+  sideProjectNameText,
+  sideProjectSearchFields,
   type CaseSearchCategory,
   type CaseStudy,
   type Highlight,
+  type LlmEntry,
   type PortfolioContent,
   type Recommendation,
+  type SideProject,
+  type SideProjectSearchCategory,
 } from "@/content/portfolio";
 import type { UIStrings } from "@/content/ui-strings";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -22,7 +27,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { CASE_EXPAND_EVENT, openCase, scrollToCase } from "@/lib/case-navigation";
+import { CASE_EXPAND_EVENT, openCase, scrollAndFlash, scrollToCase } from "@/lib/case-navigation";
 import { scrollToRecommendation } from "@/components/recommendations";
 import {
   HeartPulse,
@@ -1073,10 +1078,13 @@ function wordsMatchQuery(words: string[], tokens: string[]): boolean {
   return tokens.every((t) => words.some((w) => w.startsWith(t)));
 }
 
-// Title and sector are excluded: they're already shown as plain text on
-// the suggestion row, so a pill for them would just repeat what's visible.
-type PillCategory = Exclude<CaseSearchCategory, "title" | "sector">;
-const PILL_CATEGORIES = new Set<PillCategory>([
+// Title/sector (cases) and name (products) are excluded: they're already
+// shown as plain text on the suggestion row, so a pill for them would
+// just repeat what's visible.
+type PillCategory =
+  | Exclude<CaseSearchCategory, "title" | "sector">
+  | Exclude<SideProjectSearchCategory, "name">;
+const CASE_PILL_CATEGORIES = new Set<PillCategory>([
   "need",
   "ecosystem",
   "highlights",
@@ -1087,6 +1095,7 @@ const PILL_CATEGORIES = new Set<PillCategory>([
   "scope",
   "challenges",
 ]);
+const PRODUCT_PILL_CATEGORIES = new Set<PillCategory>(["pitch", "bullets", "stack", "llms", "business"]);
 
 const MAX_PILLS = 4;
 const PILL_VALUE_MAX_LENGTH = 34;
@@ -1142,15 +1151,19 @@ type MatchPill = { category: PillCategory; segments: ValueSegment[] };
 // Points back at exactly which value a query matched, not just which
 // category - e.g. a "Stack" / "DocumentDB" two-tone pill rather than a
 // bare "Stack" pill, so a hit stays traceable to the specific item it
-// came from, with the matched word itself bolded.
-function matchedPills(
-  fields: { category: CaseSearchCategory; value: string; words: string[] }[],
+// came from, with the matched word itself bolded. Generic over the field
+// type so it works for both case fields and product fields - each has its
+// own, wider category union (includes "title"/"name" etc, which never
+// appear in `pillCategories` and so never produce a pill).
+function matchedPills<F extends { category: string; value: string; words: string[] }>(
+  fields: F[],
   tokens: string[],
+  pillCategories: Set<PillCategory>,
 ): MatchPill[] {
   const result: MatchPill[] = [];
   for (const f of fields) {
     if (
-      PILL_CATEGORIES.has(f.category as PillCategory) &&
+      pillCategories.has(f.category as PillCategory) &&
       tokens.some((t) => f.words.some((w) => w.startsWith(t)))
     ) {
       const windowed = windowAroundMatch(f.value, tokens, PILL_VALUE_MAX_LENGTH);
@@ -1161,26 +1174,60 @@ function matchedPills(
   return result;
 }
 
-type CaseSuggestion = { item: CaseStudy; pills: MatchPill[] };
+// A search hit is either a case study (has its own detail popup) or a
+// nocodext side-business product (no popup - a search pick just scrolls
+// to and flashes its card in the Side-business section instead).
+type SearchHit =
+  | { kind: "case"; id: string; title: string; sector: string; pills: MatchPill[] }
+  | { kind: "product"; id: string; title: string; pills: MatchPill[] };
 
 // Shared by the inline dropdown and the Ctrl/Cmd+F spotlight overlay -
-// both list the same matches against the same JSON-derived index.
-function useCaseSuggestions(cases: CaseStudy[], query: string): CaseSuggestion[] {
-  const searchIndex = useMemo(
-    () =>
-      cases.map((item) => {
-        const fields = caseSearchFields(item).map((f) => ({ ...f, words: wordsOf(f.value) }));
-        return { item, fields, words: fields.flatMap((f) => f.words) };
-      }),
-    [cases],
-  );
+// both search the same unified, JSON-derived index of cases and nocodext
+// products (so e.g. "supabase", only ever shown once in the shared stack
+// block, still surfaces every product built on it).
+function useSearchSuggestions(
+  cases: CaseStudy[],
+  sideProjects: SideProject[],
+  sideProjectsStack: string[],
+  sideProjectsLlms: LlmEntry[],
+  query: string,
+): SearchHit[] {
+  const searchIndex = useMemo(() => {
+    const caseEntries = cases.map((item) => {
+      const fields = caseSearchFields(item).map((f) => ({ ...f, words: wordsOf(f.value) }));
+      return { kind: "case" as const, item, fields, words: fields.flatMap((f) => f.words) };
+    });
+    const productEntries = sideProjects.map((item) => {
+      const fields = sideProjectSearchFields(item, sideProjectsStack, sideProjectsLlms).map((f) => ({
+        ...f,
+        words: wordsOf(f.value),
+      }));
+      return { kind: "product" as const, item, fields, words: fields.flatMap((f) => f.words) };
+    });
+    return [...caseEntries, ...productEntries];
+  }, [cases, sideProjects, sideProjectsStack, sideProjectsLlms]);
 
   return useMemo(() => {
     const tokens = queryTokens(query);
     if (tokens.length === 0) return [];
     return searchIndex
-      .filter(({ words }) => wordsMatchQuery(words, tokens))
-      .map((m) => ({ item: m.item, pills: matchedPills(m.fields, tokens) }))
+      .filter((e) => wordsMatchQuery(e.words, tokens))
+      .map((e): SearchHit =>
+        e.kind === "case"
+          ? {
+              kind: "case",
+              id: e.item.id,
+              title: e.item.title,
+              sector: e.item.sector,
+              pills: matchedPills(e.fields, tokens, CASE_PILL_CATEGORIES),
+            }
+          : {
+              kind: "product",
+              id: e.item.id,
+              title: sideProjectNameText(e.item.name),
+              pills: matchedPills(e.fields, tokens, PRODUCT_PILL_CATEGORIES),
+            },
+      )
       .slice(0, 6);
   }, [searchIndex, query]);
 }
@@ -1193,10 +1240,10 @@ function CaseSuggestionList({
   strings,
   large = false,
 }: {
-  suggestions: CaseSuggestion[];
+  suggestions: SearchHit[];
   activeIndex: number;
   onHover: (i: number) => void;
-  onPick: (id: string) => void;
+  onPick: (hit: SearchHit) => void;
   strings: UIStrings;
   large?: boolean;
 }) {
@@ -1205,28 +1252,30 @@ function CaseSuggestionList({
   }
   return (
     <ul className={`divide-y divide-ink/8 ${large ? "max-h-[60vh] overflow-y-auto py-1.5" : ""}`}>
-      {suggestions.map(({ item, pills }, i) => (
-        <li key={item.id}>
+      {suggestions.map((hit, i) => (
+        <li key={hit.id}>
           <button
             type="button"
             onMouseDown={(e) => e.preventDefault()}
-            onClick={() => onPick(item.id)}
+            onClick={() => onPick(hit)}
             onMouseEnter={() => onHover(i)}
             className={`flex w-full flex-col gap-1.5 px-4 py-2.5 text-left transition-colors ${
               large ? "text-base" : "text-sm"
             } ${i === activeIndex ? "bg-ink/5" : ""}`}
           >
             <span className="flex w-full items-center gap-3">
-              <CaseIcon id={item.id} size="sm" />
-              <span className="min-w-0 flex-1 truncate">{item.title}</span>
-              <span className="shrink-0 font-mono text-[10px] text-slate">{item.sector}</span>
+              <CaseIcon id={hit.id} size="sm" />
+              <span className="min-w-0 flex-1 truncate">{hit.title}</span>
+              <span className="shrink-0 font-mono text-[10px] text-slate">
+                {hit.kind === "case" ? hit.sector : strings.work.sideProjectLabel}
+              </span>
             </span>
-            {pills.length > 0 ? (
+            {hit.pills.length > 0 ? (
               <span className="flex flex-wrap justify-end gap-1">
-                {pills.map((p, pi) => (
+                {hit.pills.map((p, pi) => (
                   <span
                     key={`${p.category}-${pi}`}
-                    className="inline-flex overflow-hidden rounded-full font-mono text-[10px] whitespace-nowrap"
+                    className="inline-flex overflow-hidden rounded-full font-mono text-[10px] whitespace-nowrap ring-1 ring-inset ring-cyan/30"
                   >
                     <span className="bg-cyan px-2 py-0.5 text-ink">
                       {strings.work.searchMatchLabels[p.category]}
@@ -1255,28 +1304,40 @@ function CaseSuggestionList({
 
 function CaseSearch({
   cases,
+  sideProjects,
+  sideProjectsStack,
+  sideProjectsLlms,
   strings,
   query,
   onQueryChange,
-  onOpenDetail,
+  onPick,
 }: {
   cases: CaseStudy[];
+  sideProjects: SideProject[];
+  sideProjectsStack: string[];
+  sideProjectsLlms: LlmEntry[];
   strings: UIStrings;
   query: string;
   onQueryChange: (q: string) => void;
-  onOpenDetail: (id: string) => void;
+  onPick: (hit: SearchHit) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-  const visibleSuggestions = useCaseSuggestions(cases, query);
+  const visibleSuggestions = useSearchSuggestions(
+    cases,
+    sideProjects,
+    sideProjectsStack,
+    sideProjectsLlms,
+    query,
+  );
 
   useEffect(() => {
     setActiveIndex(0);
   }, [query]);
 
-  const pickSuggestion = (id: string) => {
-    onOpenDetail(id);
+  const pickSuggestion = (hit: SearchHit) => {
+    onPick(hit);
     setSuggestOpen(false);
     onQueryChange("");
   };
@@ -1309,7 +1370,7 @@ function CaseSearch({
             } else if (e.key === "Enter") {
               e.preventDefault();
               const target = visibleSuggestions[activeIndex];
-              if (target) pickSuggestion(target.item.id);
+              if (target) pickSuggestion(target);
             } else if (e.key === "Escape") {
               setSuggestOpen(false);
               inputRef.current?.blur();
@@ -1356,25 +1417,31 @@ function CaseSearch({
 // the page.
 function CaseSearchSpotlight({
   cases,
+  sideProjects,
+  sideProjectsStack,
+  sideProjectsLlms,
   strings,
   query,
   onQueryChange,
-  onOpenDetail,
+  onPick,
   hasOpenCaseDetail,
   onCloseCaseDetail,
 }: {
   cases: CaseStudy[];
+  sideProjects: SideProject[];
+  sideProjectsStack: string[];
+  sideProjectsLlms: LlmEntry[];
   strings: UIStrings;
   query: string;
   onQueryChange: (q: string) => void;
-  onOpenDetail: (id: string) => void;
+  onPick: (hit: SearchHit) => void;
   hasOpenCaseDetail: boolean;
   onCloseCaseDetail: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestions = useCaseSuggestions(cases, query);
+  const suggestions = useSearchSuggestions(cases, sideProjects, sideProjectsStack, sideProjectsLlms, query);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -1404,8 +1471,8 @@ function CaseSearchSpotlight({
     };
   }, [open]);
 
-  const pick = (id: string) => {
-    onOpenDetail(id);
+  const pick = (hit: SearchHit) => {
+    onPick(hit);
     setOpen(false);
     onQueryChange("");
   };
@@ -1442,7 +1509,7 @@ function CaseSearchSpotlight({
               } else if (e.key === "Enter") {
                 e.preventDefault();
                 const target = suggestions[activeIndex];
-                if (target) pick(target.item.id);
+                if (target) pick(target);
               }
             }}
             placeholder={strings.work.searchPlaceholder}
@@ -1466,7 +1533,7 @@ function CaseSearchSpotlight({
 }
 
 export function Work({ content, strings }: { content: PortfolioContent; strings: UIStrings }) {
-  const { cases } = content;
+  const { cases, sideProjects, sideProjectsStack, sideProjectsLlms } = content;
   const [openCaseId, setOpenCaseId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
@@ -1479,6 +1546,21 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
   const openFromSearch = (id: string) => {
     setOpenCaseId(id);
     navigate({ hash: id, replace: true, resetScroll: false, hashScrollIntoView: false });
+  };
+
+  // A search hit is either a case (has its own detail popup) or a
+  // nocodext product (no popup - just scroll to and flash its card in
+  // the Side-business section instead).
+  const onSearchPick = (hit: SearchHit) => {
+    if (hit.kind === "case") {
+      openFromSearch(hit.id);
+    } else {
+      // Deferred: this runs synchronously from the spotlight's pick
+      // handler, before its own `setOpen(false)` has committed and
+      // released the body-scroll lock it holds while open - scrolling
+      // immediately would race that cleanup and get silently swallowed.
+      setTimeout(() => scrollAndFlash(hit.id), 0);
+    }
   };
 
   const searchIndex = useMemo(
@@ -1517,17 +1599,23 @@ export function Work({ content, strings }: { content: PortfolioContent; strings:
         </div>
         <CaseSearch
           cases={cases}
+          sideProjects={sideProjects}
+          sideProjectsStack={sideProjectsStack}
+          sideProjectsLlms={sideProjectsLlms}
           strings={strings}
           query={query}
           onQueryChange={setQuery}
-          onOpenDetail={openFromSearch}
+          onPick={onSearchPick}
         />
         <CaseSearchSpotlight
           cases={cases}
+          sideProjects={sideProjects}
+          sideProjectsStack={sideProjectsStack}
+          sideProjectsLlms={sideProjectsLlms}
           strings={strings}
           query={query}
           onQueryChange={setQuery}
-          onOpenDetail={openFromSearch}
+          onPick={onSearchPick}
           hasOpenCaseDetail={openCaseId !== null}
           onCloseCaseDetail={() => setOpenCaseId(null)}
         />

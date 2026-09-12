@@ -147,6 +147,20 @@
   animation: spokeFlow 1.4s linear infinite;
 }
 
+@keyframes searchFlash {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  15% {
+    box-shadow: 0 0 0 3px var(--cyan);
+  }
+}
+
+@utility search-flash {
+  animation: searchFlash 1.6s ease-out;
+}
+
 @keyframes gradientDrift {
   0%,
   100% {

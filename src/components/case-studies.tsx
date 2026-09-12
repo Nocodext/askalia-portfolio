@@ -936,18 +936,21 @@ function CaseDetailDialog({
         if (!open) onOpenIdChange(null);
       }}
     >
-      <DialogContent className="w-[min(92vw,860px)] max-w-none overflow-visible border-none bg-transparent p-0 shadow-none">
+      <DialogContent className="top-[6vh] w-[min(92vw,860px)] max-w-none translate-y-0 overflow-visible border-none bg-transparent p-0 shadow-none">
         {/* Rendered even at the first/last case - invisible but still
             hit-testable (opacity, not `hidden`/`visibility`), so a click at
             that spot is swallowed by this no-op button instead of falling
-            through to the backdrop and closing the dialog. */}
+            through to the backdrop and closing the dialog. `absolute` (not
+            `fixed`) so they center on the dialog's own height, which varies
+            with content, rather than the viewport's - DialogContent is
+            their nearest positioned ancestor. */}
         <button
           type="button"
           onClick={() => goToCase(prevId)}
           aria-label={strings.caseCard.prevCase}
           aria-hidden={!prevId}
           tabIndex={prevId ? 0 : -1}
-          className={`fixed top-1/2 left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
+          className={`absolute top-1/2 left-0 z-10 flex size-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:left-auto sm:right-full sm:mr-3 sm:translate-x-0 ${
             prevId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >
@@ -959,7 +962,7 @@ function CaseDetailDialog({
           aria-label={strings.caseCard.nextCase}
           aria-hidden={!nextId}
           tabIndex={nextId ? 0 : -1}
-          className={`fixed top-1/2 right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
+          className={`absolute top-1/2 right-0 z-10 flex size-9 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-ink shadow-md ring-1 ring-ink/15 transition-colors sm:right-auto sm:left-full sm:ml-3 sm:translate-x-0 ${
             nextId ? "cursor-pointer hover:ring-ink/30" : "opacity-0"
           }`}
         >

@@ -631,7 +631,7 @@ export const cases: CaseStudy[] = [
       ethical: ["RGPD (données candidats)", "Délivrabilité & anti-spam (SPF/DKIM/DMARC)"],
     },
     duration: "1 mois",
-    scope: { label: "Retombées business", body: "Réseau d'affaires OnlyFans et MyM." },
+    scope: { label: "Retombées business", body: "Media sociaux de créateurs de contenus explicites." },
   },
   {
     id: "sftp-photographe",

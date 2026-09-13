@@ -506,7 +506,7 @@ export const cases: CaseStudy[] = [
     duration: "1 month",
     scope: {
       label: "Business outcome",
-      body: "Business network across OnlyFans and MyM.",
+      body: "Social media for explicit content creators.",
     },
   },
   {

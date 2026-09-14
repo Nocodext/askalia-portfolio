@@ -50,7 +50,7 @@ export const profile = {
   firstName: "Joris",
   lastName: "GROUILLET",
   initials: "JG",
-  role: "Product & technical Architect",
+  role: "Product & Technical Architect",
   tagline: "Product clarity. Technical fluency.",
   location: "France / Europe",
   emailUser: "hello",
